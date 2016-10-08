@@ -136,8 +136,13 @@ public class UserRemote extends BaseRemote {
 	/**
 	 * 注册时获取手机验证码
 	 * 
-	 * @param request
+	 * @param 
+	 *	"appKey": "2016eteathcer",
+  	 *	"mobile": "15631223549",
+  	 *	"imei": "1223123213",
+     *	"type": "0"
 	 * @return
+	 *  "verifyCode": "123212"
 	 */
 	@RequestMapping(value = "verifycode", method = RequestMethod.GET)
 	public ReturnBody verifycode(HttpServletRequest request) {
@@ -164,12 +169,22 @@ public class UserRemote extends BaseRemote {
 						return ReturnBody.getParamError();
 					}
 					int code = 100000 + new Random().nextInt(899999);
-					VerifyCode verifyCode = new VerifyCode();
-					verifyCode.setCodeId(mobile);
-					verifyCode.setImei(imei);
-					verifyCode.setVerifyCode(String.valueOf(code));
-					verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
-					verifyCode.setType(type);
+					VerifyCode verifyCode = verifyCodeServiceImpl.getVerifyByMobile(mobile);
+					if (null != verifyCode) {
+						verifyCode.setType(type);
+						verifyCode.setImei(imei);
+						verifyCode.setVerifyCode(String.valueOf(code));
+						verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
+						verifyCodeServiceImpl.update(verifyCode);
+					}else{
+						verifyCode = new VerifyCode();
+						verifyCode.setCodeId(mobile);
+						verifyCode.setImei(imei);
+						verifyCode.setVerifyCode(String.valueOf(code));
+						verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
+						verifyCode.setType(type);
+						verifyCodeServiceImpl.add(verifyCode);
+					}
 					// 使用聚合数据发送验证码
 					Map result = SmsUtil.sendSms(mobile, "13909", "#code#=" + code);
 					if ("0".equals(result.get("error_code") + "")) {
@@ -190,70 +205,61 @@ public class UserRemote extends BaseRemote {
 	/**
 	 * 用户注册
 	 * 
-	 * @param request
-	 * @param user
+	 * @param 
+	 *	"account": "15631223549",
+	 *	“verifyCode”:”526312”,
+	 *	“password”:”123456”,
+	 *	“userType”:”01”
 	 * @return
 	 */
-	// --request--
-	// {
-	// account : '注册账号（手机号）',
-	// password : '密码',
-	// userType : '用户类别',//'01'教师 '02'学生
-	// verifyCode : '验证码'
-	// }
-	// --response--
-	// {
-	// result : 'success',//成功success，失败failure
-	// data : 'userId',//用户数据主键
-	// msg : '提示信息XXX'
-	// }
 	@RequestMapping(value = "register", method = RequestMethod.POST)
-	public ReturnBody register(HttpServletRequest request, User user) {
+	public ReturnBody register(HttpServletRequest request) {
 		try {
 			String verifyCode = request.getParameter("verifyCode");
-			if (null != request.getSession().getAttribute("timestamp")) {
-				long before = (long) request.getSession().getAttribute("timestamp");
-				if (DateUtil.isAvailable(before, System.currentTimeMillis(),SystemConstants.MESSAGE_DISTANCE)) {
-					if (StringUtil.checkParams(verifyCode)) {
-						if (null != request.getSession().getAttribute("verifyCode")) {
-							if (verifyCode.equals(request.getSession().getAttribute("verifyCode"))) {
-								request.getSession().setAttribute("timestamp", null);
-								User serverUser = userServiceImpl.getUserByAcct(user.getAccount());
-								if (serverUser != null) {
-									return new ReturnBody(ReturnBody.RESULT_FAILURE, "手机号已被注册");
-								}
-								user.setPassword(user.getPassword());
-								user.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-								userServiceImpl.add(user);
-								if (EteacherConstants.USER_TYPE_STUDENT.equals(user.getUserType())) {
-									Student student = new Student();
-									student.setStuId(user.getUserId());
-									userServiceImpl.save(student);
-								} else {
-									Teacher teacher = new Teacher();
-									teacher.setTeacherId(user.getUserId());
-									userServiceImpl.save(teacher);
-								}
-								return new ReturnBody(ReturnBody.RESULT_SUCCESS, user.getUserId(),"注册成功！");
-							}else{
-								return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码错误");
+			String account = request.getParameter("account");
+			String password = request.getParameter("password"); 
+			String userType = request.getParameter("userType");
+			if (StringUtil.checkParams(verifyCode,account,password,userType)) {
+				VerifyCode verify = verifyCodeServiceImpl.getVerifyByMobile(account);
+				if (null != verify && verify.getType() == 0) {
+					long before = Long.parseLong(verify.getTime());
+					if (DateUtil.isAvailable(before, System.currentTimeMillis(),SystemConstants.MESSAGE_DISTANCE)) {
+						if (verifyCode.equals(verify.getVerifyCode())) {
+							User serverUser = userServiceImpl.getUserByAcct(account);
+							if (serverUser != null) {
+								return new ReturnBody(ReturnBody.RESULT_FAILURE, "手机号已被注册");
 							}
+							serverUser = new User();
+							serverUser.setPassword(password);
+							serverUser.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+							userServiceImpl.add(serverUser);
+							String userId = userServiceImpl.getUserByAcct(account).getUserId();
+							verifyCodeServiceImpl.delete(verify);
+							if (EteacherConstants.USER_TYPE_STUDENT.equals(userType)) {
+								Student student = new Student();
+								student.setStuId(userId);
+								userServiceImpl.save(student);
+							} else {
+								Teacher teacher = new Teacher();
+								teacher.setTeacherId(userId);
+								userServiceImpl.save(teacher);
+							}
+							return new ReturnBody(ReturnBody.RESULT_SUCCESS, userId,"注册成功！");
 						}else{
-							return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
+							return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码错误");
 						}
-					}else{
-						return ReturnBody.getParamError();
+					} else {
+						return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
 					}
-				} else {
-					return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
+				}else{
+					return new ReturnBody(ReturnBody.RESULT_FAILURE,"验证码失效");
 				}
 			} else {
-				return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
+				return ReturnBody.getParamError();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -272,24 +278,22 @@ public class UserRemote extends BaseRemote {
 	public ReturnBody updatePassword(HttpServletRequest request) {
 		try {
 			String password = request.getParameter("password");
-			String newPassword = request.getParameter("newpassword");
-			User user = getCurrentUser(request);
-			if (StringUtil.isNotEmpty(password)
-					&& StringUtil.isNotEmpty(newPassword)) {
-				if (password.equals(user.getPassword())) {
-					user.setPassword(newPassword);
-					userServiceImpl.update(user);
-					return new ReturnBody(ReturnBody.RESULT_SUCCESS, "密码修改成功！");
-				} else {
-					return new ReturnBody(ReturnBody.RESULT_FAILURE, "原密码输入有误！");
-				}
-			} else {
-				return new ReturnBody(ReturnBody.RESULT_FAILURE, "密码不能为空！");
+			String newPassword = request.getParameter("newPassword");
+			if (StringUtil.checkParams(password,newPassword)) {
+				User user = getCurrentUser(request);
+					if (password.equals(user.getPassword())) {
+						user.setPassword(newPassword);
+						userServiceImpl.update(user);
+						return new ReturnBody(ReturnBody.RESULT_SUCCESS, "密码修改成功！");
+					} else {
+						return new ReturnBody(ReturnBody.RESULT_FAILURE, "原密码输入有误！");
+					}
+			}else{
+				return ReturnBody.getParamError();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 		}
 	}
 

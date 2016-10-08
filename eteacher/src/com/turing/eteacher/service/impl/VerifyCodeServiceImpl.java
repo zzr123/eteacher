@@ -3,6 +3,7 @@ package com.turing.eteacher.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
@@ -11,7 +12,7 @@ import com.turing.eteacher.model.User;
 import com.turing.eteacher.model.VerifyCode;
 import com.turing.eteacher.service.IVerifyCodeService;
 import com.turing.eteacher.util.Encryption;
-
+@Service
 public class VerifyCodeServiceImpl extends BaseService<VerifyCode> implements IVerifyCodeService  {
 	
 	@Autowired
