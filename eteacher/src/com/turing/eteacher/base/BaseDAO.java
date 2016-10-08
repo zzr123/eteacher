@@ -71,6 +71,11 @@ public class BaseDAO<T> {
 		return query.list();
 	}
 	
+	public List find(String hql){
+		Query query = getSession().createQuery(hql);
+		return query.list();
+	}
+	
 	public List<Map> findMap(String hql, Object...params){
 		System.out.println("!!!!");
 		Query query = getSession().createQuery(hql);

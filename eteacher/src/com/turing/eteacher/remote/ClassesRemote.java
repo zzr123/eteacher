@@ -37,4 +37,5 @@ public class ClassesRemote extends BaseController{
 				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 			}
 		}
+		
 }

@@ -46,4 +46,14 @@ public class UserServiceImpl extends BaseService<User> implements IUserService {
 		return null;
 	}
 
+	@Override
+	public User getUserById(String id) {
+		String hql = "from User user where user.userId = ?";
+		List<User> list = userDAO.find(hql, id);
+		if (list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
 }

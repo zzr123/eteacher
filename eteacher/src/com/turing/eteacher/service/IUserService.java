@@ -17,5 +17,12 @@ public interface IUserService extends IService<User> {
 	 * @return
 	 */
 	public User getUserByAcctAndPwd(String account, String password);
-
+	
+	/**
+	 * 通过用户id获取用户
+	 * @author lifei
+	 * @param id
+	 * @return
+	 */
+	public User getUserById(String id);
 }

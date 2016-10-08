@@ -1,5 +1,7 @@
 package com.turing.eteacher.component;
 
+import freemarker.cache.StringTemplateLoader;
+
 /**
  * remote响应对象
  * 
@@ -7,9 +9,18 @@ package com.turing.eteacher.component;
  * 
  */
 public class ReturnBody {
-
-	public static final String RESULT_SUCCESS = "success";
-	public static final String RESULT_FAILURE = "failure";
+	//登陆成功
+	public static final String RESULT_SUCCESS = 		"200";
+	//请求超时
+	public static final String RESULT_TIMEOUT = 		"900";
+	//非法请求
+	public static final String RESULT_ILLEGAL_ACCESS = 	"406";
+	//用户不存在
+	public static final String RESULT_USER_NOT_EXIST = 	"401";
+	//请求失败
+	public static final String RESULT_FAILURE = 		"400";
+	//token过期
+	public static final String RESULT_TOKEN_TIMEOUT = 	"201";
 
 	public static final String ERROR_MSG = "系统出现异常，请稍后再试。";
 
@@ -18,9 +29,11 @@ public class ReturnBody {
 	public static final String PARAMETER_ERROR = "参数错误！";
 
 	private static ReturnBody paramErrorBody;
-	
+
 	private static ReturnBody systemErrorBody;
-	
+
+	private static ReturnBody noLoginErrorBody;
+
 	public ReturnBody() {
 
 	}
@@ -44,6 +57,7 @@ public class ReturnBody {
 	/**
 	 * 获取一个参数错误的返回值
 	 * 
+	 * @author lifei
 	 * @return
 	 */
 	public static ReturnBody getParamError() {
@@ -52,17 +66,31 @@ public class ReturnBody {
 		}
 		return paramErrorBody;
 	}
-	
+
 	/**
 	 * 获取一个系统错误的返回值
 	 * 
+	 * @author lifei
 	 * @return
 	 */
-	public static ReturnBody getSystemError(){
+	public static ReturnBody getSystemError() {
 		if (null == systemErrorBody) {
-			systemErrorBody= new ReturnBody(RESULT_FAILURE, ERROR_MSG);
+			systemErrorBody = new ReturnBody(RESULT_FAILURE, ERROR_MSG);
 		}
 		return systemErrorBody;
+	}
+
+	/**
+	 * 获取一个未登录的返回值
+	 * 
+	 * @author lifei
+	 * @return
+	 */
+	public static ReturnBody getNoLoginError() {
+		if (null == noLoginErrorBody) {
+			noLoginErrorBody = new ReturnBody(RESULT_FAILURE, NO_LOGIN);
+		}
+		return noLoginErrorBody;
 	}
 
 	private String result;
