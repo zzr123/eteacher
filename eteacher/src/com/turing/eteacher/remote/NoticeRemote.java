@@ -1,9 +1,7 @@
 package com.turing.eteacher.remote;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,19 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.User;
-import com.turing.eteacher.model.Work;
 import com.turing.eteacher.service.INoticeService;
 
 @RestController
 @RequestMapping("remote")
-public class NoticeRemote extends BaseController {
+public class NoticeRemote extends BaseRemote {
 
 	@Autowired
 	private INoticeService noticeServiceImpl;

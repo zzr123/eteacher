@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.IStudentService;
@@ -19,7 +19,7 @@ import com.turing.eteacher.util.BeanUtils;
 
 @RestController
 @RequestMapping("remote")
-public class StudentRemote extends BaseController {
+public class StudentRemote extends BaseRemote {
 	
 	@Autowired
 	private IStudentService studentServiceImpl;

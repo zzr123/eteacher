@@ -11,16 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.model.Dictionary2Private;
 import com.turing.eteacher.model.Test;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IDictionary2PrivateService;
 
 @RestController
 @RequestMapping("remote")
-public class DictionaryRemote extends BaseController{
+public class DictionaryRemote extends BaseRemote{
 	
 	@Autowired
 	private IDictionary2PrivateService dictionary2PrivateServiceImpl;

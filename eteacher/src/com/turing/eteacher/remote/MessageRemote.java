@@ -8,13 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.turing.eteacher.base.BaseController;
+
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.service.IMessageService;
 
 @RestController
 @RequestMapping("remote")
-public class MessageRemote extends BaseController {
+public class MessageRemote extends BaseRemote {
 	@Autowired
 	private IMessageService messageServiceImp;
 	

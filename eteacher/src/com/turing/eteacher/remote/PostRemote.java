@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Post;
 import com.turing.eteacher.model.PostReply;
@@ -21,7 +21,7 @@ import com.turing.eteacher.service.IPostService;
 
 @RestController
 @RequestMapping("remote")
-public class PostRemote extends BaseController {
+public class PostRemote extends BaseRemote {
 	
 	@Autowired
 	private IPostService postServiceImpl;

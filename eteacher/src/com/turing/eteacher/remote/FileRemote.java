@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.service.IFileService;
 
 @RestController
 @RequestMapping("remote")
-public class FileRemote extends BaseController {
+public class FileRemote extends BaseRemote {
 
 	@Autowired
 	private IFileService fileServiceImpl;

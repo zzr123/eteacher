@@ -1,6 +1,5 @@
 package com.turing.eteacher.remote;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Work;
 import com.turing.eteacher.model.WorkStatus;
@@ -35,7 +34,7 @@ import com.turing.eteacher.service.IWorkService;
  */
 @RestController
 @RequestMapping("remote")
-public class WorkRemote extends BaseController {
+public class WorkRemote extends BaseRemote {
 	
 	@Autowired
 	private IWorkService workServiceImpl;

@@ -13,4 +13,6 @@ public interface IStudentService extends IService<Student> {
 	public Student getByStuNo(String stuNo);
 	
 	public Map getStudentSchoolInfo(String stuId);
+	
+	public Student getById(String id);
 }

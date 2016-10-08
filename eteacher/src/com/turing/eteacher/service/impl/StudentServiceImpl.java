@@ -61,4 +61,14 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 		return null;
 	}
 
+	@Override
+	public Student getById(String id) {
+		String hql = "from Student where stuId = ?";
+		List<Student> list = studentDAO.find(hql, id);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
 }

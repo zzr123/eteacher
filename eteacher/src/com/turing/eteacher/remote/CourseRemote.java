@@ -20,12 +20,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseClasses;
 import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScore;
 import com.turing.eteacher.model.Teacher;
@@ -39,7 +37,7 @@ import com.turing.eteacher.service.ITextbookService;
 
 @RestController
 @RequestMapping("remote")
-public class CourseRemote extends BaseController {
+public class CourseRemote extends BaseRemote {
 	
 	private static final Log log = LogFactory.getLog(CourseRemote.class);
 	

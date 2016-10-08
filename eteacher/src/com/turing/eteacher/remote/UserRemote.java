@@ -13,19 +13,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.turing.eteacher.base.BaseController;
+import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.constants.SystemConstants;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
+import com.turing.eteacher.model.VerifyCode;
 import com.turing.eteacher.remote.model.LoginReturn;
 import com.turing.eteacher.service.IAppService;
 import com.turing.eteacher.service.IStudentService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.IUserService;
+import com.turing.eteacher.service.IVerifyCodeService;
 import com.turing.eteacher.util.DateUtil;
 import com.turing.eteacher.util.Encryption;
 import com.turing.eteacher.util.SmsUtil;
@@ -33,7 +35,7 @@ import com.turing.eteacher.util.StringUtil;
 
 @RestController
 @RequestMapping("remote")
-public class UserRemote extends BaseController {
+public class UserRemote extends BaseRemote {
 
 	@Autowired
 	private IUserService userServiceImpl;
@@ -49,6 +51,9 @@ public class UserRemote extends BaseController {
 	
 	@Autowired
 	private IAppService appServiceImpl;
+	
+	@Autowired
+	private IVerifyCodeService  verifyCodeServiceImpl;
 
 	/**
 	 * 登录
@@ -118,6 +123,7 @@ public class UserRemote extends BaseController {
 	@RequestMapping(value = "loginout", method = RequestMethod.POST)
 	public ReturnBody loginout(HttpServletRequest request) {
 		try {
+			//TODO 清除登录记录
 			request.getSession().invalidate();
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
@@ -137,39 +143,40 @@ public class UserRemote extends BaseController {
 	public ReturnBody verifycode(HttpServletRequest request) {
 		try {
 			String mobile = request.getParameter("mobile");
-			int type = Integer.parseInt(request.getParameter("type"));
-			User user;
-			if (StringUtil.isNotEmpty(mobile)) {
-				switch (type) {
-				case 0:// 注册
-					user = userServiceImpl.getUserByAcct(mobile);
-					if (null != user) {
-						return new ReturnBody(ReturnBody.RESULT_FAILURE,
-								"手机号已被注册");
+			String imei = request.getParameter("imei");
+			if(StringUtil.checkParams(mobile,imei)){
+				int type = Integer.parseInt(request.getParameter("type"));
+				User user;
+					switch (type) {
+					case 0:// 注册
+						user = userServiceImpl.getUserByAcct(mobile);
+						if (null != user) {
+							return new ReturnBody(ReturnBody.RESULT_FAILURE,"手机号已被注册");
+						}
+						break;
+					case 1:// 忘记密码
+						user = userServiceImpl.getUserByAcct(mobile);
+						if (null == user) {
+							return new ReturnBody(ReturnBody.RESULT_FAILURE,"手机号未注册");
+						}
+						break;
+					default:
+						return ReturnBody.getParamError();
 					}
-					break;
-				case 1:// 忘记密码
-					user = userServiceImpl.getUserByAcct(mobile);
-					if (null == user) {
-						return new ReturnBody(ReturnBody.RESULT_FAILURE,
-								"手机号未注册");
+					int code = 100000 + new Random().nextInt(899999);
+					VerifyCode verifyCode = new VerifyCode();
+					verifyCode.setCodeId(mobile);
+					verifyCode.setImei(imei);
+					verifyCode.setVerifyCode(String.valueOf(code));
+					verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
+					verifyCode.setType(type);
+					// 使用聚合数据发送验证码
+					Map result = SmsUtil.sendSms(mobile, "13909", "#code#=" + code);
+					if ("0".equals(result.get("error_code") + "")) {
+						return new ReturnBody(ReturnBody.RESULT_SUCCESS, code);
+					} else {
+						return new ReturnBody(ReturnBody.RESULT_FAILURE,"短信验证码获取失败");
 					}
-					break;
-				default:
-					return ReturnBody.getParamError();
-				}
-				int code = 100000 + new Random().nextInt(899999);
-				request.getSession().setAttribute("timestamp",
-						System.currentTimeMillis());
-				request.getSession().setAttribute("verifyCode", code + "");
-				// 使用聚合数据发送验证码
-				Map result = SmsUtil.sendSms(mobile, "13909", "#code#=" + code);
-				if ("0".equals(result.get("error_code") + "")) {
-					return new ReturnBody(ReturnBody.RESULT_SUCCESS, code);
-				} else {
-					return new ReturnBody(ReturnBody.RESULT_FAILURE,
-							"短信验证码获取失败");
-				}
 			} else {
 				return ReturnBody.getParamError();
 			}
