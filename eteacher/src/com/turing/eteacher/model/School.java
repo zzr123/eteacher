@@ -19,9 +19,9 @@ import com.turing.eteacher.base.BaseModel;
  * 
  */
 @Entity
-@Table(name = "T_DICTIONARY_PUBLIC")
-public class DictionaryPublic extends BaseModel implements Serializable {
-	private String vocabularyId;
+@Table(name = "T_SCHOOL")
+public class School extends BaseModel implements Serializable {
+	private String schoolId;
 	private int type;
 	private int code;
 	private int parentCode;
@@ -32,13 +32,13 @@ public class DictionaryPublic extends BaseModel implements Serializable {
 	@Id
 	@GeneratedValue(generator = "customId")
 	@GenericGenerator(name = "customId", strategy = "com.turing.eteacher.util.CustomIdGenerator")
-	@Column(name = "VOCABULARY_ID")
-	public String getVocabularyId() {
-		return vocabularyId;
+	@Column(name = "SCHOOL_ID")
+	public String getSchoolId() {
+		return schoolId;
 	}
 
-	public void setVocabularyId(String vocabularyId) {
-		this.vocabularyId = vocabularyId;
+	public void setSchoolId(String schoolId) {
+		this.schoolId = schoolId;
 	}
 
 	@Column(name = "TYPE")
