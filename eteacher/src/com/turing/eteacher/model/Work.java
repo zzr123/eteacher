@@ -12,20 +12,18 @@ import com.turing.eteacher.base.CreateTimeModel;
 
 @Entity
 @Table(name = "T_WORK")
-public class Work extends CreateTimeModel implements Serializable {
+public class Work implements Serializable {
 
 	private static final long serialVersionUID = 8523575661624181680L;
 	
 	private String workId;
 	private String courseId;
 	private String content;
-	private Integer timeLength;
-	private String publishType;
 	private Date publishTime;
 	private Date endTime;
+	private Date createTime;
 	private String remindTime;
 	private Integer status;  //状态：0代表学生端不可见，1代表学生端可见
-	private String fileId;
 	
 	@Id
 	@GeneratedValue(generator = "customId")
@@ -51,19 +49,14 @@ public class Work extends CreateTimeModel implements Serializable {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	@Column(name = "TIME_LENGTH")
-	public Integer getTimeLength() {
-		return timeLength;
-	}
-	public void setTimeLength(Integer timeLength) {
-		this.timeLength = timeLength;
-	}
-	@Column(name = "PUBLISH_TYPE")
-	public String getPublishType() {
-		return publishType;
-	}
-	public void setPublishType(String publishType) {
-		this.publishType = publishType;
+
+	@Column(name = "CREATE_TIME")
+	public Date getCreateTime() {
+		return createTime;
+	};
+	@Override
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 	@Column(name = "PUBLISH_TIME")
 //	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -95,11 +88,5 @@ public class Work extends CreateTimeModel implements Serializable {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	@Column(name="FILE_ID")
-	public String getFileId() {
-		return fileId;
-	}
-	public void setFileId(String fileId) {
-		this.fileId = fileId;
-	}	
+	
 }

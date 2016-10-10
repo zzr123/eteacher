@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.csvreader.CsvWriter;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.Score;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseService;
@@ -54,7 +54,7 @@ public class ScoreController extends BaseController {
 	public String viewListScore(HttpServletRequest request){
 		//该课程成绩组成
 		String courseId = request.getParameter("courseId");
-		List<CourseScore> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
+		List<CourseScorePrivate> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		Course course = courseServiceImpl.get(courseId);
 		request.setAttribute("CourseScoreList", CourseScoreList);
 		request.setAttribute("courseId", courseId);
@@ -99,7 +99,7 @@ public class ScoreController extends BaseController {
 	@RequestMapping("exportScore")
 	public String exportScore(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException{
 		String courseId = request.getParameter("courseId");
-		List<CourseScore> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
+		List<CourseScorePrivate> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		List<Map> scoreList = scoreServiceImpl.getScoreList(courseId);
 		Course course = courseServiceImpl.get(courseId);
 		response.setContentType("application/octet-stream");  
@@ -110,7 +110,7 @@ public class ScoreController extends BaseController {
 			csvWriter = new CsvWriter(response.getWriter(),',');
 			String[] header = {"学号"};
 			StringBuffer sb = new StringBuffer("学号,姓名,");
-			for(CourseScore courseScore : CourseScoreList){
+			for(CourseScorePrivate courseScore : CourseScoreList){
 				sb.append(courseScore.getScoreName());
 				sb.append(",");
 			}
@@ -122,7 +122,7 @@ public class ScoreController extends BaseController {
 				sb.append(",");
 				sb.append(record.get("stuName"));
 				sb.append(",");
-				for(CourseScore courseScore : CourseScoreList){
+				for(CourseScorePrivate courseScore : CourseScoreList){
 					sb.append(record.get("score_"+courseScore.getCsId())==null?"":record.get("score_"+courseScore.getCsId()));
 					sb.append(",");
 				}

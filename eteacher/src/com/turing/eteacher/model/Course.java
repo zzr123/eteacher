@@ -21,8 +21,7 @@ public class Course implements Serializable {
 	private String courseName;
 	private String introduction;
 	private Integer classHours;
-	private Integer studentNumber;
-	private String specialty;
+	private String majorId;
 	private String teachingMethodId;
 	private String courseTypeId;
 	private String examinationModeId;
@@ -68,19 +67,12 @@ public class Course implements Serializable {
 	public void setClassHours(Integer classHours) {
 		this.classHours = classHours;
 	}
-	@Column(name = "STUDENT_NUMBER")
-	public Integer getStudentNumber() {
-		return studentNumber;
+	@Column(name = "MAJOR_ID")
+	public String getMajorId() {
+		return majorId;
 	}
-	public void setStudentNumber(Integer studentNumber) {
-		this.studentNumber = studentNumber;
-	}
-	@Column(name = "SPECIALTY")
-	public String getSpecialty() {
-		return specialty;
-	}
-	public void setSpecialty(String specialty) {
-		this.specialty = specialty;
+	public void setMajorId(String majorId) {
+		this.majorId = majorId;
 	}
 	@Column(name = "TEACHING_METHOD_ID")
 	public String getTeachingMethodId() {

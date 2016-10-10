@@ -22,7 +22,7 @@ import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseFile;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.Textbook;
@@ -94,7 +94,7 @@ public class CourseController extends BaseController {
 			request.setAttribute("courseWorkloadsJson", courseWorkloadsJson);
 		}
 		//成绩组成
-		List<CourseScore> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
+		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		if(courseScores != null && courseScores.size()>0){
 			String courseScoresJson = new ObjectMapper().writeValueAsString(courseScores);
 			request.setAttribute("courseScoresJson", courseScoresJson);
@@ -145,10 +145,10 @@ public class CourseController extends BaseController {
 			courseWorkloads = Arrays.asList(new ObjectMapper().readValue(courseWorkloadArrJson, CourseWorkload[].class));
 		}
 		//成绩组成
-		List<CourseScore> courseScores = null;
+		List<CourseScorePrivate> courseScores = null;
 		String courseScoreArrJson = request.getParameter("courseScoreArr");
 		if(StringUtil.isNotEmpty(courseScoreArrJson)){
-			courseScores = Arrays.asList(new ObjectMapper().readValue(courseScoreArrJson, CourseScore[].class));
+			courseScores = Arrays.asList(new ObjectMapper().readValue(courseScoreArrJson, CourseScorePrivate[].class));
 		}
 		//教材和教辅
 		Textbook textbook = null;

@@ -13,7 +13,7 @@ import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.dao.ScoreDAO;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.Score;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseService;
@@ -40,13 +40,13 @@ public class ScoreServiceImpl extends BaseService<Score> implements IScoreServic
 
 	@Override
 	public List<Map> getScoreList(String courseId) {
-		List<CourseScore> courseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
+		List<CourseScorePrivate> courseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		List args = new ArrayList();
 		String normalScoreId = null;
 		String hql = "select s.stuId as stuId," +
 				"s.stuNo as stuNo," +
 				"s.stuName as stuName";
-		for(CourseScore record : courseScoreList){
+		for(CourseScorePrivate record : courseScoreList){
 			hql += ",(select scoreNumber from Score where stuId = s.stuId and courseId = cc.courseId and scoreType = ?) as score_"+record.getCsId();
 			args.add(record.getCsId());
 			if("平时".equals(record.getScoreName())){
@@ -72,7 +72,7 @@ public class ScoreServiceImpl extends BaseService<Score> implements IScoreServic
 			}
 			//综合成绩
 			finalScore = null;
-			for(CourseScore courseScore : courseScoreList){
+			for(CourseScorePrivate courseScore : courseScoreList){
 				BigDecimal scoreNumber = (BigDecimal)record.get("score_" + courseScore.getCsId());
 				if(scoreNumber != null){
 					if(finalScore == null){
@@ -144,13 +144,13 @@ public class ScoreServiceImpl extends BaseService<Score> implements IScoreServic
 		String hql = "delete from Score where courseId = ? and scoreType <> ? and scoreType <> ?";
 		scoreDAO.executeHql(hql, courseId, EteacherConstants.SCORE_TYPE_COURSE, EteacherConstants.SCORE_TYPE_WORK);
 		// 插入数据库
-		List<CourseScore> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
+		List<CourseScorePrivate> CourseScoreList = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		for (Map record : datas) {
 			String stuNo = (String) record.get("学号");
 			if (StringUtil.isNotEmpty(stuNo)) {
 				Student student = studentServiceImpl.getByStuNo(stuNo.replace(".0", ""));
 				if (student != null) {
-					for (CourseScore courseScore : CourseScoreList) {
+					for (CourseScorePrivate courseScore : CourseScoreList) {
 						String scoreNumber = (String) record.get(courseScore.getScoreName());
 						if (scoreNumber != null) {
 							Score score = new Score();

@@ -19,8 +19,8 @@ public class Log extends CreateTimeModel implements Serializable{
 	
 	private String logId;
 	private String stuId;
-	private String targetId;
-	private int type;//0代表课程签到日志，1代表通知查看日志
+	private String noticeId;
+	private int type;//日志类型。 01：通知查看日志
 	
 	@Id
 	@GeneratedValue(generator="customId")
@@ -39,12 +39,12 @@ public class Log extends CreateTimeModel implements Serializable{
 	public void setStuId(String stuId) {
 		this.stuId = stuId;
 	}
-	@Column(name="TARGET_ID")
-	public String getTargetId() {
-		return targetId;
+	@Column(name="NOTICE_ID")
+	public String getNoticeId() {
+		return noticeId;
 	}
-	public void setTargetId(String targetId) {
-		this.targetId = targetId;
+	public void setNoticeId(String noticeId) {
+		this.noticeId = noticeId;
 	}
 	@Column(name="TYPE")
 	public int getType() {

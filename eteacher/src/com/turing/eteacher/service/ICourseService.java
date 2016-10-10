@@ -6,7 +6,7 @@ import java.util.Map;
 import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseFile;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.Textbook;
@@ -20,13 +20,13 @@ public interface ICourseService extends IService<Course> {
 	
 	public List<CourseFile> getPublicCourseFilesByCourseId(String courseId);
 
-	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScore> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
+	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
 	
-	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScore> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
+	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
 	
 	public void deleteCourseFile(String cfId);
 	
-	public List<CourseScore> getCoureScoreByCourseId(String courseId);
+	public List<CourseScorePrivate> getCoureScoreByCourseId(String courseId);
 	
 	public List<CourseWorkload> getCoureWorkloadByCourseId(String courseId);
 	
@@ -62,5 +62,5 @@ public interface ICourseService extends IService<Course> {
 	//修改教材教辅信息
 	public void updateTextbook(Textbook text);
 	//修改成绩组成项信息
-	public void updateCoursescore(CourseScore cs);
+	public void updateCoursescore(CourseScorePrivate cs);
 }

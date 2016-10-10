@@ -120,22 +120,23 @@ public class WorkController extends BaseController {
 	public String saveWork(HttpServletRequest request, Work work, 
 			@RequestParam(value="files",required=false) MultipartFile[] files) throws Exception {
 		String isDraft = request.getParameter("isDraft");
-		if("true".equals(isDraft)){
-			work.setPublishType(EteacherConstants.WORK_STAUTS_DRAFT);
-		}
-		else if(EteacherConstants.WORK_STAUTS_NOW.equals(work.getPublishType())){
-			work.setPublishTime(new Date());
-		}
-		//设置终止时间
-		work.setEndTime(DateUtil.addDays(work.getPublishTime(),work.getTimeLength()));
-        if(StringUtil.isNotEmpty(work.getWorkId())){
-        	Work serverWork = workServiceImpl.get(work.getWorkId());
-        	BeanUtils.copyToModel(work, serverWork);
-        	workServiceImpl.update(serverWork);
-        }
-        else{
-        	workServiceImpl.add(work);
-        }
+		//TODO 需要修改
+//		if("true".equals(isDraft)){
+//			work.setPublishType(EteacherConstants.WORK_STAUTS_DRAFT);
+//		}
+//		else if(EteacherConstants.WORK_STAUTS_NOW.equals(work.getPublishType())){
+//			work.setPublishTime(new Date());
+//		}
+//		//设置终止时间
+//		work.setEndTime(DateUtil.addDays(work.getPublishTime(),work.getTimeLength()));
+//        if(StringUtil.isNotEmpty(work.getWorkId())){
+//        	Work serverWork = workServiceImpl.get(work.getWorkId());
+//        	BeanUtils.copyToModel(work, serverWork);
+//        	workServiceImpl.update(serverWork);
+//        }
+//        else{
+//        	workServiceImpl.add(work);
+//        }
         String pathRoot = request.getSession().getServletContext().getRealPath("");
         for (int i = 0; i < files.length; i++) {
             if(!files[i].isEmpty()){

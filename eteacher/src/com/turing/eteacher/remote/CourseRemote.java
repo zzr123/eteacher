@@ -25,7 +25,7 @@ import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseFile;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
@@ -306,7 +306,7 @@ public class CourseRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value="teacher/course/addOrUpdateType",method=RequestMethod.GET)
-	public ReturnBody addOrUpdateType(HttpServletRequest request,CourseScore cs){
+	public ReturnBody addOrUpdateType(HttpServletRequest request,CourseScorePrivate cs){
 		try{
 			String status=request.getParameter("status");
 			if("0".equals(status)){//增加课程组成项信息

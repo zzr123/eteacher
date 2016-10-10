@@ -26,7 +26,7 @@ import com.turing.eteacher.dao.TextbookDAO;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseClasses;
 import com.turing.eteacher.model.CourseFile;
-import com.turing.eteacher.model.CourseScore;
+import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseTable;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Major;
@@ -82,10 +82,10 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		}
 		List<Course> list = courseDAO.find(hql, args.toArray());
 		for(Course record : list){
-			if(StringUtil.isNotEmpty(record.getSpecialty())){
-				Major major = majorDAO.get(record.getSpecialty());
+			if(StringUtil.isNotEmpty(record.getMajorId())){
+				Major major = majorDAO.get(record.getMajorId());
 				if(major!=null){
-					record.setSpecialty(major.getMajorName());
+					record.setMajorId(major.getMajorName());
 				}
 			}
 		}
@@ -105,7 +105,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	}
 
 	@Override
-	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScore> courseScores, Textbook textbook,
+	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook,
 			List<Textbook> textbookOthers, List<CourseFile> courseFiles) {
 		String courseId = (String) courseDAO.save(course);
 		//授课班级
@@ -129,7 +129,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		//成绩组成
 		if(courseScores != null){
 			for(int i=0;i<courseScores.size();i++){
-				CourseScore record = courseScores.get(i);
+				CourseScorePrivate record = courseScores.get(i);
 				record.setCourseId(courseId);
 				record.setCsOrder(i);
 				courseDAO.save(record);
@@ -157,7 +157,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	}
 
 	@Override
-	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScore> courseScores, Textbook textbook,
+	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook,
 			List<Textbook> textbookOthers, List<CourseFile> courseFiles) {
 		Course serverCourse = courseDAO.get(course.getCourseId());
 		BeanUtils.copyToModel(course, serverCourse);
@@ -196,7 +196,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		List<String> csIds = new ArrayList();
 		if(courseScores != null){
 			for(int i=0;i<courseScores.size();i++){
-				CourseScore record = courseScores.get(i);
+				CourseScorePrivate record = courseScores.get(i);
 				record.setCourseId(course.getCourseId());
 				record.setCsOrder(i);
 				if("".equals(record.getCsId())){
@@ -251,9 +251,9 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	}
 
 	@Override
-	public List<CourseScore> getCoureScoreByCourseId(String courseId) {
+	public List<CourseScorePrivate> getCoureScoreByCourseId(String courseId) {
 		String hql = "from CourseScore where courseId = ? order by csOrder";
-		List<CourseScore> list = courseDAO.find(hql, courseId);
+		List<CourseScorePrivate> list = courseDAO.find(hql, courseId);
 		return list;
 	}
 
@@ -725,8 +725,8 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	}
     //修改课程成绩组成项信息
 	@Override
-	public void updateCoursescore(CourseScore cs) {
-		CourseScore score=courseScoreDAO.get(cs.getCsId());
+	public void updateCoursescore(CourseScorePrivate cs) {
+		CourseScorePrivate score=courseScoreDAO.get(cs.getCsId());
 		cs.setCourseId(score.getCourseId());
 		cs.setCsOrder(score.getCsOrder());
 		courseScoreDAO.saveOrUpdate(cs);

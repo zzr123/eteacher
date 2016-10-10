@@ -178,12 +178,12 @@ public class WorkRemote extends BaseRemote {
 		try{
 			String status=request.getParameter("status");
 			String operator=request.getParameter("operator");
-			if("0".equals(status)){
-				work.setPublishType("01");
-			}
-			else{
-				work.setPublishType("02");
-			}
+//			if("0".equals(status)){
+//				work.setPublishType("01");
+//			}
+//			else{
+//				work.setPublishType("02");
+//			}
 			work.setStatus(1);
 			if("add".equals(operator)){
 				workServiceImpl.add(work);
