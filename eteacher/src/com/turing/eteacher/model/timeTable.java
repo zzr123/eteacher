@@ -10,7 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "T_TIMETABLE")
-public class timeTable {
+public class TimeTable {
 	private String timetableId;
 	private String schoolId;
 	private String endTime;

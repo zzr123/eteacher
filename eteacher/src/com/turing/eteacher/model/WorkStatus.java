@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.turing.eteacher.base.BaseModel;
 
 @Entity
-@Table(name = "T_WORK_STATUS")
+@Table(name = "T_STATUS")
 public class WorkStatus extends BaseModel implements Serializable {
 
 	private static final long serialVersionUID = -8365515524370091931L;
