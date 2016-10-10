@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost_3306
-Source Server Version : 50521
-Source Host           : localhost:3306
-Source Database       : eteacherdo
+Source Server         : 公司台式机
+Source Server Version : 50540
+Source Host           : 192.168.1.114:3306
+Source Database       : eteacher2
 
 Target Server Type    : MYSQL
-Target Server Version : 50521
+Target Server Version : 50540
 File Encoding         : 65001
 
-Date: 2016-10-10 09:05:57
+Date: 2016-10-10 13:15:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -50,14 +50,15 @@ CREATE TABLE `t_class` (
 -- ----------------------------
 INSERT INTO `t_class` VALUES ('1', '020101', '测试班级1', '2014', '本科', null);
 INSERT INTO `t_class` VALUES ('2', '010103K', '测试班级2', '2016', '本科', null);
+INSERT INTO `t_class` VALUES ('3aIuuYCNQt', '010102', '2016级逻辑学', '2016', '本科', null);
 INSERT INTO `t_class` VALUES ('NCG4iCUGy0', '020101', '经济学1班', '2016', null, null);
 INSERT INTO `t_class` VALUES ('p74GYIXJnV', '010103K', '测试班级a', '2016', '本科', null);
 
 -- ----------------------------
--- Table structure for `t_config--`
+-- Table structure for `t_config`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_config--`;
-CREATE TABLE `t_config--` (
+DROP TABLE IF EXISTS `t_config`;
+CREATE TABLE `t_config` (
   `KEY` varchar(20) NOT NULL DEFAULT '' COMMENT '配置表主键',
   `VALUE` varchar(80) DEFAULT NULL COMMENT '配置项的值',
   `USER_ID` varchar(10) DEFAULT NULL COMMENT '用户ID',
@@ -65,7 +66,7 @@ CREATE TABLE `t_config--` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_config--
+-- Records of t_config
 -- ----------------------------
 
 -- ----------------------------
@@ -243,10 +244,10 @@ CREATE TABLE `t_course_score_pubic` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for `t_custom_data(未知表)`
+-- Table structure for `t_custom_data`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_custom_data(未知表)`;
-CREATE TABLE `t_custom_data(未知表)` (
+DROP TABLE IF EXISTS `t_custom_data`;
+CREATE TABLE `t_custom_data` (
   `CD_ID` varchar(10) NOT NULL DEFAULT '',
   `USER_ID` varchar(10) DEFAULT NULL,
   `DATA_TYPE` varchar(10) DEFAULT NULL,
@@ -258,7 +259,7 @@ CREATE TABLE `t_custom_data(未知表)` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_custom_data(未知表)
+-- Records of t_custom_data
 -- ----------------------------
 
 -- ----------------------------
@@ -450,15 +451,14 @@ CREATE TABLE `t_notice` (
 -- ----------------------------
 INSERT INTO `t_notice` VALUES ('1', 'qJTKcpG0Mc', '测试通知标题', '123', '2016-06-24 11:11:41', '2016-06-16 17:07:27', 'Qsq73xbQDS', null);
 INSERT INTO `t_notice` VALUES ('FrBhdpvRTR', 'DDJHAT0SKb', '啊啊', '是', '2016-06-17 09:52:28', '2016-06-17 09:52:28', 'Qsq73xbQDS', null);
-INSERT INTO `t_notice` VALUES ('hedjl1iY4i', 'DDJHAT0SKb', 'futrue', 'ss', '2016-06-25 10:35:22', '2016-06-24 10:35:29', 'Qsq73xbQDS', null);
 INSERT INTO `t_notice` VALUES ('iYM4nLL0IM', 'qJTKcpG0Mc', '啊啊啊啊啊啊啊啊啊', '试试', '2016-06-18 09:52:42', '2016-06-17 09:52:55', 'Qsq73xbQDS', null);
 INSERT INTO `t_notice` VALUES ('timz2XxiLO', 'DDJHAT0SKb', 'hhhh', 'hhh', '2016-06-24 10:32:39', '2016-06-24 10:32:39', 'Qsq73xbQDS', null);
 
 -- ----------------------------
--- Table structure for `t_post--`
+-- Table structure for `t_post`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_post--`;
-CREATE TABLE `t_post--` (
+DROP TABLE IF EXISTS `t_post`;
+CREATE TABLE `t_post` (
   `POST_ID` varchar(10) NOT NULL DEFAULT '' COMMENT '同学帮表主键',
   `USER_ID` varchar(10) DEFAULT NULL COMMENT '创建用户',
   `CONTENT` varchar(400) DEFAULT NULL COMMENT '内容',
@@ -468,15 +468,15 @@ CREATE TABLE `t_post--` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_post--
+-- Records of t_post
 -- ----------------------------
-INSERT INTO `t_post--` VALUES ('1', '2', '哈哈大家好', '2016-07-06 14:12:26', null);
+INSERT INTO `t_post` VALUES ('1', '2', '哈哈大家好', '2016-07-06 14:12:26', null);
 
 -- ----------------------------
--- Table structure for `t_post_activity--`
+-- Table structure for `t_post_activity`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_post_activity--`;
-CREATE TABLE `t_post_activity--` (
+DROP TABLE IF EXISTS `t_post_activity`;
+CREATE TABLE `t_post_activity` (
   `PA_ID` varchar(10) NOT NULL,
   `USER_ID` varchar(10) DEFAULT NULL COMMENT '用户id',
   `ACTIVITY` int(10) DEFAULT NULL COMMENT '用户热度(点赞+1，评论+2)',
@@ -486,14 +486,14 @@ CREATE TABLE `t_post_activity--` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_post_activity--
+-- Records of t_post_activity
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for `t_post_like--`
+-- Table structure for `t_post_like`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_post_like--`;
-CREATE TABLE `t_post_like--` (
+DROP TABLE IF EXISTS `t_post_like`;
+CREATE TABLE `t_post_like` (
   `PL_ID` varchar(10) DEFAULT NULL COMMENT '学生帮点赞表主键',
   `POST_ID` varchar(10) DEFAULT NULL COMMENT '同学帮主键',
   `USER_ID` varchar(10) DEFAULT NULL COMMENT '用户ID',
@@ -501,14 +501,14 @@ CREATE TABLE `t_post_like--` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_post_like--
+-- Records of t_post_like
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for `t_post_reply--`
+-- Table structure for `t_post_reply`
 -- ----------------------------
-DROP TABLE IF EXISTS `t_post_reply--`;
-CREATE TABLE `t_post_reply--` (
+DROP TABLE IF EXISTS `t_post_reply`;
+CREATE TABLE `t_post_reply` (
   `PR_ID` varchar(10) NOT NULL DEFAULT '' COMMENT '同学帮回复表主键',
   `POST_ID` varchar(10) DEFAULT NULL COMMENT '同学帮ID',
   `USER_ID` varchar(10) DEFAULT NULL COMMENT '回复人ID',
@@ -519,7 +519,7 @@ CREATE TABLE `t_post_reply--` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of t_post_reply--
+-- Records of t_post_reply
 -- ----------------------------
 
 -- ----------------------------
