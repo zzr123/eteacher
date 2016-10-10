@@ -451,12 +451,12 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		for(CourseTable courseTable : courseTables){
 			// 获取当前时间是本学期的第几周
 			Course course = courseDAO.get(courseTable.getCourseId());
-			TermPrivate currentTerm = termServiceImpl.getCurrentTerm(course.getUserId());
+			Map currentTerm = termServiceImpl.getCurrentTerm(course.getUserId());
 			Calendar termStart = Calendar.getInstance();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar now = Calendar.getInstance();
 			try {
-				termStart.setTime(dateFormat.parse(currentTerm.getStartDate()));
+				termStart.setTime(dateFormat.parse((String)currentTerm.get("startDate")));
 				termStart.add(Calendar.DATE, -(DateUtil.getDayOfWeek(termStart) - 1));
 				now.setTime(dateFormat.parse(dateFormat.format(new Date())));
 			} catch (Exception e) {
@@ -557,7 +557,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 			list=courseDAO.findMap(hql, data, userId);
 		}
 		if("1".equals(status)){//根据指定日期获取课程列表
-			String startDate=termServiceImpl.getCurrentTerm(userId).getStartDate();//获取当前学期的开始日期时间
+			String startDate=(String)termServiceImpl.getCurrentTerm(userId).get("StartDate");//获取当前学期的开始日期时间
 			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 			try {
 				//计算指定日期与开始日期相隔天数

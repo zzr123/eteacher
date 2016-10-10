@@ -1,25 +1,22 @@
 package com.turing.eteacher.service.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hibernate.Query;
-import org.hibernate.transform.Transformers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.TermDAO;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.service.ITermService;
-import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.DateUtil;
-import com.turing.eteacher.util.StringUtil;
 
 @Service
 public class TermServiceImpl extends BaseService<TermPrivate> implements ITermService {
@@ -117,10 +114,10 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 	 * 获取当前学期
 	 */
 	@Override
-	public TermPrivate getCurrentTerm(String userId) {
+	public Map getCurrentTerm(String userId) {
 		String now = DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD);
 		String hql = "from TermPrivate where userId = ? and ? >= startDate and ? <= endDate order by createTime desc";
-		List<TermPrivate> list = termDAO.find(hql, userId, now, now);
+		List<Map> list = termDAO.find(hql, userId, now, now);
 		if(list!=null&&list.size()>0){
 			return list.get(0);
 		}
@@ -136,8 +133,15 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 	 * 获取最新的一个学期
 	 */
 	@Override
-	public List<TermPrivate> getTermList(String userId) {
-		String hql = "from TermPrivate where userId = ? order by startDate desc,endDate desc";
-		return termDAO.find(hql, userId);
+	public List<Map> getTermList(String userId) {
+		String hql = "select tp.tpId as termId,"
+				+ "t.termName as termName,"
+				+ "tp.startDate as startDate,"
+				+ "tp.endDate as endDate "
+				+ "from TermPrivate tp,Term t "
+				+ "where tp.termId = t.termId "
+				+ "and tp.userId = ? "
+				+ "order by tp.startDate desc";
+		return termDAO.findMap(hql, userId);
 	}
 }
