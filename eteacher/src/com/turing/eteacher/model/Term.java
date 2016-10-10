@@ -16,6 +16,11 @@ public class Term implements Serializable {
 	
 	private String termId;
 	private String termName;
+	private String startDate;
+	private String endDate;
+	private Integer weekCount;
+	private String schoolId;
+	
 	
 	@Id
 	@GeneratedValue(generator = "customId")
@@ -33,5 +38,35 @@ public class Term implements Serializable {
 	}
 	public void setTermName(String termName) {
 		this.termName = termName;
+	}
+	@Column(name="START_DATE")
+	public String getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+	
+	@Column(name="END_DATE")
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	
+	@Column(name="WEEK_COUNT")
+	public Integer getWeekCount() {
+		return weekCount;
+	}
+	public void setWeekCount(Integer weekCount) {
+		this.weekCount = weekCount;
+	}
+	@Column(name="SCHOOL_ID")
+	public String getSchoolId() {
+		return schoolId;
+	}
+	public void setSchoolId(String schoolId) {
+		this.schoolId = schoolId;
 	}
 }
