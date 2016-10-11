@@ -97,7 +97,12 @@
                         <td>
                         	<select id="termSelect" class="select-control" style="width:30%" onchange="courseTable.bootstrapTable('refresh');">   
                         		<#list termList as term> 
-									<option value="${term.termId}" <#if term.termId == termId?default("")>selected="selected"</#if>>${term.termName}</option>
+									<option value=${term.termId} 
+										<#if term.termId == termId?default("")>
+											selected="selected"
+										</#if>>
+										${term.termName}
+									</option>
 								</#list>                          
                             </select>                                
                         </td>                    

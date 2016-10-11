@@ -144,4 +144,13 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 				+ "order by tp.startDate desc";
 		return termDAO.findMap(hql, userId);
 	}
+	/**
+	 * 获取我的学期名字
+	 */
+	@Override
+	public List<Map> getListTermPrivatesName(String userId) {
+		String hql = "select t.termId as termId," +
+				"t.termName as termName from Term t where termId not in (select tp.termId from TermPrivate tp where tp.userId = ? and tp.status = 2)";
+		return termDAO.findMap(hql, userId);
+	}
 }
