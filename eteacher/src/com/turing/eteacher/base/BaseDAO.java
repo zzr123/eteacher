@@ -86,7 +86,8 @@ public class BaseDAO<T> {
 	}
 	
 	private void setQueryParams(Query query, Object...params){
-		if (params.length == 1 && params[0] instanceof List<?>) {
+		if(null != params){
+			if (params.length == 1 && params[0] instanceof List<?>) {
             List list = (List) params[0];
             for (int i = 0; i < list.size(); i++) {
                 query.setParameter(i, list.get(i));
@@ -97,6 +98,8 @@ public class BaseDAO<T> {
                 query.setParameter(i, params[i]);
             }
         }
+		}
+		
 	}
 	
 	private Query setMapQueryParams(Query query, Map<String, Object> map) {

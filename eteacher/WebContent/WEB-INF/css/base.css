@@ -251,3 +251,5 @@ table.altrowstable td {
 .evenrowcolor{
 	background-color:#fff;
 }
+
+.CustomAdd { background:orange; color:#fff; cursor:pointer;}

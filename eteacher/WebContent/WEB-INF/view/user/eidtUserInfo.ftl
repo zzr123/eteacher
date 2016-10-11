@@ -12,22 +12,39 @@
 <script type="text/javascript" src="${context}/js/turingLib/validator.js"></script>
 <script type="text/javascript">
 	function addRecord(type, value){
-		var title = type=='email'?'邮箱':'联系电话';
+		var title = type=='email'?'邮箱':((type=='phone')?'联系电话':'IM');
 		var value = value?value:'';
 		var recordDiv = '';
-		recordDiv += '<div class="message-wrap">';
-		recordDiv += '<div class="mess-input">';
-        recordDiv += ('<input name="'+type+'Text" type="text" class="mess-control" placeholder="请添加您的'+title+'" style=" width:100%;" value="'+value+'" />');
-        recordDiv += '</div>';
-        recordDiv += '<div class="mess-img">';
-        recordDiv += '<a href="javascript:void(0);" class="delet-message" onclick="delRecord(this)"></a>';
-        recordDiv += '</div>';
-        recordDiv += '</div> ';
-		$('#'+type+'Div').append(recordDiv);
+		if(title == 'IM'){         
+            recordDiv += '<div class="message-wrap">';
+            recordDiv += '<div class="mess-input">';
+            recordDiv += '<select style="width:40%">';
+            recordDiv += '<option>--请选择IM类型--</option>';
+            recordDiv += '</select>';
+            recordDiv += ('<input name="'+type+'Text" type="text" class="mess-control" placeholder="请添加您的'+title+'" style=" width:58.7%;" value="'+value+'" />');
+         	recordDiv += '</div>';
+         	recordDiv += '<div class="mess-img">';
+            recordDiv += '<a href="javascript:void(0);" class="delet-message" onclick="delRecord(this)"></a>';
+            recordDiv += '</div>';
+            recordDiv += '</div>';
+            $('#'+type+'Div').append(recordDiv);	
+		}else{
+			recordDiv += '<div class="message-wrap">';
+			recordDiv += '<div class="mess-input">';
+	        recordDiv += ('<input name="'+type+'Text" type="text" class="mess-control" placeholder="请添加您的'+title+'" style=" width:100%;" value="'+value+'" />');
+	        recordDiv += '</div>';
+	        recordDiv += '<div class="mess-img">';
+	        recordDiv += '<a href="javascript:void(0);" class="delet-message" onclick="delRecord(this)"></a>';
+	        recordDiv += '</div>';
+	        recordDiv += '</div> ';
+			$('#'+type+'Div').append(recordDiv);
+		}
 	}
+	
 	function delRecord(btn){
 		$(btn).parent().parent().remove();
 	}
+	
 	function init(){
 		var emails = $('#email').val();
 		if(emails != ''){
@@ -51,6 +68,7 @@
 			}
 		}
 	}
+
 	$(function(){
 		$('#userInfoForm').json2form({url:'getCurrentTeacherJson'});
 		$('#userInfoForm').validatorInit(callback, prepareData);
@@ -76,6 +94,15 @@
 		}
 		init();
 	});
+	//职称下拉列表，选项选择后的操作
+	$(document).ready(function () { 
+ 		$("#postSel").bind("change",function(){ 
+   		if($(this).val()=="addPost"){
+      		alert("触发新增职称事件"); 
+   		}else{return;} 
+  		}); 
+	});
+	
 </script>
 </head>
 
@@ -107,23 +134,21 @@
         	</div>
             <div class="message-group">
         		<div class="message-left">职称：</div>
-                <div class="message-right">       
-                	<input id="title" name="title" type="text" class="mess-control" placeholder="请输入您的职称" />
-                	<!--         	
-                    <select>
-                    	<option selected="selected">--请选择您的职称--</option>
-                        <option>1111</option>
-                        <option>222</option>
-                    </select>
-                    -->
+                <div class="message-right" >       
+                    <input id="titleSel" type="text" class="mess-control" placeholder="请选择职称" />
                 </div>                   	
         	</div>
             <div class="message-group">
         		<div class="message-left">职务：</div>
                 <div class="message-right">
-                	<input  id="post" name="post" type="text" class="mess-control" placeholder="请输入您的职务" />                    
-                </div>                   	
-        	</div>
+                	<select id="postSel">
+                    	<option selected="selected">--请选择您的职务--</option>
+                        	<#list titleList as title> 
+								<option value="${title.id}" <#if title.id == titleId?default("")>selected="selected"</#if>>${title.value}</option>
+							</#list>
+                        <option value="addPost" class="CustomAdd">新增职务</option>
+                    </select>
+        		</div>
             <div class="message-group">
         		<div class="message-left">学校：</div>
                 <div class="message-right">
@@ -150,7 +175,7 @@
                     </div>        
                 </div>                                   	
         	</div>
-        	
+        	    	
             <div class="message-group">
         		<div class="message-left">联系电话：</div>
         		<input id="phone" name="phone" type="hidden" />
@@ -166,17 +191,26 @@
                 </div>
                                    	
         	</div>
-            <div class="message-group">
-        		<div class="message-left">QQ：</div>
-                <div class="message-right">
-                	<input id="qq" name="qq" type="text" class="mess-control" placeholder="请添加您的QQ号" />                    
-                </div>                   	
-        	</div> 
-            <div class="message-group">
-        		<div class="message-left">微信：</div>
-                <div class="message-right">
-                	<input id="weixin" name="weixin" type="text" class="mess-control" placeholder="请添加您的微信号" />                    
-                </div>                   	
+                     	
+        	<div class="message-group">
+        		<div class="message-left">I M：</div>
+        		<input id="IM" name="IM" type="hidden" />
+                <div class="message-right" id="IMDiv">
+                	<div class="message-wrap">
+                        <div class="mess-input">
+ 							<select style="width:40%">
+ 								<option>--请选择IM类型--</option>
+ 								<option>Q Q</option>
+ 								<option>微信</option>
+ 								<option>GitHub</option>
+ 							</select>                       
+                            <input id="IMText" name="IMText" type="text" class="mess-control" placeholder="请添加您的IM" id="" style=" width:58.7%;" />   
+                        </div>
+                        <div class="mess-img">
+                            <a href="javascript:void(0);" class="add-message" onclick="addRecord('IM')"></a>
+                        </div>
+                    </div>               
+                </div>
         	</div>
             <div class="message-group">
         		<div class="message-left">教师简介：</div>

@@ -1,5 +1,8 @@
 package com.turing.eteacher.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
+import com.turing.eteacher.model.Dictionary2Public;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
+import com.turing.eteacher.service.IDictionary2PublicService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.IUserService;
+import com.turing.eteacher.service.impl.Dictionary2PublicServiceImpl;
 import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.StringUtil;
 /**
@@ -30,8 +36,19 @@ public class UserController extends BaseController {
 	@Autowired
 	private ITeacherService teacherServiceImpl;
 	
+	@Autowired
+	private IDictionary2PublicService Dictionary2PublicServiceImpl;
+	
+	private String TYPE = null;
+	
 	@RequestMapping("viewEidtUserInfo")
 	public String viewEidtUserInfo(HttpServletRequest request){
+		//获取职称下拉列表
+		User currentUser = getCurrentUser(request);
+		TYPE="04";
+		List<Map> titleList =Dictionary2PublicServiceImpl.getListByType(TYPE ,currentUser.getUserId());
+		request.setAttribute("titleList", titleList);
+		
 		//邮箱手机之类的
 		Teacher teacher = (Teacher)request.getSession().getAttribute(EteacherConstants.CURRENT_TEACHER);
 		String[] emails = {};
