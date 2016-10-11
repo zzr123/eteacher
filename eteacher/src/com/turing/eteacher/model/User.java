@@ -16,7 +16,7 @@ public class User {
 	private String userType;
 	private String account;
 	private String password;
-	private String email;
+
 	private String createTime;
 	private String lastLoginTime;
 	private String token;
@@ -60,15 +60,6 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	@Column(name = "EMAIL")
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	@Column(name = "CREATE_TIME")
@@ -120,7 +111,7 @@ public class User {
 	public String toString() {
 		return "User [userId=" + userId + ", userType=" + userType
 				+ ", account=" + account + ", password=" + password
-				+ ", email=" + email + ", createTime=" + createTime
+				+ ",  createTime=" + createTime
 				+ ", lastLoginTime=" + lastLoginTime + "]";
 	}
 
