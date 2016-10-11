@@ -21,6 +21,7 @@ public class TermPrivate extends CreateTimeModel implements Serializable{
 	private Integer weekCount;
 	private String userId;
 	private String termId;
+	private Integer status;
 	
 	@Id
 	@GeneratedValue(generator="customId")
@@ -71,6 +72,15 @@ public class TermPrivate extends CreateTimeModel implements Serializable{
 	}
 	public void setTermId(String termId) {
 		this.termId = termId;
+	}
+	
+	@Column(name = "STATUS")
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }
