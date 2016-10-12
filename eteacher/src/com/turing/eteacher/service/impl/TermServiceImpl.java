@@ -16,7 +16,9 @@ import com.turing.eteacher.dao.TermDAO;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.service.ITermService;
+import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.DateUtil;
+import com.turing.eteacher.util.StringUtil;
 
 @Service
 public class TermServiceImpl extends BaseService<TermPrivate> implements ITermService {
@@ -31,6 +33,22 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 
 	@Override
 	public void saveTerm(Term term) {
+		/*try{
+			String year="";
+			String termnum="";
+			String termName = "";
+			if(termnum.equals("1")){
+				termName=year+"学年第一学期";
+			}
+			else if(termnum.equals("2")){
+				termName=year+"学年第二学期";
+			}
+			else if(termnum.equals("3")){
+				termName=year+"学年第三学期";
+			}
+			else{
+				termName=year+"学年第四学期";
+			}*/
 		/*if(term.getStartDate().substring(0,4).equals(term.getEndDate().substring(0,4))){
 			term.setYear((Integer.parseInt(term.getStartDate().substring(0,4))-1) + "-" + term.getStartDate().substring(0,4));
 			term.setTerm("2");
@@ -47,6 +65,9 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 		else{
 			termDAO.save(term);
 		}*/
+		/*String hql = "insert into TermPrivate (startDate,endDate,weekCount) values(?,?,?)";
+		List<Map> list = termDAO.findMap(hql, term);
+		return list;*/
 	}
 	
 	
@@ -94,9 +115,9 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 	 * 获取学期公有数据列表
 	 */
 	@Override
-	public List<Term> getListTerms() {
+	public List<Map> getListTerms() {
 		String hql="from Term";
-		List<Term> list=termDAO.getListTerms(hql);
+		List<Map> list=termDAO.getListTerms(hql);
 		return list;
 	}
 	/**
@@ -116,8 +137,15 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 	@Override
 	public Map getCurrentTerm(String userId) {
 		String now = DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD);
-		String hql = "from TermPrivate where userId = ? and ? >= startDate and ? <= endDate order by createTime desc";
-		List<Map> list = termDAO.find(hql, userId, now, now);
+		String hql = "select tp.tpId as termId,"
+				+ "t.termName as termName,"
+				+ "tp.startDate as startDate,"
+				+ "tp.endDate as endDate "
+				+ "from TermPrivate tp ,Term t "
+				+ "where tp.userId = ? "
+				+ "and ? >= tp.startDate "
+				+ "and ? <= tp.endDate order by tp.createTime desc";
+		List<Map> list = termDAO.findMap(hql, userId, now, now);
 		if(list!=null&&list.size()>0){
 			return list.get(0);
 		}
@@ -144,13 +172,10 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 				+ "order by tp.startDate desc";
 		return termDAO.findMap(hql, userId);
 	}
-	/**
-	 * 获取我的学期名字
-	 */
+
 	@Override
 	public List<Map> getListTermPrivatesName(String userId) {
-		String hql = "select t.termId as termId," +
-				"t.termName as termName from Term t where termId not in (select tp.termId from TermPrivate tp where tp.userId = ? and tp.status = 2)";
-		return termDAO.findMap(hql, userId);
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
