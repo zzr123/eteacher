@@ -253,3 +253,13 @@ table.altrowstable td {
 }
 
 .CustomAdd { background:orange; color:#fff; cursor:pointer;}
+
+/*自定义弹框样式  add by  mxc*/
+.tabCont { width:100%; height:auto; overflow:hidden;}
+.onetab { float:left; margin:10px 30px 5px 0; height:30px; line-height:30px; background:#eee; border-radius:3px; color:#000;}
+.onetab span { float:left; display:block; font-size:14px; padding:0 8px;}
+.onetab a { display:block; float:left; width:30px; height:30px; background:url(../images/delet.png) no-repeat; background-size:100%;}
+.onetab a:hover { background:url(../images/delet1.png) no-repeat; background-size:100%;}
+.tabAdd { margin:40px auto 5px; width:100%; height:30px;}
+.tabinput { float:left; border:1px solid #e1e1e1; height:28px; border-radius:3px; font-size:14px; padding:0 3px;}
+a.tabAddbtn, a.tabAddbtn:hover { display:inline-block; margin:0 0 0 10px; width:60px; height:28px; border-radius:3px; line-height:30px; text-align:center; background:#09F; color:#fff; text-decoration:none;}

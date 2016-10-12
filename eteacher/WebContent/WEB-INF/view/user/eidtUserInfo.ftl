@@ -6,11 +6,15 @@
 <meta name="description" content="">
 <title>教学系统教师pc端</title>
 <link href="${context}/css/base.css" rel="stylesheet" type="text/css">
+<link href="${context}/js/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="${context}/js/jquery.min.js"></script>
+<script type="text/javascript" src="${context}/js/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="${context}/js/json2form.js"></script>
 <script type="text/javascript" src="${context}/js/turingLib/alert.js"></script>
 <script type="text/javascript" src="${context}/js/turingLib/validator.js"></script>
+<script type="text/javascript" src="${context}/js/turingLib/modal.js"></script>
 <script type="text/javascript">
+	var editFlag = '${editFlag?default("")}';
 	function addRecord(type, value){
 		var title = type=='email'?'邮箱':((type=='phone')?'联系电话':'IM');
 		var value = value?value:'';
@@ -94,15 +98,28 @@
 		}
 		init();
 	});
-	//职称下拉列表，选项选择后的操作
-	$(document).ready(function () { 
- 		$("#postSel").bind("change",function(){ 
-   		if($(this).val()=="addPost"){
-      		alert("触发新增职称事件"); 
-   		}else{return;} 
-  		}); 
-	});
 	
+	//学校的级联查询
+	function loadSchoolData(select,parentId,value){
+		select.html('<option value="">--请选择学校--</option>');
+		if(parentId||parent=='0'){
+			$.post('${context}/user/getSchoolSelectData',{parentId:parentId},function(data){
+				$.each(data,function(i,r){
+					select.append('<option value="'+r.Id+'">'+r.Name+'</option>');
+				});
+				if(value){
+					select.val(value);
+				}
+			},'json');
+		}
+	}
+	
+	function openModal(){
+		$.modal.open({
+			title:'职务选择',
+			url:'../dictionary/viewDictionaryModal'
+		});
+	}
 </script>
 </head>
 
@@ -135,26 +152,39 @@
             <div class="message-group">
         		<div class="message-left">职称：</div>
                 <div class="message-right" >       
-                    <input id="titleSel" type="text" class="mess-control" placeholder="请选择职称" />
+                    <input id="titleSel" onclick="openModal();" type="text" class="mess-control" placeholder="请选择职称" />
                 </div>                   	
         	</div>
             <div class="message-group">
         		<div class="message-left">职务：</div>
-                <div class="message-right">
-                	<select id="postSel">
-                    	<option selected="selected">--请选择您的职务--</option>
-                        	<#list titleList as title> 
-								<option value="${title.id}" <#if title.id == titleId?default("")>selected="selected"</#if>>${title.value}</option>
-							</#list>
-                        <option value="addPost" class="CustomAdd">新增职务</option>
-                    </select>
-        		</div>
+                <div class="message-right" >       
+                    <input id="postSel" data-toggle="modal" data-target="#dictionaryModal" type="text" class="mess-control" placeholder="请选择职称" />
+                </div>                   	
+        	</div>
+            <!--
             <div class="message-group">
         		<div class="message-left">学校：</div>
                 <div class="message-right">
                 	<input id="school" name="school" type="text" class="mess-control" placeholder="请输入您的学校" />                    
                 </div>                   	
         	</div>
+        	-->
+        	<!--begin-->
+        	<div class="message-group">
+                    <div class="message-left">学校：</div>
+                    <div class="message-right">
+                        <select id="specialty1" onchange="loadSchoolData($('#specialty2'),this.value);loadSchoolData($('#specialty3'));">
+                            <option value="">--请选择省份/直辖市--</option>
+                        </select>    
+                        <select id="specialty2" onchange="loadSchoolData($('#specialty3'),this.value);" style="margin-top:5px">
+                            <option value="">--请选择所在城市--</option>
+                        </select>      
+                        <select id="specialty3" name="specialty" style="margin-top:5px">
+                            <option value="">--请选择学校--</option>
+                        </select>                 
+                    </div>                   	
+                </div>
+        	<!--end-->
             <div class="message-group">
         		<div class="message-left">院系：</div>
                 <div class="message-right">
