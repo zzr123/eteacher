@@ -111,6 +111,9 @@ public class TermRemote extends BaseRemote {
 			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 			String year=request.getParameter("year");
 			String termnum=request.getParameter("termnum");
+			String startDate=request.getParameter("startDate");
+			String endDate=request.getParameter("endDate");
+			/*String weekCount=request.getParameter(weekCount);*/
 			String termName = "";
 			if(termnum.equals("1")){
 				termName=year+"学年第一学期";
@@ -124,15 +127,19 @@ public class TermRemote extends BaseRemote {
 			else{
 				termName=year+"学年第四学期";
 			}
-			List<Term> list=termServiceImpl.getListTerms();
+			List<Map> list=termServiceImpl.getListTerms();
 			for(int i=0;i<list.size();i++){
-				if(termName.equals(list.get(i).getTermName())){
-					tp.setTermId(list.get(i).getTermId());
+				if(termName.equals(((Term) list.get(i)).getTermName())){
+					tp.setTermId(((Term) list.get(i)).getTermId());
 					break;
 				}
 			}		
 			tp.setUserId(userId);
+			tp.setStartDate(startDate);
+			tp.setEndDate(endDate);
+			/*tp.setWeekCount(weekCount);*/
 			termServiceImpl.add(tp);
+			System.out.println(tp.getTermId()+tp.getUserId()+tp.getStartDate()+tp.getEndDate());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}
 		catch(Exception e){
