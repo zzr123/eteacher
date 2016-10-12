@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +68,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	public BaseDAO<Course> getDAO() {
 		return courseDAO;
 	}
-
+	
 	@Override
 	@Transactional(readOnly=true)
 	public List<Course> getListByTermId(String termId, String userId) {
@@ -91,10 +93,40 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		}
 		return list;
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<Map> getListByTermId2(String termId, String userId) {
+		List args = new ArrayList();
+		String sql = "select t_course.COURSE_ID as courseId, " +
+				"t_course.COURSE_NAME as courseName, " +
+				"t_course.COURSE_TYPE_ID as courseTypeId, "+
+				"t_major.MAJOR_NAME as specialty from t_course left join t_major on t_course.MAJOR_ID = t_major.MAJOR_ID where ";
+		if (StringUtil.isNotEmpty(userId)) {
+			sql += " t_course.USER_ID = ?";
+			args.add(userId);
+		}
+		if (StringUtil.isNotEmpty(termId)) {
+			sql += " and t_course.TERM_ID = ?";
+			args.add(termId);
+		}
+		List<Map> list = courseDAO.findBySql(sql,args);
+		for (int i = 0; i < list.size(); i++) {
+			String typeId = (String) list.get(i).get("courseTypeId");
+			String sql1 = "SELECT  VALUE as type FROM t_dictionary2_public WHERE  DICTIONARY_ID = ? "+
+			"UNION "+
+			"SELECT  VALUE as type FROM t_dictionary2_private WHERE DP_ID =  ?";
+			List<Map> list2 = courseDAO.findBySql(sql1, typeId,typeId);
+			if (null != list2 && list2.size() >= 1) {
+				list.get(i).put("courseType", list2.get(0).get("type"));
+			}
+		}
+		return list;
+	}
 	
 	@Override
 	public List<CourseFile> getCourseFilesByCourseId(String courseId) {
-		String hql = "from CourseFile where courseId = ?";
+		String hql = "from CourseFile cFile where cFile.dataId = ?";
 		return courseDAO.find(hql, courseId);
 	}
 	
@@ -151,7 +183,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		}
 		// 资源
 		for (CourseFile record : courseFiles) {
-			record.setCourseId(courseId);
+			record.setDataId(courseId);
 			courseDAO.save(record);
 		}
 	}
@@ -232,7 +264,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		}
 		// 资源
 		for (CourseFile record : courseFiles) {
-			record.setCourseId(course.getCourseId());
+			record.setDataId(course.getCourseId());
 			courseDAO.save(record);
 		}
 	}
@@ -252,7 +284,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 
 	@Override
 	public List<CourseScorePrivate> getCoureScoreByCourseId(String courseId) {
-		String hql = "from CourseScore where courseId = ? order by csOrder";
+		String hql = "from CourseScorePrivate where courseId = ? order by csOrder";
 		List<CourseScorePrivate> list = courseDAO.find(hql, courseId);
 		return list;
 	}
@@ -731,4 +763,11 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		cs.setCsOrder(score.getCsOrder());
 		courseScoreDAO.saveOrUpdate(cs);
 	}
+
+	@Override
+	public List<Map> getDictionaryByType(String type) {
+		//String sql = ""
+		return null;
+	}
+	
 }

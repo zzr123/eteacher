@@ -14,23 +14,20 @@ import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.TermDAO;
 import com.turing.eteacher.model.Term;
-import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.service.ITermService;
-import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.DateUtil;
-import com.turing.eteacher.util.StringUtil;
 
 @Service
-public class TermServiceImpl extends BaseService<TermPrivate> implements ITermService {
+public class TermServiceImpl extends BaseService<Term> implements ITermService {
 
 	@Autowired
 	private TermDAO termDAO;
 	
 	@Override
-	public BaseDAO<TermPrivate> getDAO() {
+	public BaseDAO<Term> getDAO() {
 		return termDAO;
 	}
-
+	
 	@Override
 	public void saveTerm(Term term) {
 		/*try{
@@ -174,8 +171,10 @@ public class TermServiceImpl extends BaseService<TermPrivate> implements ITermSe
 	}
 
 	@Override
-	public List<Map> getListTermPrivatesName(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Term> getListTermPrivatesName(String userId) {
+		String hql = "from Term t where t.termId not in " +
+				"(select tp.termId from TermPrivate tp where tp.userId = ? and tp.status = 2)";
+		List list = termDAO.find(hql, userId);
+		return list;
 	}
 }

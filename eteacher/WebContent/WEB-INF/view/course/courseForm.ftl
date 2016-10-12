@@ -39,15 +39,17 @@
 			var courseJson = $.parseJSON('${courseJson?default("")}');
 			$('#courseForm').json2form({data:courseJson});
 			//专业
-			loadMajorData($('#specialty1'),'0',courseJson.specialty.substring(0,2));
-			loadMajorData($('#specialty2'),courseJson.specialty.substring(0,2),courseJson.specialty.substring(0,4));
-			loadMajorData($('#specialty3'),courseJson.specialty.substring(0,4),courseJson.specialty);
+			loadMajorData($('#specialty1'),'0',courseJson.majorId.substring(0,2));
+			loadMajorData($('#specialty2'),courseJson.majorId.substring(0,2),courseJson.majorId.substring(0,4));
+			loadMajorData($('#specialty3'),courseJson.majorId.substring(0,4),courseJson.majorId);
 			//工作量组成
-			var courseWorkloadsJson = '${courseWorkloadsJson?default("")}';
-			if(courseWorkloadsJson){
-				courseWorkloadArr = $.parseJSON(courseWorkloadsJson);
-				initWorkload();
-			}
+//			var courseWorkloadsJson = '${courseWorkloadsJson?default("")}';
+//			if(courseWorkloadsJson){
+//				courseWorkloadArr = $.parseJSON(courseWorkloadsJson);
+//				initWorkload();
+//			}
+			//授课方式
+			
 			//成绩组成
 			var courseScoresJson = '${courseScoresJson?default("")}';
 			if(courseScoresJson){
@@ -200,10 +202,14 @@
                 </div>
                 <div class="message-group">
                     <div class="message-left">工作量统计公式：</div>
+                    <div class="message-right">
+                        <input id="courseWorkloadDiv" name="formula" maxlength="5" type="text" class="mess-control" placeholder="请输入工作量统计公式" />                        
+                    </div> 
+ <!--                   <div class="message-left">工作量统计公式：</div>
                     <div class="message-right" id="courseWorkloadDiv">
                     	<input type="hidden" id="courseWorkloadArr" name="courseWorkloadArr" />
                    		<i style="cursor: pointer;" data-toggle="modal" data-target="#courseWorkloadModal" title="设置" class="glyphicon glyphicon-edit"></i>
-                    </div>                   	
+                    </div>  -->                   	
                 </div>
                 <div>
                     <div class="message-left">授课班级：</div>
@@ -212,12 +218,12 @@
                     	</select> 
                     </div>                   	
                 </div>
-                <div class="message-group">
+<!--                 <div class="message-group">
                     <div class="message-left">学生数：</div>
                     <div class="message-right">
                         <input id="studentNumber" name="studentNumber" maxlength="5" type="text" class="mess-control" placeholder="请输入学生数" />                        
                     </div>                   	
-                </div>
+                </div> -->
                 <div class="message-group">
                     <div class="message-left">成绩组成：</div>
                     <div class="message-right" id="courseScoreDiv">

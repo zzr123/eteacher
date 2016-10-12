@@ -116,4 +116,5 @@ public class Course implements Serializable {
 	public void setRemindTime(String remindTime) {
 		this.remindTime = remindTime;
 	}
+	
 }

@@ -14,6 +14,8 @@ import com.turing.eteacher.model.User;
 
 public interface ICourseService extends IService<Course> {
 	
+	public List<Map> getListByTermId2(String termId, String userId);
+	
 	public List<Course> getListByTermId(String termId, String userId);
 	
 	public List<CourseFile> getCourseFilesByCourseId(String courseId);
@@ -63,4 +65,11 @@ public interface ICourseService extends IService<Course> {
 	public void updateTextbook(Textbook text);
 	//修改成绩组成项信息
 	public void updateCoursescore(CourseScorePrivate cs);
+	/**
+	 * 通过type获取字典表的值
+	 * @author lifei
+	 * @param type
+	 * @return
+	 */
+	public List<Map> getDictionaryByType(String type); 
 }

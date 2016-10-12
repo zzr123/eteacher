@@ -29,6 +29,7 @@ import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.ICourseService;
+import com.turing.eteacher.service.IDictionary2PrivateService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.ITextbookService;
 import com.turing.eteacher.util.CustomIdGenerator;
@@ -49,6 +50,10 @@ public class CourseController extends BaseController {
 	
 	@Autowired
 	private ITextbookService textbookServiceImpl;
+	
+	@Autowired
+	private IDictionary2PrivateService dictionary2PrivateServiceImpl;
+	
 
 	@RequestMapping("viewListCourse")
 	public String viewListCourse(HttpServletRequest request){
@@ -61,7 +66,7 @@ public class CourseController extends BaseController {
 		}
 		//学期下拉列表数据
 		User currentUser = getCurrentUser(request);
-		List<Map> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
+		List<Term> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
 		request.setAttribute("termList", termList);
 		request.setAttribute("termId", termId);
 		return "course/listCourse";
@@ -76,11 +81,11 @@ public class CourseController extends BaseController {
 	
 	@RequestMapping("viewEditCourse")
 	public String viewEditCourse(HttpServletRequest request) throws JsonProcessingException{
-		String courseId = "DDJHAT0SKb";//request.getParameter("courseId");
+		String courseId = request.getParameter("courseId");
 		//课程
 		Course course = courseServiceImpl.get(courseId);
 		String courseJson = new ObjectMapper().writeValueAsString(course);
-		System.out.println(courseJson);
+		request.setAttribute("courseJson", courseJson);
 		//授课班级
 		List<String> classIds = classServiceImpl.getClassIdsByCourseId(courseId);
 		if(classIds != null && classIds.size()>0){
@@ -88,11 +93,13 @@ public class CourseController extends BaseController {
 			request.setAttribute("classIdsJson", classIdsJson);
 		}
 		//工作量组成
-		List<CourseWorkload> courseWorkloads = courseServiceImpl.getCoureWorkloadByCourseId(courseId);
-		if(courseWorkloads != null && courseWorkloads.size()>0){
-			String courseWorkloadsJson = new ObjectMapper().writeValueAsString(courseWorkloads);
-			request.setAttribute("courseWorkloadsJson", courseWorkloadsJson);
-		}
+//		List<CourseWorkload> courseWorkloads = courseServiceImpl.getCoureWorkloadByCourseId(courseId);
+//		if(courseWorkloads != null && courseWorkloads.size()>0){
+//			String courseWorkloadsJson = new ObjectMapper().writeValueAsString(courseWorkloads);
+//			request.setAttribute("courseWorkloadsJson", courseWorkloadsJson);
+//		}
+		//获取授课方式
+		//List<E>
 		//成绩组成
 		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		if(courseScores != null && courseScores.size()>0){
@@ -117,7 +124,6 @@ public class CourseController extends BaseController {
 			String courseFilesJson = new ObjectMapper().writeValueAsString(courseFiles);
 			request.setAttribute("courseFilesJson", courseFilesJson);
 		}
-		request.setAttribute("courseJson", courseJson);
 		request.setAttribute("editFlag", "true");
 		return "course/courseForm";
 	}
@@ -127,7 +133,7 @@ public class CourseController extends BaseController {
 	public Object getCourseListData(HttpServletRequest request){
 		String termId = request.getParameter("termId");
 		User currentUser = getCurrentUser(request);
-		List list = courseServiceImpl.getListByTermId(termId, currentUser.getUserId());
+		List list = courseServiceImpl.getListByTermId2(termId, currentUser.getUserId());
 		Map result = new HashMap();
 		result.put("data", list);
 		return result;
@@ -176,7 +182,8 @@ public class CourseController extends BaseController {
                 courseFile = new CourseFile();
                 courseFile.setFileName(files[i].getOriginalFilename());
                 courseFile.setServerName(uuid);
-                courseFile.setFileType(fileTypes[i]);
+                //TODO 这里临时注掉
+                //courseFile.setFileType(fileTypes[i]);
                 courseFile.setFileAuth(fileAuths[i]);
                 courseFiles.add(courseFile);
             }

@@ -77,9 +77,13 @@ public class BaseDAO<T> {
 	}
 	
 	public List<Map> findMap(String hql, Object...params){
-		System.out.println("!!!!");
+		if (getSession() == null) {
+			System.out.println("session is null");
+		}
+		if (hql == null) {
+			System.out.println("hql is null");
+		}
 		Query query = getSession().createQuery(hql);
-		System.out.println("。。。");
 		setQueryParams(query, params);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		return query.list();
