@@ -85,6 +85,29 @@ public class BaseDAO<T> {
 		return query.list();
 	}
 	
+
+	/**
+     * 根据sql语句查询返回MAP的列表
+     * @param sql
+     * @param params
+     * @return
+     */
+    public List<Map> findBySql(String sql, Object... params) {
+        Query query = getSession().createSQLQuery(sql);
+        setQueryParams(query, params);
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.list();
+    }
+    
+    public List<Map> findBySqlAndPage(String sql, int first, int max, Object... params) {
+        Query query = getSession().createSQLQuery(sql);
+        setQueryParams(query, params);
+        query.setFirstResult(first);
+        query.setMaxResults(max);
+        query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        return query.list();
+    }
+	
 	private void setQueryParams(Query query, Object...params){
 		if(null != params){
 			if (params.length == 1 && params[0] instanceof List<?>) {
