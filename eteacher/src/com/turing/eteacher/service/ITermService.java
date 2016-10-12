@@ -21,7 +21,7 @@ public interface ITermService extends IService<TermPrivate> {
 	
 	//教师端
 	//获取学期公有数据列表
-	public List<Term> getListTerms();
+	public List<Map> getListTerms();
 	// 获取学期私有数据列表
 	public List<Map> getListTermPrivates(String userId);
 	//获取当前学期
