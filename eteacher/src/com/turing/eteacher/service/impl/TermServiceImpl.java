@@ -171,10 +171,13 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	}
 
 	@Override
-	public List<Term> getListTermPrivatesName(String userId) {
-		String hql = "from Term t where t.termId not in " +
-				"(select tp.termId from TermPrivate tp where tp.userId = ? and tp.status = 2)";
-		List list = termDAO.find(hql, userId);
+	public List<Map> getListTermPrivatesName(String userId) {
+		String hql = "SELECT t_term_private.TP_ID  AS id, "+
+		"t_term.TERM_NAME AS content " +
+		"FROM t_term_private LEFT JOIN t_term " +
+		"ON t_term_private.TREM_ID =  t_term.TERM_ID "+
+		"WHERE t_term_private.USER_ID = ?";
+		List list = termDAO.findBySql(hql, userId);
 		return list;
 	}
 }

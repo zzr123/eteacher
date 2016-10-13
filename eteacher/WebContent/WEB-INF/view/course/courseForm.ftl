@@ -49,7 +49,17 @@
 //				initWorkload();
 //			}
 			//授课方式
-			
+			var courseTypeJson = '${coursetype?default("")}';
+			if(courseTypeJson){
+				$.each($.parseJSON(courseTypeJson),function(i,n){
+						$('#courseType').prepend('<option value = '+n.id+'>' + n.content +'</option>');
+		/* 			if(n.id = courseJson.courseTypeId){
+					}else{
+						$('#courseType').prepend('<option value = '+n.id+'>' + n.content +'</option>');
+					} */
+				});
+				$('#courseType').prepend('<option>--请选择课程类型--</option>');
+			}
 			//成绩组成
 			var courseScoresJson = '${courseScoresJson?default("")}';
 			if(courseScoresJson){
@@ -182,11 +192,7 @@
                     <div class="message-left">课程类型：</div>
                     <div class="message-right">
                         <select id="courseType" name="courseType">
-                            <option value="">--请选择课程类型--</option>
-                            <option>公共选修课</option>
-                            <option>公共必修课</option>
-                            <option>专业基础课</option>
-                            <option>专业主干课</option>
+                           <!--  <option value="">--请选择课程类型--</option> -->
                         </select>                      
                     </div>                   	
                 </div>

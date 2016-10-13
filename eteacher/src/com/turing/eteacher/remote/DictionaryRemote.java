@@ -2,6 +2,7 @@ package com.turing.eteacher.remote;
 
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.model.Test;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IDictionary2PrivateService;
 
@@ -48,7 +48,7 @@ public class DictionaryRemote extends BaseRemote{
 		User user = getCurrentUser(request);
 		if (null != user) {
 			System.out.println("user:"+user.toString());
-			List<Test> list = dictionary2PrivateServiceImpl.getListByType(Integer.parseInt(type), user.getUserId());
+			List<Map> list = dictionary2PrivateServiceImpl.getListByType(Integer.parseInt(type), user.getUserId());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}else{
 			return ReturnBody.getNoLoginError();

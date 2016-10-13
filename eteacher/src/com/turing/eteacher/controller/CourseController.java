@@ -59,14 +59,14 @@ public class CourseController extends BaseController {
 	public String viewListCourse(HttpServletRequest request){
 		String termId = request.getParameter("termId");
 		if(termId == null){
-			Term currentTerm = (Term)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
+			Map currentTerm = (Map)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
 			if(currentTerm != null){
-				termId = currentTerm.getTermId();
+				termId = (String) currentTerm.get("termId");
 			}
 		}
 		//学期下拉列表数据
 		User currentUser = getCurrentUser(request);
-		List<Term> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
+		List<Map> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
 		request.setAttribute("termList", termList);
 		request.setAttribute("termId", termId);
 		return "course/listCourse";
@@ -99,7 +99,10 @@ public class CourseController extends BaseController {
 //			request.setAttribute("courseWorkloadsJson", courseWorkloadsJson);
 //		}
 		//获取授课方式
-		//List<E>
+		List<Map> courseType = dictionary2PrivateServiceImpl.getListByType(1, getCurrentUser(request).getUserId());
+		String courserTypeJson = new ObjectMapper().writeValueAsString(courseType);
+		System.out.println("查出来的内容："+courserTypeJson);
+		request.setAttribute("coursetype", courserTypeJson);
 		//成绩组成
 		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		if(courseScores != null && courseScores.size()>0){

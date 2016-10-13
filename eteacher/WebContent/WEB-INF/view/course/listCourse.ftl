@@ -96,12 +96,9 @@
                     	<td width="8%" align="left" valign="middle"><label for="xueqi" style="line-height:36px; margin-bottom:0;">学期：</label></td>
                         <td>
                         	<select id="termSelect" class="select-control" style="width:30%" onchange="courseTable.bootstrapTable('refresh');">   
-                        		<#list termList as term> 
-									<option value=${term.termId} 
-										<#if term.termId == termId?default("")>
-											selected="selected"
-										</#if>>
-										${term.termName}
+                        		<#list termList as map> 
+									<option value=${map["id"]} <#if map["id"] == termId?default("")>selected="selected"</#if>>
+										${map["content"]}
 									</option>
 								</#list>                          
                             </select>                                
