@@ -87,7 +87,7 @@ public class UserController extends BaseController {
 		return "success";
 	}
 	
-	//学校的级联查询
+	/*//学校的级联查询
 	@RequestMapping("getSchoolSelectData")
 	@ResponseBody
 	public Object getSchoolSelectData(HttpServletRequest request){
@@ -95,5 +95,5 @@ public class UserController extends BaseController {
 		List list = SchoolServiceImpl.getListByParentId(parentId);
 		return list;
 	}
-
+*/
 }
