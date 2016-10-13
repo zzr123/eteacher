@@ -19,6 +19,18 @@
 		$('#endDate').validatorEmpty('终止日期');
 		$('#weekCount').validatorZZS('学期时长');
 	});
+         
+         
+	    
+         $(function ChangeValue(){
+          document.getElementById("term").value="3";
+         document.getElementById("term").fireEvent("onChange");
+             var d=document.getElementById("term").value;
+             document.getElementById("startDate").value=d;
+             document.getElementById("endDate").value=d;
+             document.getElementById("weekCount").value=d;
+	     
+	     });
 	
 </script>
 </head>
@@ -30,7 +42,13 @@
                 <div class="message-group">
                     <div class="message-left">学期名称：</div>
                     <div class="message-right">
-                        <input id="termName" name="termName" maxlength="20" type="text" class="mess-control" value="2015-2016学年第2学期" />
+                        <!--<input id="termName" name="termName" maxlength="20" type="text" class="mess-control" value="2015-2016学年第2学期" />-->
+                        <select id="term" onChange="changeValue()">
+                        	<option value="1" selected>2015-2016年第一学期</option>
+                        	<option value="2">2015-2016年第二学期</option>
+                        	<option value="3">2016-2017年第一学期</option>
+                        	<option value="4">2016-2017年第二学期</option>
+                        </select>
                     </div>                   	
                 </div>
                 <div class="message-group">
@@ -54,8 +72,9 @@
                     </div>                   	
                 </div>
                 <div class="btnsub">
-                    <button type="submit" class="btn-submit" style="float:left;">保存</button>
+                    <button type="submit" class="btn-submit" style="float:left;" onclick="window.location.href='viewListTerm'">保存</button>
                     <button type="button" class="btn-submit" style="float:right;" onclick="history.back();">返回</button>
+			        
                 </div>
             </form> 
         </div>

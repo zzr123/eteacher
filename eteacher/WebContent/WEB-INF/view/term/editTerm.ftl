@@ -12,7 +12,7 @@
 <script type="text/javascript">
 	$(function(){
 		$('#termForm').validatorInit(function(data){
-			window.location.href = 'viewListTerm';
+			window.location.href = 'viewEditTerm';
 		});
 		$('#termName').validatorEmpty('学期名称');
 		$('#startDate').validatorEmpty('起始日期');
