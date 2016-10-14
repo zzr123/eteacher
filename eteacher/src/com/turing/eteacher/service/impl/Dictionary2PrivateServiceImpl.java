@@ -1,7 +1,10 @@
 package com.turing.eteacher.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,11 +77,24 @@ public class Dictionary2PrivateServiceImpl extends
 		if (dictionary2PrivateDAO.find(hql).size() > 0) {
 			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+dId+"'";
 		}else{
-			sql2 = " INSERT INTO t_dictionary2_private (t_dictionary2_private.TYPE,t_dictionary2_private.PARENT_CODE,t_dictionary2_private.DICTIONARY_ID,t_dictionary2_private.USER_ID ) "+
-					"SELECT t_dictionary2_public.TYPE,t_dictionary2_public.PARENT_CODE,t_dictionary2_public.DICTIONARY_ID,'"+userId+"' "+ 
+			sql2 = " INSERT INTO t_dictionary2_private (" +
+					"t_dictionary2_private.DP_ID," +
+					"t_dictionary2_private.STATUS," +
+					"t_dictionary2_private.TYPE," +
+					"t_dictionary2_private.PARENT_CODE," +
+					"t_dictionary2_private.DICTIONARY_ID," +
+					"t_dictionary2_private.USER_ID ) "+
+					"SELECT " +
+					"'"+UUID.randomUUID().toString().substring(0, 10)+"', " +
+					"2, "+
+					"t_dictionary2_public.TYPE," +
+					"t_dictionary2_public.PARENT_CODE," +
+					"t_dictionary2_public.DICTIONARY_ID," +
+					"'"+userId+"' "+ 
 					"FROM t_dictionary2_public WHERE "+
 					"t_dictionary2_public.DICTIONARY_ID = '"+dId+"'" ;
 		}
+		System.out.println("sql2:"+sql2);
 		int result = dictionary2PrivateDAO.executeBySql(sql2);
 		if (result == 1) {
 			return true;
@@ -87,8 +103,41 @@ public class Dictionary2PrivateServiceImpl extends
 	}
 
 	@Override
-	public boolean addItem(int type, String userId) {
-		String sql = "";
+	public boolean addItem(int type,String value, String userId) {
+		String sql = "SELECT t_dictionary2_private.DP_ID AS id FROM t_dictionary2_private WHERE t_dictionary2_private.VALUE = '"+value+"' "+
+				"AND t_dictionary2_private.USER_ID = '"+userId+"' "+ 
+				"AND t_dictionary2_private.STATUS = 2 "+ 
+				"AND t_dictionary2_private.TYPE = "+type+" "+ 
+				"AND t_dictionary2_private.DICTIONARY_ID IS NOT NULL "+
+				"AND t_dictionary2_private.PARENT_CODE = ( "+
+				"SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "+
+				"WHERE t_dictionary2_public.TYPE = '"+type+"' "+
+				"AND t_dictionary2_public.PARENT_CODE IS NULL "+
+				"AND t_dictionary2_public.STATUS = 1 "+
+				")";
+		List<Map> list = dictionary2PrivateDAO.findBySql(sql);
+		String sql2 = "";
+		if (list.size() > 0) {
+			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+list.get(0).get("id")+"'";
+		}else {
+			sql2 = "INSERT INTO t_dictionary2_private ( "+
+			"t_dictionary2_private.DP_ID, "+
+			"t_dictionary2_private.TYPE "+
+			",t_dictionary2_private.USER_ID "+
+			",t_dictionary2_private.VALUE "+
+			",t_dictionary2_private.CREATE_TIME "+
+			",t_dictionary2_private.PARENT_CODE "+
+			") VALUES('"+UUID.randomUUID().toString().substring(0, 10)+"',"+type+",'"+userId+"','"+value+"','"+
+			new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())+
+			"',( "+
+			"SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "+ 
+			"WHERE t_dictionary2_public.TYPE = "+type+" "+ 
+			"AND t_dictionary2_public.PARENT_CODE IS NULL)) ";
+		}
+		int result = dictionary2PrivateDAO.executeBySql(sql2);
+		if (result == 1) {
+			return true;
+		}
 		return false;
 	}
 }
