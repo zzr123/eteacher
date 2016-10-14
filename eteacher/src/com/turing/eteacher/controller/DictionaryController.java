@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.User;
@@ -29,13 +30,14 @@ public class DictionaryController extends BaseController {
 		User currentUser = getCurrentUser(request);
 		int TYPE = Integer.valueOf(request.getParameter("type"));
 		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
-		System.out.println("list:"+titleList.size());
+		System.out.println("list:"+titleList.toString());
 		request.setAttribute("titleList", titleList);
 		request.setAttribute("type", TYPE);
 		return "dictionary";
 	}
 
 	@RequestMapping("viewDictionaryDel")
+	@ResponseBody
 	public String viewDictionaryDel(HttpServletRequest request) {
 		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
@@ -47,7 +49,7 @@ public class DictionaryController extends BaseController {
 		if(result == true){
 			data = "success";
 		}else{
-			data = "未知错误";
+			data = "error";
 		}
 		return data;
 	}

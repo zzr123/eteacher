@@ -4,6 +4,7 @@
 <script type="text/javascript" src="${context}/js/jquery.min.js"></script>
 <head>
 <script type="text/javascript">
+	
 	function selectData(id,value){
 		$('#titleSel',parent.document).val(value);
 		parent.$.modal.close();
@@ -11,33 +12,39 @@
 	
 	//删除数据
 	function delData(dtype,did){
+		$.post('../dictionary/viewDictionaryDel',{type:dtype,id:did},function(data){
+			window.location.reload(); 
+		});
+		/*
     	$.ajax({
         	type: "POST",
          	url: "../dictionary/viewDictionaryDel",
          	data: {type:dtype,id:did},
-            dataType: "json",
-            error: function(){      //失败 
-				alert('Error loading document'); 
-			}, 
-			success: function(msg){ //成功 
-				alert( "Data Saved: " + msg ); 
-			} 
+            //dataType: "json",
+            success: function(data){ //成功 
+				alert( "删除成功，返回： " + data ); 
+			},
+            error: function(a,b,c){       //失败 
+				alert(b); 
+			}
 			});
+		*/
 		}
 </script>
 </head>
 <body style="background:#fff;">
 
 	<div class="newtable">
+		<div class="tabAdd">
+        	<input value="" class="tabinput" type="text" /><a class="tabAddbtn" href="#">增加</a>
+        </div>
     	<div class="tabCont" id="dataList">
     	<#list titleList as dictionarys> 
-			<div class="onetab"><span onclick="selectData('${dictionarys.id}','${dictionarys.content}')">${dictionarys.content}</span>
-			<a class="delet-img" onclick="delData('${type}','${dictionarys.id}')" href="#" title="删除"></a></div>
+			<div class="onetab"><span onclick="selectData(${dictionarys['id']},${dictionarys['content']})">${dictionarys['content']}</span>
+			<a class="delet-img" onclick="delData(${type},${dictionarys['id']})" href="#" title="删除"></a></div>
 		</#list>
         </div>
-        <div class="tabAdd">
-        	<input value="" class="tabinput" type="text" /><a class="tabAddbtn" href="#">增加</a>
-        </div> 
+         
   	</div>
 
 </body>

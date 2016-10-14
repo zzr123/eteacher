@@ -9,7 +9,7 @@
 		        '<h4 id="turingModalTitle" class="modal-title">弹出框</h4>' + 
 		      '</div>' + 
 		      '<div class="modal-body">' + 
-		            '<iframe src="" id="turingModalIframe" name="turingModalIframe" frameborder="0" width="100%"></iframe>' + 
+		            '<iframe src="" id="turingModalIframe" name="turingModalIframe" frameborder="0" height="300px" width="100%"></iframe>' + 
 		      '</div>' +
 		      /*
 		      '<div class="modal-footer">' + 

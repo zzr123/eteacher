@@ -120,6 +120,7 @@
 			url:'../dictionary/viewDictionaryModal?type='+dtype,
 		});
 	}
+	
 </script>
 </head>
 
