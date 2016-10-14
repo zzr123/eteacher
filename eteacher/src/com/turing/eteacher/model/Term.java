@@ -1,6 +1,8 @@
 package com.turing.eteacher.model;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +18,8 @@ public class Term implements Serializable {
 	
 	private String termId;
 	private String termName;
-	private String startDate;
-	private String endDate;
+	private Date startDate;
+	private Date endDate;
 	private Integer weekCount;
 	private String schoolId;
 	
@@ -40,18 +42,18 @@ public class Term implements Serializable {
 		this.termName = termName;
 	}
 	@Column(name="START_DATE")
-	public String getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(String startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 	
 	@Column(name="END_DATE")
-	public String getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(String endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 	
