@@ -69,6 +69,7 @@ public class CourseController extends BaseController {
 		List<Map> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
 		request.setAttribute("termList", termList);
 		request.setAttribute("termId", termId);
+		dictionary2PrivateServiceImpl.deleteItem(1, getCurrentUser(request).getUserId(), "10");
 		return "course/listCourse";
 	}
 	

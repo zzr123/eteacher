@@ -102,6 +102,18 @@ public class BaseDAO<T> {
         query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         return query.list();
     }
+    /**
+     * @author lifei 
+     * @param sql
+     * @param params
+     * @return
+     */
+    public int executeBySql(String sql, Object... params) {
+    	Query query = getSession().createSQLQuery(sql);
+    	setQueryParams(query, params);
+    	query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+    	return query.executeUpdate();
+    }
     
     public List<Map> findBySqlAndPage(String sql, int first, int max, Object... params) {
         Query query = getSession().createSQLQuery(sql);
