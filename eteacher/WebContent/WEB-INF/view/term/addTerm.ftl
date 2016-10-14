@@ -22,15 +22,15 @@
          
          
 	    
-         $(function ChangeValue(){
-          document.getElementById("term").value="3";
-         document.getElementById("term").fireEvent("onChange");
-             var d=document.getElementById("term").value;
+     <!--    $(function ChangeValue(){
+          document.getElementById("termName").value="4";
+         document.getElementById("termName").fireEvent("onChange");
+             var d=document.getElementById("termName").value;
              document.getElementById("startDate").value=d;
              document.getElementById("endDate").value=d;
              document.getElementById("weekCount").value=d;
 	     
-	     });
+	     });-->
 	
 </script>
 </head>
@@ -43,11 +43,25 @@
                     <div class="message-left">学期名称：</div>
                     <div class="message-right">
                         <!--<input id="termName" name="termName" maxlength="20" type="text" class="mess-control" value="2015-2016学年第2学期" />-->
-                        <select id="term" onChange="changeValue()">
-                        	<option value="1" selected>2015-2016年第一学期</option>
+                        <select id="termName" onChange="startDate.value=this.options[termName.selectedIndex].startDate;endDate.value=this.options[termName.selectedIndex].endDate;weekCount.value=this.options[termName.selectedIndex].weekCount;"> 
+<% 
+do while not rs.eof 
+Response.Write "<option value="---("tpId")---" startDate='"&rs("开始日期")&"' endDate='"&rs("结束日期")&"'> ---请选择--- </option> " & vbCrLf 
+rs.movenext 
+loop 
+%>
+                       		<#list termlist as term> 
+									<option value=${term.termId} 
+										<#if term.termId == termId?default("")>
+											selected="selected"
+										</#if>>
+										${term.termName}
+									</option>
+							</#list> 
+                        	<!--<option value="1" selected>2015-2016年第一学期</option>
                         	<option value="2">2015-2016年第二学期</option>
                         	<option value="3">2016-2017年第一学期</option>
-                        	<option value="4">2016-2017年第二学期</option>
+                        	<option value="4">2016-2017年第二学期</option>-->
                         </select>
                     </div>                   	
                 </div>
