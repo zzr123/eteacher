@@ -3,6 +3,7 @@ package com.turing.eteacher.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +58,8 @@ public class IndexController extends BaseController {
 			String password = request.getParameter("password");
 			User currentUser = userServiceImpl.getUserByAcctAndPwd(account, password);
 			if (currentUser != null) {
-				Teacher currentTeacher = teacherServiceImpl.get(currentUser.getUserId());
+				//Teacher currentTeacher = teacherServiceImpl.get(currentUser.getUserId());
+				Map currentTeacher = teacherServiceImpl.getTeacherDetail(currentUser.getUserId());
 				request.getSession().setAttribute(EteacherConstants.CURRENT_USER, currentUser);
 				request.getSession().setAttribute(EteacherConstants.CURRENT_TEACHER, currentTeacher);
 				request.getSession().setAttribute(EteacherConstants.CURRENT_TERM, termServiceImpl.getCurrentTerm(currentUser.getUserId()));

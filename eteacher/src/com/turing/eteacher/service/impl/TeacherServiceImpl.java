@@ -97,5 +97,19 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements ITeacher
 		list.add(total);
 		return list;
 	}
-
+	//获取用户的详细信息。
+	@Override
+	public Map getTeacherDetail(String userId){
+//		String hql = "select * from Teacher where teacherId =?";
+//		Teacher teacher = (Teacher) teacherDAO.find(hql);
+//		String titleId = teacher.getTitleId();
+//		String postId = teacher.getPostId();
+//		String schoolId = teacher.getSchoolId();
+		
+		String hql2 = "select  from Dictionary2Private pri where pri.dpId = ? union "
+				+ "select * from Dictionary2Public p where p.dictionaryId = ?";
+		
+		
+		return null;
+	}
 }

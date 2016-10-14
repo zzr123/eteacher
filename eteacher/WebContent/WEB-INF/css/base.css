@@ -255,6 +255,7 @@ table.altrowstable td {
 .CustomAdd { background:orange; color:#fff; cursor:pointer;}
 
 /*自定义弹框样式  add by  mxc*/
+.newtable {  overflow:hidden;}
 .tabCont { width:100%; height:auto; overflow:hidden;}
 .onetab { float:left; margin:10px 30px 5px 0; height:30px; line-height:30px; background:#eee; border-radius:3px; color:#000;}
 .onetab span { float:left; display:block; font-size:14px; padding:0 8px;}

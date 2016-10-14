@@ -3,23 +3,36 @@
 <link href="${context}/css/base.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="${context}/js/jquery.min.js"></script>
 <head>
-	<script type="text/javascript">
-		function selectData(id, value){
-			$('#titleSel',parent.document).val(value);
-			parent.$.modal.close();
-		}
-	</script>
+<script type="text/javascript">
+	function selectData(){
+		$('#titleSel',parent.document).val(value);
+		parent.$.modal.close();
+	}
+	
+	//删除数据
+	function delData(did){
+    	$.ajax({
+        	type: "POST",
+         	url: "../dictionary/viewDictionaryDel",
+         	data: {id:did},
+            dataType: "json"
+		});
+	}
+</script>
 </head>
 <body style="background:#fff;">
+
 	<div class="newtable">
-    	<div class="tabCont">
-    	<#list titleList as title> 
-			<div class="onetab"><span onclick="selectData('${title.id}','${title.value}')" id="${title.id}">${title.value}</span><a class="delet-img" href="#" title="删除"></a></div>
+    	<div class="tabCont" id="dataList">
+    	<#list titleList as dictionarys> 
+			<div class="onetab"><span onclick="selectData()">${dictionarys.content}</span>
+			<a class="delet-img" onclick="delData('${dictionarys.id}')" href="#" title="删除"></a></div>
 		</#list>
         </div>
         <div class="tabAdd">
         	<input value="" class="tabinput" type="text" /><a class="tabAddbtn" href="#">增加</a>
         </div> 
   	</div>
+
 </body>
 </html>
