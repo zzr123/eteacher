@@ -28,10 +28,10 @@ public class DictionaryController extends BaseController {
 		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
 		int TYPE = Integer.valueOf(request.getParameter("type"));
-		System.out.println("-------------------"+TYPE);
 		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
 		System.out.println("list:"+titleList.size());
 		request.setAttribute("titleList", titleList);
+		request.setAttribute("type", TYPE);
 		return "dictionary";
 	}
 
@@ -40,9 +40,15 @@ public class DictionaryController extends BaseController {
 		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
 		String id = request.getParameter("id");
-		String TYPE = request.getParameter("type");
-		//List<Map> titleList = Dictionary2PublicServiceImpl.delListById(TYPE,id, currentUser.getUserId());
-		//request.setAttribute("titleList", titleList);
-		return null;
+		int TYPE = Integer.valueOf(request.getParameter("type"));
+		System.out.println("-------------------"+TYPE);
+		boolean result = Dictionary2PrivateServiceImpl.deleteItem(TYPE,currentUser.getUserId(),id);
+		String data = null;
+		if(result == true){
+			data = "success";
+		}else{
+			data = "未知错误";
+		}
+		return data;
 	}
 }

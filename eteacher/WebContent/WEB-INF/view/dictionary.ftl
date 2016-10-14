@@ -4,20 +4,26 @@
 <script type="text/javascript" src="${context}/js/jquery.min.js"></script>
 <head>
 <script type="text/javascript">
-	function selectData(){
+	function selectData(id,value){
 		$('#titleSel',parent.document).val(value);
 		parent.$.modal.close();
 	}
 	
 	//删除数据
-	function delData(did){
+	function delData(dtype,did){
     	$.ajax({
         	type: "POST",
          	url: "../dictionary/viewDictionaryDel",
-         	data: {id:did},
-            dataType: "json"
-		});
-	}
+         	data: {type:dtype,id:did},
+            dataType: "json",
+            error: function(){      //失败 
+				alert('Error loading document'); 
+			}, 
+			success: function(msg){ //成功 
+				alert( "Data Saved: " + msg ); 
+			} 
+			});
+		}
 </script>
 </head>
 <body style="background:#fff;">
@@ -25,8 +31,8 @@
 	<div class="newtable">
     	<div class="tabCont" id="dataList">
     	<#list titleList as dictionarys> 
-			<div class="onetab"><span onclick="selectData()">${dictionarys.content}</span>
-			<a class="delet-img" onclick="delData('${dictionarys.id}')" href="#" title="删除"></a></div>
+			<div class="onetab"><span onclick="selectData('${dictionarys.id}','${dictionarys.content}')">${dictionarys.content}</span>
+			<a class="delet-img" onclick="delData('${type}','${dictionarys.id}')" href="#" title="删除"></a></div>
 		</#list>
         </div>
         <div class="tabAdd">
