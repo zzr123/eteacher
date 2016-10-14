@@ -34,14 +34,17 @@ public class TermController extends BaseController {
 	}
 	
 	@RequestMapping("viewAddTerm")
-	public String viewAddTerm(){
+	public String viewAddTerm(HttpServletRequest request){
+		//TODO 查询可用学期
+		List<Map> list = termServiceImpl.getListTerms(getCurrentUser(request).getUserId());
+		request.setAttribute("termlist", list);
 		return "term/addTerm";
 	}
 	
 	@RequestMapping("viewEditTerm")
 	public String viewEditTerm(HttpServletRequest request){
 		String termId = request.getParameter("termId");
-		//Term term = termServiceImpl.get(termId);
+		Term term = termServiceImpl.get(termId);
 		//request.setAttribute("term", term);
 		return "term/editTerm";
 	}
