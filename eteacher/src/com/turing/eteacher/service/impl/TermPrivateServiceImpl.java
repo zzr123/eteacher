@@ -1,8 +1,7 @@
 package com.turing.eteacher.service.impl;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;import org.springframework.beans.factory.annotation.Autowired;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
@@ -20,7 +19,12 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		// TODO Auto-generated method stub
 		return termPrivateDAO;
 	}
-
+	@Override
+	public void addTermPrivate(String termId, String tpId) {
+		// TODO Auto-generated method stub
+		String hql = "insert into TermPrivate (startDate,endDate,weekCount,createTime,status) values(?,?,?)";
+		List<Map> list = termPrivateDAO.findMap(hql);
+	}
 	@Override
 	public List<TermPrivate> getListTermPrivatesName(String userId) {
 		String hql = "from Term t where t.termId not in " +
