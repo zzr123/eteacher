@@ -14,6 +14,7 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.Dictionary2PrivateDAO;
 import com.turing.eteacher.model.Dictionary2Private;
 import com.turing.eteacher.service.IDictionary2PrivateService;
+import com.turing.eteacher.util.CustomIdGenerator;
 
 @Service
 public class Dictionary2PrivateServiceImpl extends
@@ -73,9 +74,12 @@ public class Dictionary2PrivateServiceImpl extends
 
 	@Override
 	public boolean deleteItem(int type, String userId, String dId) {
-		String hql = "from Dictionary2Private dp where dp.type = "+type+" and dp.dpId = '"+dId+"'";
+		System.out.println("type:"+type+"  userId:"+userId+"  did:"+dId);
+		String hql = "from Dictionary2Private dp where dp.type = ? and dp.dpId = ?";
 		String sql2 = "";
-		if (dictionary2PrivateDAO.find(hql).size() > 0) {
+		List list = dictionary2PrivateDAO.find(hql, type, dId);
+		System.out.println("影响数据："+list.size());
+		if (null != list && list.size() > 0) {
 			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+dId+"'";
 		}else{
 			sql2 = " INSERT INTO t_dictionary2_private (" +
@@ -86,7 +90,7 @@ public class Dictionary2PrivateServiceImpl extends
 					"t_dictionary2_private.DICTIONARY_ID," +
 					"t_dictionary2_private.USER_ID ) "+
 					"SELECT " +
-					"'"+UUID.randomUUID().toString().substring(0, 10)+"', " +
+					"'"+CustomIdGenerator.generateShortUuid()+"', " +
 					"2, "+
 					"t_dictionary2_public.TYPE," +
 					"t_dictionary2_public.PARENT_CODE," +
@@ -130,7 +134,7 @@ public class Dictionary2PrivateServiceImpl extends
 			",t_dictionary2_private.VALUE "+
 			",t_dictionary2_private.CREATE_TIME "+
 			",t_dictionary2_private.PARENT_CODE "+
-			") VALUES('"+UUID.randomUUID().toString().substring(0, 10)+"',"+type+",'"+userId+"','"+value+"','"+
+			") VALUES('"+CustomIdGenerator.generateShortUuid()+"',"+type+",'"+userId+"','"+value+"','"+
 			new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())+
 			"',( "+
 			"SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "+ 

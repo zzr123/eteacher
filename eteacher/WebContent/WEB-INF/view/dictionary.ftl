@@ -5,14 +5,14 @@
 <head>
 <script type="text/javascript">
 	
-	function selectData(id,value){
-		$('#titleSel',parent.document).val(value);
+	function selectData(id,value,pid){
+		$('#'+pid,parent.document).val(value);
 		parent.$.modal.close();
 	}
 	
 	//删除数据
 	function delData(dtype,did){
-		alert("1");
+		alert("字典表类型："+dtype+"————ID："+did);
 		$.post('../dictionary/viewDictionaryDel',{type:dtype,id:did},function(data){
 			if(data){
 				window.location.reload();
@@ -55,11 +55,11 @@
 		<div class="tabAdd">
         	<input id="inputeData" value="" class="tabinput" type="text" /><a class="tabAddbtn" onclick="addDate(${type})">增加</a>
         </div>
-    	<div class="tabCont" id="dataList">
+    	<div class="tabCont">
     	<#list titleList as dictionarys> 
 			<div class="onetab">
-				<span onclick="selectData(${dictionarys['id']},${dictionarys['content']})">${dictionarys['content']}</span>
-				<a class="delet-img" onclick="delData(${type},${dictionarys['id']})" href="#" title="删除"></a>
+				<span id="titleSel" onclick="selectData('${dictionarys['id']}','${dictionarys['content']}','${pid}')">${dictionarys['content']}</span>
+				<a class="delet-img" onclick="delData(${type},'${dictionarys['id']}')" href="#" title="删除"></a>
 			</div>
 		</#list>
         </div>

@@ -71,11 +71,6 @@ public class BaseDAO<T> {
 		return query.list();
 	}
 	
-	public List find(String hql){
-		Query query = getSession().createQuery(hql);
-		return query.list();
-	}
-	
 	public List<Map> findMap(String hql, Object...params){
 		if (getSession() == null) {
 			System.out.println("session is null");

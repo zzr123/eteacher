@@ -29,10 +29,12 @@ public class DictionaryController extends BaseController {
 		// 获取字典表的列表项
 		User currentUser = getCurrentUser(request);
 		int TYPE = Integer.valueOf(request.getParameter("type"));
+		String parentId = request.getParameter("pid");
 		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
 		System.out.println("list:"+titleList.toString());
 		request.setAttribute("titleList", titleList);
 		request.setAttribute("type", TYPE);
+		request.setAttribute("pid", parentId);
 		return "dictionary";
 	}
 
