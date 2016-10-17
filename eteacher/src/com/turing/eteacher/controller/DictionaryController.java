@@ -26,7 +26,7 @@ public class DictionaryController extends BaseController {
 
 	@RequestMapping("viewDictionaryModal")
 	public String viewDictionaryModal(HttpServletRequest request) {
-		// 获取职称下拉列表
+		// 获取字典表的列表项
 		User currentUser = getCurrentUser(request);
 		int TYPE = Integer.valueOf(request.getParameter("type"));
 		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
@@ -38,19 +38,25 @@ public class DictionaryController extends BaseController {
 
 	@RequestMapping("viewDictionaryDel")
 	@ResponseBody
-	public String viewDictionaryDel(HttpServletRequest request) {
+	public boolean viewDictionaryDel(HttpServletRequest request) {
 		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
 		String id = request.getParameter("id");
 		int TYPE = Integer.valueOf(request.getParameter("type"));
-		System.out.println("-------------------"+TYPE);
 		boolean result = Dictionary2PrivateServiceImpl.deleteItem(TYPE,currentUser.getUserId(),id);
-		String data = null;
-		if(result == true){
-			data = "success";
-		}else{
-			data = "error";
-		}
-		return data;
+		return result;
+	}
+	//增加用户自定义字典项
+	@RequestMapping("viewDictionaryAdd")
+	@ResponseBody
+	public boolean viewDictionaryAdd(HttpServletRequest request) {
+		// 获取职称下拉列表
+		User currentUser = getCurrentUser(request);
+		String value = request.getParameter("value");
+		int TYPE = Integer.valueOf(request.getParameter("type"));
+		boolean result = Dictionary2PrivateServiceImpl.addItem(TYPE, value, currentUser.getUserId());
+		System.out.println("增加结果为："+result);
+		return result;
 	}
 }
+

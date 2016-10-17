@@ -12,8 +12,13 @@
 	
 	//删除数据
 	function delData(dtype,did){
+		alert("1");
 		$.post('../dictionary/viewDictionaryDel',{type:dtype,id:did},function(data){
-			window.location.reload(); 
+			if(data){
+				window.location.reload();
+			}else{
+				alert("发生错误，删除数据失败");
+			} 
 		});
 		/*
     	$.ajax({
@@ -30,21 +35,34 @@
 			});
 		*/
 		}
+		
+		//增加数据
+		function addDate(dtype){
+			var dvalue = $('#inputeData').val();
+			$.post('../dictionary/viewDictionaryAdd',{type:dtype,value:dvalue},function(data){
+			if(data){
+				window.location.reload();
+			}else{
+				alert("发生错误，增加数据失败");
+			}
+		});
+		}
 </script>
 </head>
 <body style="background:#fff;">
 
 	<div class="newtable">
 		<div class="tabAdd">
-        	<input value="" class="tabinput" type="text" /><a class="tabAddbtn" href="#">增加</a>
+        	<input id="inputeData" value="" class="tabinput" type="text" /><a class="tabAddbtn" onclick="addDate(${type})">增加</a>
         </div>
     	<div class="tabCont" id="dataList">
     	<#list titleList as dictionarys> 
-			<div class="onetab"><span onclick="selectData(${dictionarys['id']},${dictionarys['content']})">${dictionarys['content']}</span>
-			<a class="delet-img" onclick="delData(${type},${dictionarys['id']})" href="#" title="删除"></a></div>
+			<div class="onetab">
+				<span onclick="selectData(${dictionarys['id']},${dictionarys['content']})">${dictionarys['content']}</span>
+				<a class="delet-img" onclick="delData(${type},${dictionarys['id']})" href="#" title="删除"></a>
+			</div>
 		</#list>
         </div>
-         
   	</div>
 
 </body>

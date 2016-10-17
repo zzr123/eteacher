@@ -66,6 +66,7 @@ public class Dictionary2PrivateServiceImpl extends
 					 "WHERE t_dictionary2_public.TYPE = "+type+" "+ 
 					 "AND t_dictionary2_public.PARENT_CODE IS NULL "+
 					 ")";
+		System.out.println("查询sql:"+hql);
 		List<Map> list = dictionary2PrivateDAO.findBySql(hql);
 		return list;
 	}
@@ -94,9 +95,10 @@ public class Dictionary2PrivateServiceImpl extends
 					"FROM t_dictionary2_public WHERE "+
 					"t_dictionary2_public.DICTIONARY_ID = '"+dId+"'" ;
 		}
-		System.out.println("sql2:"+sql2);
+		
 		int result = dictionary2PrivateDAO.executeBySql(sql2);
 		if (result == 1) {
+			System.out.println("删除数据成功");
 			return true;
 		}
 		return false;
@@ -115,6 +117,7 @@ public class Dictionary2PrivateServiceImpl extends
 				"AND t_dictionary2_public.PARENT_CODE IS NULL "+
 				"AND t_dictionary2_public.STATUS = 1 "+
 				")";
+		System.out.println("sql:"+sql);
 		List<Map> list = dictionary2PrivateDAO.findBySql(sql);
 		String sql2 = "";
 		if (list.size() > 0) {
@@ -134,6 +137,7 @@ public class Dictionary2PrivateServiceImpl extends
 			"WHERE t_dictionary2_public.TYPE = "+type+" "+ 
 			"AND t_dictionary2_public.PARENT_CODE IS NULL)) ";
 		}
+		System.out.println("sql2:"+sql2);
 		int result = dictionary2PrivateDAO.executeBySql(sql2);
 		if (result == 1) {
 			return true;
