@@ -21,8 +21,8 @@
 	});
          
          
-	    
-     <!--    $(function ChangeValue(){
+	   /*  
+         $(function ChangeValue(){
           document.getElementById("termName").value="4";
          document.getElementById("termName").fireEvent("onChange");
              var d=document.getElementById("termName").value;
@@ -30,7 +30,7 @@
              document.getElementById("endDate").value=d;
              document.getElementById("weekCount").value=d;
 	     
-	     });-->
+	     }); */
 	
 </script>
 </head>
