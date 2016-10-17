@@ -190,7 +190,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	}
 
 	@Override
-	public List<Term> getListTermPrivatesName(String userId) {
+	public List<Map> getListTermPrivatesName(String userId) {
 		String hql = "SELECT t_term_private.TP_ID  AS id, "+
 		"t_term.TERM_NAME AS content " +
 		"FROM t_term_private LEFT JOIN t_term " +
