@@ -3,17 +3,26 @@ package com.turing.eteacher.service.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omg.CORBA.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
+import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.dao.TermDAO;
+import com.turing.eteacher.model.CourseClasses;
+import com.turing.eteacher.model.CourseFile;
+import com.turing.eteacher.model.CourseScorePrivate;
+import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Term;
+import com.turing.eteacher.model.TermPrivate;
+import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.DateUtil;
 
@@ -112,9 +121,19 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	 * 获取学期公有数据列表
 	 */
 	@Override
-	public List<Map> getListTerms() {
-		String hql="from Term";
-		List<Map> list=termDAO.getListTerms(hql);
+	public List<Map> getListTerms(String userId) {
+		//TODO 需要过滤已经创建的学期
+		/*String hql=" from Term";*/
+/*		String sql="select t_term.TERM_ID, t_term.TERM_NAME FROM t_term WHERE t_term.TERM_ID NOT IN (select t_term_private.TREM_ID FROM t_term_private WHERE t_term_private.USER_ID = "P3ZxThTHo3")";*/
+		String sql="select t_term.TERM_ID as termId," +
+				" t_term.TERM_NAME as termName FROM t_term " +
+				"WHERE t_term.TERM_ID NOT IN " +
+				"(select t_term_private.TREM_ID FROM t_term_private " +
+				"WHERE t_term_private.USER_ID = ?)";
+		List<Map> list=termDAO.findBySql(sql,userId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
 		return list;
 	}
 	/**
@@ -171,7 +190,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	}
 
 	@Override
-	public List<Map> getListTermPrivatesName(String userId) {
+	public List<Term> getListTermPrivatesName(String userId) {
 		String hql = "SELECT t_term_private.TP_ID  AS id, "+
 		"t_term.TERM_NAME AS content " +
 		"FROM t_term_private LEFT JOIN t_term " +
@@ -179,5 +198,23 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		"WHERE t_term_private.USER_ID = ?";
 		List list = termDAO.findBySql(hql, userId);
 		return list;
+	}
+
+
+	@Override
+	public void addTermPrivate(String termId, String tpId) {
+		// TODO Auto-generated method stub
+		String hql = "insert into TermPrivate (startDate,endDate,weekCount,createTime,status) values(?,?,?)";
+		List<Map> list = termDAO.findMap(hql);
+		
+		
+	}
+
+	@Override
+	public void deleteById(TermPrivate tpId) {
+		// TODO Auto-generated method stub
+		String hql = "delete from TermPrivate where tpId=?";
+		List<Map> list = termDAO.findMap(hql);
+
 	}
 }
