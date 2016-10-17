@@ -114,10 +114,10 @@
 		}
 	}
 	
-	function openModal(dtype){
+	function openModal(dtype,pid){
 		$.modal.open({
 			title:'职务选择',
-			url:'../dictionary/viewDictionaryModal?type='+dtype,
+			url:'../dictionary/viewDictionaryModal?type='+dtype+'&pid='+pid,
 		});
 	}
 	
@@ -153,13 +153,13 @@
             <div class="message-group">
         		<div class="message-left">职称：</div>
                 <div class="message-right" >       
-                    <input id="titleSel" onclick="openModal(4);" type="text" class="mess-control" placeholder="请选择职称" />
+                    <input id="titleSel" onclick="openModal(4,'titleSel');" type="text" class="mess-control" placeholder="请选择职称" />
                 </div>                   	
         	</div>
             <div class="message-group">
         		<div class="message-left">职务：</div>
                 <div class="message-right" >       
-                    <input id="postSel" onclick="openModal(5);" data-toggle="modal" data-target="#dictionaryModal" type="text" class="mess-control" placeholder="请选择职称" />
+                    <input id="postSel" onclick="openModal(5,'postSel');" data-toggle="modal" data-target="#dictionaryModal" type="text" class="mess-control" placeholder="请选择职称" />
                 </div>                   	
         	</div>
             <!--
