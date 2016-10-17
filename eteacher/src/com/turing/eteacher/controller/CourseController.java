@@ -66,7 +66,7 @@ public class CourseController extends BaseController {
 		}
 		//学期下拉列表数据
 		User currentUser = getCurrentUser(request);
-		List<Map> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
+		List<Term> termList = termServiceImpl.getListTermPrivatesName(currentUser.getUserId());
 		request.setAttribute("termList", termList);
 		request.setAttribute("termId", termId);
 		return "course/listCourse";
