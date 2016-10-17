@@ -31,75 +31,89 @@ public class Dictionary2PrivateServiceImpl extends
 
 	@Override
 	public List<Map> getListByType(int type, String userId) {
-		String hql = "SELECT t_dictionary2_public.DICTIONARY_ID AS id,"+
-					 "t_dictionary2_public.VALUE AS content "+
-					 "FROM t_dictionary2_public "+
-					 "WHERE t_dictionary2_public.TYPE = "+type+" "+ 
-					 "AND "+
-					 "t_dictionary2_public.PARENT_CODE =("+
-					 " SELECT t_dictionary2_public.CODE "+
-					 " FROM t_dictionary2_public "+
-					 " WHERE t_dictionary2_public.TYPE = "+type+" "+ 
-					 " AND t_dictionary2_public.PARENT_CODE IS NULL) "+
-					 "AND t_dictionary2_public.STATUS = 1 "+
-					 "AND t_dictionary2_public.DICTIONARY_ID NOT IN ( "+
-					 "SELECT t_dictionary2_private.DICTIONARY_ID "+
-					 "FROM t_dictionary2_private "+
-					 "WHERE t_dictionary2_private.USER_ID = '"+userId+"' "+ 
-					 "AND t_dictionary2_private.type = "+type+" "+
-					 "AND t_dictionary2_private.PARENT_CODE = ("+
-					 " SELECT t_dictionary2_public.CODE "+
-					 " FROM t_dictionary2_public "+
-					 " WHERE t_dictionary2_public.TYPE = "+type+" "+ 
-					 "AND t_dictionary2_public.PARENT_CODE IS NULL) "+
-					 " AND t_dictionary2_private.STATUS = 2 "+
-					 ") "+
-					 "UNION "+ 
-					 "SELECT t_dictionary2_private.DP_ID AS id, "+
-					 "t_dictionary2_private.VALUE AS content "+ 
-					 "FROM t_dictionary2_private "+ 
-					 "WHERE t_dictionary2_private.TYPE = "+type+" "+ 
-					 "AND t_dictionary2_private.USER_ID = '"+userId+"' "+ 
-					 "AND t_dictionary2_private.STATUS = 1 "+ 
-					 "AND t_dictionary2_private.PARENT_CODE =( "+
-					 "SELECT t_dictionary2_public.CODE "+ 
-					 "FROM t_dictionary2_public "+ 
-					 "WHERE t_dictionary2_public.TYPE = "+type+" "+ 
-					 "AND t_dictionary2_public.PARENT_CODE IS NULL "+
-					 ")";
-		System.out.println("查询sql:"+hql);
+		String hql = "SELECT t_dictionary2_public.DICTIONARY_ID AS id,"
+				+ "t_dictionary2_public.VALUE AS content "
+				+ "FROM t_dictionary2_public "
+				+ "WHERE t_dictionary2_public.TYPE = "
+				+ type
+				+ " "
+				+ "AND "
+				+ "t_dictionary2_public.PARENT_CODE =("
+				+ " SELECT t_dictionary2_public.CODE "
+				+ " FROM t_dictionary2_public "
+				+ " WHERE t_dictionary2_public.TYPE = "
+				+ type
+				+ " "
+				+ " AND t_dictionary2_public.PARENT_CODE IS NULL) "
+				+ "AND t_dictionary2_public.STATUS = 1 "
+				+ "AND t_dictionary2_public.DICTIONARY_ID NOT IN ( "
+				+ "SELECT t_dictionary2_private.DICTIONARY_ID "
+				+ "FROM t_dictionary2_private "
+				+ "WHERE t_dictionary2_private.USER_ID = '"
+				+ userId
+				+ "' "
+				+ "AND t_dictionary2_private.type = "
+				+ type
+				+ " "
+				+ "AND t_dictionary2_private.PARENT_CODE = ("
+				+ " SELECT t_dictionary2_public.CODE "
+				+ " FROM t_dictionary2_public "
+				+ " WHERE t_dictionary2_public.TYPE = "
+				+ type
+				+ " "
+				+ "AND t_dictionary2_public.PARENT_CODE IS NULL) "
+				+ " AND t_dictionary2_private.STATUS = 2 "
+				+ ") "
+				+ "UNION "
+				+ "SELECT t_dictionary2_private.DP_ID AS id, "
+				+ "t_dictionary2_private.VALUE AS content "
+				+ "FROM t_dictionary2_private "
+				+ "WHERE t_dictionary2_private.TYPE = "
+				+ type
+				+ " "
+				+ "AND t_dictionary2_private.USER_ID = '"
+				+ userId
+				+ "' "
+				+ "AND t_dictionary2_private.STATUS = 1 "
+				+ "AND t_dictionary2_private.PARENT_CODE =( "
+				+ "SELECT t_dictionary2_public.CODE "
+				+ "FROM t_dictionary2_public "
+				+ "WHERE t_dictionary2_public.TYPE = "
+				+ type
+				+ " "
+				+ "AND t_dictionary2_public.PARENT_CODE IS NULL " + ")";
+		System.out.println("查询sql:" + hql);
 		List<Map> list = dictionary2PrivateDAO.findBySql(hql);
 		return list;
 	}
 
 	@Override
 	public boolean deleteItem(int type, String userId, String dId) {
-		System.out.println("type:"+type+"  userId:"+userId+"  did:"+dId);
-		String hql = "from Dictionary2Private dp where dp.type = ? and dp.dpId = ?";
+		String hql = "SELECT t_dictionary2_private.DP_ID AS id FROM t_dictionary2_private WHERE "+
+		"t_dictionary2_private.TYPE = ? AND t_dictionary2_private.DP_ID = ? AND t_dictionary2_private.USER_ID = ? " +
+		"AND t_dictionary2_private.STATUS = 1";
 		String sql2 = "";
-		List list = dictionary2PrivateDAO.find(hql, type, dId);
-		System.out.println("影响数据："+list.size());
+		List list = dictionary2PrivateDAO.findBySql(hql, type, dId, userId);
 		if (null != list && list.size() > 0) {
-			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+dId+"'";
-		}else{
-			sql2 = " INSERT INTO t_dictionary2_private (" +
-					"t_dictionary2_private.DP_ID," +
-					"t_dictionary2_private.STATUS," +
-					"t_dictionary2_private.TYPE," +
-					"t_dictionary2_private.PARENT_CODE," +
-					"t_dictionary2_private.DICTIONARY_ID," +
-					"t_dictionary2_private.USER_ID ) "+
-					"SELECT " +
-					"'"+CustomIdGenerator.generateShortUuid()+"', " +
-					"2, "+
-					"t_dictionary2_public.TYPE," +
-					"t_dictionary2_public.PARENT_CODE," +
-					"t_dictionary2_public.DICTIONARY_ID," +
-					"'"+userId+"' "+ 
-					"FROM t_dictionary2_public WHERE "+
-					"t_dictionary2_public.DICTIONARY_ID = '"+dId+"'" ;
+			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+ dId + "'";
+		} else {
+			sql2 = " INSERT INTO t_dictionary2_private ("
+					+ "t_dictionary2_private.DP_ID,"
+					+ "t_dictionary2_private.STATUS,"
+					+ "t_dictionary2_private.TYPE,"
+					+ "t_dictionary2_private.PARENT_CODE,"
+					+ "t_dictionary2_private.DICTIONARY_ID,"
+					+ "t_dictionary2_private.VALUE,"
+					+ "t_dictionary2_private.USER_ID ) " + "SELECT " + "'"
+					+ CustomIdGenerator.generateShortUuid() + "', " + "2, "
+					+ "t_dictionary2_public.TYPE,"
+					+ "t_dictionary2_public.PARENT_CODE,"
+					+ "t_dictionary2_public.DICTIONARY_ID,"
+					+ "t_dictionary2_public.VALUE," + "'" + userId
+					+ "' " + "FROM t_dictionary2_public WHERE "
+					+ "t_dictionary2_public.DICTIONARY_ID = '" + dId + "'";
 		}
-		
+
 		int result = dictionary2PrivateDAO.executeBySql(sql2);
 		if (result == 1) {
 			System.out.println("删除数据成功");
@@ -109,39 +123,49 @@ public class Dictionary2PrivateServiceImpl extends
 	}
 
 	@Override
-	public boolean addItem(int type,String value, String userId) {
-		String sql = "SELECT t_dictionary2_private.DP_ID AS id FROM t_dictionary2_private WHERE t_dictionary2_private.VALUE = '"+value+"' "+
-				"AND t_dictionary2_private.USER_ID = '"+userId+"' "+ 
-				"AND t_dictionary2_private.STATUS = 2 "+ 
-				"AND t_dictionary2_private.TYPE = "+type+" "+ 
-				"AND t_dictionary2_private.DICTIONARY_ID IS NOT NULL "+
-				"AND t_dictionary2_private.PARENT_CODE = ( "+
-				"SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "+
-				"WHERE t_dictionary2_public.TYPE = '"+type+"' "+
-				"AND t_dictionary2_public.PARENT_CODE IS NULL "+
-				"AND t_dictionary2_public.STATUS = 1 "+
-				")";
-		System.out.println("sql:"+sql);
+	public boolean addItem(int type, String value, String userId) {
+		//查询要添加的数据是否为共有表的数据并且被用户删除
+		String sql = "SELECT t_dictionary2_private.DP_ID AS id FROM t_dictionary2_private WHERE" +
+				" t_dictionary2_private.VALUE = '"+ value+ "' "
+				+ "AND t_dictionary2_private.USER_ID = '"+ userId+ "' "
+				+ "AND t_dictionary2_private.STATUS = 2 "
+				+ "AND t_dictionary2_private.TYPE = "+ type+ " "
+				+ "AND t_dictionary2_private.DICTIONARY_ID IS NOT NULL "
+				+ "AND t_dictionary2_private.PARENT_CODE = ( "
+				+ "SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "
+				+ "WHERE t_dictionary2_public.TYPE = "+ type+ " "
+				+ "AND t_dictionary2_public.PARENT_CODE IS NULL "
+				+ "AND t_dictionary2_public.STATUS = 1 " + ")";
+		System.out.println("sql:" + sql);
 		List<Map> list = dictionary2PrivateDAO.findBySql(sql);
 		String sql2 = "";
 		if (list.size() > 0) {
-			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+list.get(0).get("id")+"'";
-		}else {
-			sql2 = "INSERT INTO t_dictionary2_private ( "+
-			"t_dictionary2_private.DP_ID, "+
-			"t_dictionary2_private.TYPE "+
-			",t_dictionary2_private.USER_ID "+
-			",t_dictionary2_private.VALUE "+
-			",t_dictionary2_private.CREATE_TIME "+
-			",t_dictionary2_private.PARENT_CODE "+
-			") VALUES('"+CustomIdGenerator.generateShortUuid()+"',"+type+",'"+userId+"','"+value+"','"+
-			new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date())+
-			"',( "+
-			"SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "+ 
-			"WHERE t_dictionary2_public.TYPE = "+type+" "+ 
-			"AND t_dictionary2_public.PARENT_CODE IS NULL)) ";
+			sql2 = "DELETE FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = '"+ list.get(0).get("id") + "'";
+		} else {
+			sql2 = "INSERT INTO t_dictionary2_private ( "
+					+ "t_dictionary2_private.DP_ID, "
+					+ "t_dictionary2_private.TYPE "
+					+ ",t_dictionary2_private.USER_ID "
+					+ ",t_dictionary2_private.VALUE "
+					+ ",t_dictionary2_private.CREATE_TIME "
+					+ ",t_dictionary2_private.PARENT_CODE "
+					+ ") VALUES('"
+					+ CustomIdGenerator.generateShortUuid()
+					+ "',"
+					+ type
+					+ ",'"
+					+ userId
+					+ "','"
+					+ value
+					+ "','"
+					+ new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+							.format(new Date())
+					+ "',( "
+					+ "SELECT t_dictionary2_public.CODE FROM t_dictionary2_public "
+					+ "WHERE t_dictionary2_public.TYPE = " + type + " "
+					+ "AND t_dictionary2_public.PARENT_CODE IS NULL)) ";
 		}
-		System.out.println("sql2:"+sql2);
+		System.out.println("sql2:" + sql2);
 		int result = dictionary2PrivateDAO.executeBySql(sql2);
 		if (result == 1) {
 			return true;
