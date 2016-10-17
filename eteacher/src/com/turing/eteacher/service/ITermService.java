@@ -1,15 +1,30 @@
 package com.turing.eteacher.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.Term;
+import com.turing.eteacher.util.DateUtil;
 
 public interface ITermService extends IService<Term> {
 	
 	public void saveTerm(Term term);
+public void addTermPrivate(String termId,String tpId);
+
 	
+	
+	
+	public List<Map> getListByGrade(int grade);
+	
+	public Term getByYearAndTerm(int year, int term);
+	
+	//教师端
+	//获取学期公有数据列表
+	public List<Map> getListTerms();
+	// 获取学期私有数据列表
+	public List<Map> get	
 	public List<Map> getListByGrade(int grade);
 	
 	public Term getByYearAndTerm(int year, int term);
