@@ -49,13 +49,28 @@ public class TermController extends BaseController {
 		return "term/editTerm";
 	}
 	
+	@RequestMapping("getListTerm")
+	@ResponseBody
+	public Object getListTerm(HttpServletRequest request){
+		User currentUser = getCurrentUser(request);
+		String termId=request.getParameter("termId");
+		List list = termServiceImpl.getListTerm(termId);
+		Map result = new HashMap();
+		result.put("data", list);
+		//request.setAttribute("data", list);
+		return result;
+	}
+	
 	@RequestMapping("getTermListData")
 	@ResponseBody
 	public Object getTermListData(HttpServletRequest request){
 		User currentUser = getCurrentUser(request);
-		List list = termServiceImpl.getTermList(currentUser.getUserId());
+		//String termId=request.getParameter("termId");
+		List list = termServiceImpl.getTermList(getCurrentUser(request).getUserId());
 		Map result = new HashMap();
 		result.put("data", list);
+		//request.setAttribute("data", list);
+		//System.out.println(result.get(0).toString()+"1111");
 		return result;
 	}
 	
@@ -78,7 +93,7 @@ public class TermController extends BaseController {
 	@RequestMapping("deleteTerm1")
 	@ResponseBody
 	public Object deleteTerm(HttpServletRequest request){
-		String termId = request.getParameter("termId");
+		String termId = request.getParameter("termId");//tpId
 		List list = courseServiceImpl.getListByTermId(termId, null);
 		if(list!=null&&list.size()>0){
 			return "该学期下有课程数据，无法删除。";
