@@ -26,6 +26,7 @@
 	<div class="maincont">
 		<div class="title"><span>编辑学期</span></div>
         <div class="enter-message">
+          <#list term as term>
             <form id="termForm" method="post" action="updateTerm">
             	<input name="termId" type="hidden" value="${term.termId}" />
                 <div class="message-group">
@@ -60,6 +61,7 @@
                     <button type="button" class="btn-submit" style="float:right;" onclick="history.back();">返回</button>
                 </div>
             </form> 
+           </#list> 
         </div>
 	</div>
 	<#include "/footer.ftl" />

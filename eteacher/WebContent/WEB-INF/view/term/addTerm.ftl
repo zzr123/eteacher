@@ -20,9 +20,36 @@
 		$('#weekCount').validatorZZS('学期时长');
 	});
          
-         
-	   /*  
-         $(function ChangeValue(){
+	function ChangeValue(termId){
+		 $.post('../term/getListTerm',{termId:termId},function(data){
+			window.location.reload(); 
+
+			$("#startDate").val(term.startDate);//开始日期
+			$("#endDate").val(term.endDate);//结束日期
+	 		$("#weekCount").val(term.weekCount);//周数
+		}); 
+
+		
+ 		/* $.ajax({
+			type : "POST",
+			url : "../term/getTermListData",
+ 			data : "termId="+termId,
+			success : function(msg) {//成功了说明
+			//alert(msg);
+				var list=eval(msg);//计算一下服务器返回来的数据
+				$.each(list,function(index, term){
+				//遍历获取到的结果集，赋值给对应的input
+					$("#startDate").val(term.startDate);//开始日期
+					$("#endDate").val(term.endDate);//结束日期
+			 		$("#weekCount").val(term.weekCount);//周数
+			 	});
+			}
+		}); */
+		}
+		
+	
+	    
+       /*   function ChangeValue(){
           document.getElementById("termName").value="4";
          document.getElementById("termName").fireEvent("onChange");
              var d=document.getElementById("termName").value;
@@ -30,7 +57,9 @@
              document.getElementById("endDate").value=d;
              document.getElementById("weekCount").value=d;
 	     
-	     }); */
+	     }; */
+
+	     
 	
 </script>
 </head>
@@ -43,13 +72,11 @@
                     <div class="message-left">学期名称：</div>
                     <div class="message-right">
                         <!--<input id="termName" name="termName" maxlength="20" type="text" class="mess-control" value="2015-2016学年第2学期" />-->
-                        <select id="termName" onChange="startDate.value=this.options[termName.selectedIndex].startDate;endDate.value=this.options[termName.selectedIndex].endDate;weekCount.value=this.options[termName.selectedIndex].weekCount;"> 
-<% 
+                        <select id="termName" onChange="ChangeValue(termId)"> 
+<%-- <% 
 do while not rs.eof 
 Response.Write "<option value="---("tpId")---" startDate='"&rs("开始日期")&"' endDate='"&rs("结束日期")&"'> ---请选择--- </option> " & vbCrLf 
-rs.movenext 
-loop 
-%>
+rs.movenext loop %> --%>
                        		<#list termlist as term> 
 									<option value=${term.termId} 
 										<#if term.termId == termId?default("")>
@@ -58,17 +85,16 @@ loop
 										${term.termName}
 									</option>
 							</#list> 
-                        	<!--<option value="1" selected>2015-2016年第一学期</option>
-                        	<option value="2">2015-2016年第二学期</option>
-                        	<option value="3">2016-2017年第一学期</option>
-                        	<option value="4">2016-2017年第二学期</option>-->
+                        	
                         </select>
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">起始日期：</div>
                     <div class="message-right">
-                        <input id="startDate" name="startDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" />
+                    <#list termlist as term>
+                         <input id="startDate" name="startDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" value="${term.startDate}"/> 
+                        </#list>
                         
                     </div>                   	
                 </div>
