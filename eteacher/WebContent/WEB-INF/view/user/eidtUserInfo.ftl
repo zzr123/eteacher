@@ -116,7 +116,7 @@
 	
 	function openModal(dtype,pid){
 		$.modal.open({
-			title:'职务选择',
+			title:'选择',
 			url:'../dictionary/viewDictionaryModal?type='+dtype+'&pid='+pid,
 		});
 	}

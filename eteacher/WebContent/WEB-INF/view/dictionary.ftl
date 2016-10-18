@@ -12,7 +12,6 @@
 	
 	//删除数据
 	function delData(dtype,did){
-		alert("字典表类型："+dtype+"————ID："+did);
 		$.post('../dictionary/viewDictionaryDel',{type:dtype,id:did},function(data){
 			if(data){
 				window.location.reload();
