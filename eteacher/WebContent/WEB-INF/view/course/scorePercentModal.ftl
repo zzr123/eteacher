@@ -19,7 +19,6 @@
 </div><!-- /.modal -->
 <script>
 	var courseScoreArr = [{scoreName:'平时'},{scoreName:'期中'},{scoreName:'期末'}];
-	initScore();
 	//打开时初始化数据
 	$('#courseScorekModal').on('show.bs.modal', function (e) {
 		$.each(courseScoreArr,function(i,n){

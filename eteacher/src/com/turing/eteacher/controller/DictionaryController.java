@@ -31,7 +31,6 @@ public class DictionaryController extends BaseController {
 		int TYPE = Integer.valueOf(request.getParameter("type"));
 		String parentId = request.getParameter("pid");
 		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
-		System.out.println("list:"+titleList.toString());
 		request.setAttribute("titleList", titleList);
 		request.setAttribute("type", TYPE);
 		request.setAttribute("pid", parentId);

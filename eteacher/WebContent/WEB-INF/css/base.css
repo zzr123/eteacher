@@ -106,7 +106,6 @@ ul.navul li .nav_dd a:last-child{ border-right: 0;}
 .message-right { display:inline-block; margin-left:10px; float:left; width:73%; font-size:14px; line-height:36px;}
 .mess-control { margin-bottom:10px; width: 80%; padding: 6px 12px; font-size: 13px; line-height:20px; color: #555555; background: #fff ;border: 1px solid #e3e6f3; border-radius: 3px; box-shadow:none; 
 transition: border .25s linear,color .25s linear,background-color .25s linear;
--webkit-appearance: none;
 -webkit-font-smoothing: antialiased;}
 .message-group textarea {width: 90%; height: 170px; padding: 6px 12px; font-size: 13px; line-height:20px; color: #555555; background: #fff ;border: 1px solid #e3e6f3; border-radius: 3px; box-shadow:none; 
 transition: border .25s linear,color .25s linear,background-color .25s linear;

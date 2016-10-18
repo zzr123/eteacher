@@ -13,6 +13,7 @@
 <script type="text/javascript" src="${context}/js/json2form.js"></script>
 <script type="text/javascript" src="${context}/js/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="${context}/js/chosen/chosen.jquery.min.js"></script>
+<script type="text/javascript" src="${context}/js/turingLib/modal.js"></script>
 <script type="text/javascript">
 	var editFlag = '${editFlag?default("")}';
 	$(function(){
@@ -48,18 +49,6 @@
 //				courseWorkloadArr = $.parseJSON(courseWorkloadsJson);
 //				initWorkload();
 //			}
-			//授课方式
-			var courseTypeJson = '${coursetype?default("")}';
-			if(courseTypeJson){
-				$.each($.parseJSON(courseTypeJson),function(i,n){
-						$('#courseType').prepend('<option value = '+n.id+'>' + n.content +'</option>');
-		/* 			if(n.id = courseJson.courseTypeId){
-					}else{
-						$('#courseType').prepend('<option value = '+n.id+'>' + n.content +'</option>');
-					} */
-				});
-				$('#courseType').prepend('<option>--请选择课程类型--</option>');
-			}
 			//成绩组成
 			var courseScoresJson = '${courseScoresJson?default("")}';
 			if(courseScoresJson){
@@ -137,6 +126,12 @@
 		$('#textbookOthers').val(JSON.stringify(textbookOthers));
 		return true;
 	}
+	function openModal(titleText,dtype,pid){
+		$.modal.open({
+			title:titleText,
+			url:'../dictionary/viewDictionaryModal?type='+dtype+'&pid='+pid,
+		});
+	}
 </script>
 </head>
 <body>
@@ -165,7 +160,7 @@
                     </div>                   	
                 </div>
                 <div class="message-group">
-                    <div class="message-left">专业：</div>
+                    <div class="message-left">学科专业：</div>
                     <div class="message-right">
                         <select id="specialty1" onchange="loadMajorData($('#specialty2'),this.value);loadMajorData($('#specialty3'));">
                             <option value="">--请选择专业--</option>
@@ -180,30 +175,20 @@
                 </div>
                 <div class="message-group">
                     <div class="message-left">授课方式：</div>
-                    <div class="message-right">                	
-                        <select id="teachingMethod" name="teachingMethod">
-                            <option value="">--请选择授课方式--</option>
-                            <option>理论</option>
-                            <option>实践</option>
-                        </select>
+                    <div class="message-right">  
+                     	<input id="teachingMethod" name="${teachingMethod.id?default('')}" value="${teachingMethod.value?default('')}" onclick="openModal('请选择授课方式',2,'teachingMethod');" type="text" class="mess-control" placeholder="请选择职称" />
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">课程类型：</div>
                     <div class="message-right">
-                        <select id="courseType" name="courseType">
-                           <!--  <option value="">--请选择课程类型--</option> -->
-                        </select>                      
+                    	<input id="courseType" name="${courseType.id?default('')}" value="${courseType.value?default('')}" onclick="openModal('请选择课程类型',1,'courseType');" type="text" class="mess-control" placeholder="请选择职称" />                    
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">考核方式：</div>
-                    <div class="message-right">                	
-                        <select id="examinationMode" name="examinationMode">
-                            <option selected="selected">--请选择考核方式--</option>
-                            <option>考试课</option>
-                            <option>考查课</option>
-                        </select>
+                    <div class="message-right"> 
+                    	<input id="examinationMode" name="${examinationMode.id?default('')}" value="${examinationMode.value?default('')}" onclick="openModal('请选择考核方式  ',3,'examinationMode');" type="text" class="mess-control" placeholder="请选择职称" />                    
                     </div>                   	
                 </div>
                 <div class="message-group">

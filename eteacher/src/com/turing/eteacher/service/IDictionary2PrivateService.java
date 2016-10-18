@@ -39,4 +39,14 @@ public interface IDictionary2PrivateService extends
 	 * @return
 	 */
 	public boolean addItem(int type, String value, String userId);
+	
+	/**
+	 * 通过ID获取对应的内容
+	 * 
+	 * @author lifei
+	 * @param type
+	 * @param dId
+	 * @return
+	 */
+	public Map getValueById(String dId);
 }

@@ -7,6 +7,7 @@
 	
 	function selectData(id,value,pid){
 		$('#'+pid,parent.document).val(value);
+		$('#'+pid,parent.document).attr("name",id);
 		parent.$.modal.close();
 	}
 	
@@ -19,20 +20,6 @@
 				alert("发生错误，删除数据失败");
 			} 
 		});
-		/*
-    	$.ajax({
-        	type: "POST",
-         	url: "../dictionary/viewDictionaryDel",
-         	data: {type:dtype,id:did},
-            //dataType: "json",
-            success: function(data){ //成功 
-				alert( "删除成功，返回： " + data ); 
-			},
-            error: function(a,b,c){       //失败 
-				alert(b); 
-			}
-			});
-		*/
 		}
 		
 		//增加数据

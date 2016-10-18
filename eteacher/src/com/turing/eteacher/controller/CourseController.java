@@ -99,10 +99,14 @@ public class CourseController extends BaseController {
 //			request.setAttribute("courseWorkloadsJson", courseWorkloadsJson);
 //		}
 		//获取授课方式
-		List<Map> courseType = dictionary2PrivateServiceImpl.getListByType(1, getCurrentUser(request).getUserId());
-		String courserTypeJson = new ObjectMapper().writeValueAsString(courseType);
-		System.out.println("查出来的内容："+courserTypeJson);
-		request.setAttribute("coursetype", courserTypeJson);
+		Map teachingMethod = dictionary2PrivateServiceImpl.getValueById(course.getTeachingMethodId());
+		request.setAttribute("teachingMethod", teachingMethod);
+		//获取课程类型
+		Map courseType = dictionary2PrivateServiceImpl.getValueById(course.getCourseTypeId());
+		request.setAttribute("courseType", courseType);
+		//获取考核方式
+		Map examinationMode = dictionary2PrivateServiceImpl.getValueById(course.getExaminationModeId());
+		request.setAttribute("examinationMode", examinationMode);
 		//成绩组成
 		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
 		if(courseScores != null && courseScores.size()>0){
