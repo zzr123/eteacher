@@ -57,16 +57,13 @@
 			        },
 			        'click .glyphicon-trash': function (e, value, row, index) {
 			        	if(confirm("确定删除")){
-			            	//$.post('deleteTerm1',{termId : value},function(data){
-			            	//	if(data!='success'){
-			            	//		alert(data);
-			            	//	}
-				            //	termTable.bootstrapTable('refresh');
-				            //});
-				            $.ajax({
-				            	url : 'deleteTerm1',
-				            	type : 'post',
+			            	$.post('deleteTerm1',{termId : value},function(data){
+			            		if(data!='success'){
+			            			alert(data);
+			            		}
+				            	termTable.bootstrapTable('refresh');
 				            });
+				           
 			            }
 			        }
 		        }
