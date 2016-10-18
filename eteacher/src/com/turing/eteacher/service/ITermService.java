@@ -18,6 +18,8 @@ public interface ITermService extends IService<Term> {
 	public List<Map> getListByGrade(int grade);
 	
 	public Term getByYearAndTerm(int year, int term);
+	
+	public void deleteById(String tpId);
 
 	
 	//教师端
@@ -32,6 +34,6 @@ public interface ITermService extends IService<Term> {
 	
 	public List<Map> getListTermPrivatesName(String userId);
 
-	void deleteById(TermPrivate tpId);
+	public List<Map> getListTerm(String termId);
 	
 }
