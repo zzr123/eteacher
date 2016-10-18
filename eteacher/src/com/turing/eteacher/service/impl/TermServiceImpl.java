@@ -71,9 +71,8 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		else{
 			termDAO.save(term);
 		}*/
-		/*String hql = "insert into TermPrivate (startDate,endDate,weekCount) values(?,?,?)";
+		String hql = "insert into TermPrivate (startDate,endDate,weekCount) values(?,?,?)";
 		List<Map> list = termDAO.findMap(hql, term);
-		return list;*/
 	}
 	
 	
@@ -126,7 +125,10 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		/*String hql=" from Term";*/
 /*		String sql="select t_term.TERM_ID, t_term.TERM_NAME FROM t_term WHERE t_term.TERM_ID NOT IN (select t_term_private.TREM_ID FROM t_term_private WHERE t_term_private.USER_ID = "P3ZxThTHo3")";*/
 		String sql="select t_term.TERM_ID as termId," +
-				" t_term.TERM_NAME as termName FROM t_term " +
+				" t_term.TERM_NAME as termName , " +
+				"t_term.START_DATE as startDate , " +
+				"t_term.END_DATE as endDate , " +
+				"t_term.WEEK_COUNT as weekCount FROM t_term " +
 				"WHERE t_term.TERM_ID NOT IN " +
 				"(select t_term_private.TREM_ID FROM t_term_private " +
 				"WHERE t_term_private.USER_ID = ?)";
@@ -205,16 +207,32 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	public void addTermPrivate(String termId, String tpId) {
 		// TODO Auto-generated method stub
 		String hql = "insert into TermPrivate (startDate,endDate,weekCount,createTime,status) values(?,?,?)";
-		List<Map> list = termDAO.findMap(hql);
-		
+		List<Map> list = termDAO.findMap(hql,termId,tpId);
 		
 	}
 
 	@Override
-	public void deleteById(TermPrivate tpId) {
+	public void deleteById(String tpId) {
 		// TODO Auto-generated method stub
 		String hql = "delete from TermPrivate where tpId=?";
-		List<Map> list = termDAO.findMap(hql);
-
+		termDAO.executeHql(hql, tpId);
 	}
+
+	@Override
+	public List<Map> getListTerm(String termId) {
+		// TODO Auto-generated method stub
+		String sql="select t_term.TERM_ID as termId," +
+				" t_term.TERM_NAME as termName , " +
+				"t_term.START_DATE as startDate , " +
+				"t_term.END_DATE as endDate , " +
+				"t_term.WEEK_COUNT as weekCount FROM t_term " +
+				"WHERE t_term.TERM_ID =?";
+		List<Map> list=termDAO.findBySql(sql,termId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("mapp"+i+":"+list.get(i).toString());
+		}
+		return list;
+	}
+
+	
 }

@@ -35,5 +35,12 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		List list = termPrivateDAO.find(hql, userId);
 		return list;
 	}
+	
+	@Override
+	public void deleteById(String tpId) {
+		// TODO Auto-generated method stub
+		String hql = "delete from TermPrivate where tpId=?";
+		termPrivateDAO.executeHql(hql, tpId);
+	}
 
 }
