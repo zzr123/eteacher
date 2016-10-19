@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.Term;
+import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ICourseService;
+import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.BeanUtils;
 
@@ -28,6 +30,10 @@ public class TermController extends BaseController {
 	@Autowired
 	private ICourseService courseServiceImpl;
 	
+	@Autowired
+	private ITermPrivateService termPrivateServiceImpl;
+	
+	
 	@RequestMapping("viewListTerm")
 	public String viewListTerm(){
 		return "term/listTerm";
@@ -38,6 +44,7 @@ public class TermController extends BaseController {
 		//TODO 查询可用学期
 		List<Map> list = termServiceImpl.getListTerms(getCurrentUser(request).getUserId());
 		request.setAttribute("termlist", list);
+		/*return "term/addTerm";*/
 		return "term/addTerm";
 	}
 	
@@ -52,13 +59,14 @@ public class TermController extends BaseController {
 	@RequestMapping("getListTerm")
 	@ResponseBody
 	public Object getListTerm(HttpServletRequest request){
-		User currentUser = getCurrentUser(request);
+		//User currentUser = getCurrentUser(request);
 		String termId=request.getParameter("termId");
-		List list = termServiceImpl.getListTerm(termId);
-		Map result = new HashMap();
-		result.put("data", list);
+		Term term = termServiceImpl.get(termId);
+//		List term = termServiceImpl.getListTerm(termId);
+		//Map result = new HashMap();
+		//result.put("data", list);
 		//request.setAttribute("data", list);
-		return result;
+		return term;
 	}
 	
 	@RequestMapping("getTermListData")
@@ -76,10 +84,10 @@ public class TermController extends BaseController {
 	
 	@RequestMapping("addTerm")
 	@ResponseBody
-	public String addTerm(HttpServletRequest request, Term term){
+	public String addTerm(HttpServletRequest request, TermPrivate term){
 		User currentUser = getCurrentUser(request);
-		//term.setUserId(currentUser.getUserId());
-		termServiceImpl.saveTerm(term);
+		term.setUserId(currentUser.getUserId());
+		termPrivateServiceImpl.saveTermPrivate(term);
 		return "success";
 	}
 	
