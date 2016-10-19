@@ -1,5 +1,6 @@
 package com.turing.eteacher.service.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,22 +40,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	
 	@Override
 	public void saveTerm(Term term) {
-		/*try{
-			String year="";
-			String termnum="";
-			String termName = "";
-			if(termnum.equals("1")){
-				termName=year+"学年第一学期";
-			}
-			else if(termnum.equals("2")){
-				termName=year+"学年第二学期";
-			}
-			else if(termnum.equals("3")){
-				termName=year+"学年第三学期";
-			}
-			else{
-				termName=year+"学年第四学期";
-			}*/
+		
 		/*if(term.getStartDate().substring(0,4).equals(term.getEndDate().substring(0,4))){
 			term.setYear((Integer.parseInt(term.getStartDate().substring(0,4))-1) + "-" + term.getStartDate().substring(0,4));
 			term.setTerm("2");
@@ -72,7 +58,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 			termDAO.save(term);
 		}*/
 		String hql = "insert into TermPrivate (startDate,endDate,weekCount) values(?,?,?)";
-		List<Map> list = termDAO.findMap(hql, term);
+		Serializable list = termDAO.save(term);
 	}
 	
 	

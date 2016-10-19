@@ -1,14 +1,16 @@
 package com.turing.eteacher.service.impl;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.TermPrivateDAO;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.service.ITermPrivateService;
-
+@Service
 public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements ITermPrivateService{
 	
 	@Autowired
@@ -23,7 +25,7 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 	public void addTermPrivate(String termId, String tpId) {
 		// TODO Auto-generated method stub
 		String hql = "insert into TermPrivate (startDate,endDate,weekCount,createTime,status) values(?,?,?)";
-		List<Map> list = termPrivateDAO.findMap(hql);
+		List<Map> list = termPrivateDAO.findMap(hql,termId,tpId);
 	}
 	@Override
 	public List<TermPrivate> getListTermPrivatesName(String userId) {
@@ -42,5 +44,10 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		String hql = "delete from TermPrivate where tpId=?";
 		termPrivateDAO.executeHql(hql, tpId);
 	}
-
+	@Override
+	public void saveTermPrivate(TermPrivate termPrivate) {
+		// TODO Auto-generated method stub
+		Serializable list = termPrivateDAO.save(termPrivate);
+	}
+	
 }
