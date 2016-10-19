@@ -24,9 +24,6 @@ public class Teacher implements Serializable {
 	private String postId;
 	private String schoolId;
 	private String department;
-	private String emailId;
-	private String phoneId;
-	private String imId;
 	private String introduction;
 	
 	@Id
@@ -88,34 +85,6 @@ public class Teacher implements Serializable {
 	public void setDepartment(String department) {
 		this.department = department;
 	}
-	@Column(name = "EMAIL_ID")
-	public String getEmailId() {
-		return emailId;
-	}
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
-	}
-	@Column(name = "PHONE_ID")
-	public String getPhoneId() {
-		return phoneId;
-	}
-	public void setPhoneId(String phoneId) {
-		this.phoneId = phoneId;
-	}
-	@Column(name = "IM_ID")
-	public String getImId() {
-		return imId;
-	}
-	public void setImId(String imId) {
-		this.imId = imId;
-	}
-	/*@Column(name = "WEIXIN")
-	public String getWeixin() {
-		return weixin;
-	}
-	public void setWeixin(String weixin) {
-		this.weixin = weixin;
-	}*/
 	@Column(name = "INTRODUCTION")
 	public String getIntroduction() {
 		return introduction;
@@ -123,5 +92,13 @@ public class Teacher implements Serializable {
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
 	}
+	@Override
+	public String toString() {
+		return "Teacher [teacherId=" + teacherId + ", teacherNo=" + teacherNo + ", name=" + name + ", sex=" + sex
+				+ ", titleId=" + titleId + ", postId=" + postId + ", schoolId=" + schoolId + ", department="
+				+ department + ",introduction="
+				+ introduction + "]";
+	}
+	
 	
 }
