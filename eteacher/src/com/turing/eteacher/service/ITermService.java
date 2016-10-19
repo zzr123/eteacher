@@ -20,6 +20,8 @@ public interface ITermService extends IService<Term> {
 	public Term getByYearAndTerm(int year, int term);
 	
 	public void deleteById(String tpId);
+	
+	
 
 	
 	//教师端
