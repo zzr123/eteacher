@@ -50,4 +50,30 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		Serializable list = termPrivateDAO.save(termPrivate);
 	}
 	
+	@Override
+	public Map getListTerm(String tpId) {
+		// TODO Auto-generated method stub
+		/*String sql="select t_term_private.TERM_ID as termId," +
+				" t_term.TERM_NAME as termName , " +
+				"t_term_private.START_DATE as startDate , " +
+				"t_term_private.END_DATE as endDate , " +
+				"t_term_private.WEEK_COUNT as weekCount FROM t_term ,t_term_private " +
+				"WHERE t_term_private.TERM_ID = t_term.TERM_ID and t_term_private.TP_ID =?";
+		List<Map> list=termPrivateDAO.findBySql(sql,tpId);*/
+		System.out.println("tpId:"+tpId);
+		String hql="select tp.termId as termId," +
+				" t.termName as termName , " +
+				"tp.startDate as startDate , " +
+				"tp.endDate as endDate , " +
+				"tp.weekCount as weekCount from Term t , TermPrivate tp " +
+				"where t.termId = tp.termId and tp.tpId =?";
+		List<Map> list=termPrivateDAO.findMap(hql,tpId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("mapp"+i+":"+list.get(i).toString());
+		}
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }
