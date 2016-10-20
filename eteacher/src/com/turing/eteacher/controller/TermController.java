@@ -50,9 +50,11 @@ public class TermController extends BaseController {
 	
 	@RequestMapping("viewEditTerm")
 	public String viewEditTerm(HttpServletRequest request){
-		String termId = request.getParameter("termId");
-		Term term = termServiceImpl.get(termId);
-		//request.setAttribute("term", term);
+		String tpId = request.getParameter("tpId");
+		Map termPrivate = termPrivateServiceImpl.getListTerm(tpId);
+		//TermPrivate term = termPrivateServiceImpl.get(termId);
+		request.setAttribute("termPrivate", termPrivate);
+		System.out.println(termPrivate.toString()+"1111");
 		return "term/editTerm";
 	}
 	
@@ -93,8 +95,12 @@ public class TermController extends BaseController {
 	
 	@RequestMapping("updateTerm")
 	@ResponseBody
-	public String updateTerm(HttpServletRequest request, Term term){
-		termServiceImpl.saveTerm(term);
+	public String updateTerm(HttpServletRequest request, TermPrivate termPrivate){
+		User currentUser = getCurrentUser(request);
+		termPrivate.setUserId(currentUser.getUserId());
+		//String termId=request.getParameter("termId");
+		//List<Map> termPrivate = termPrivateServiceImpl.getListTerm(termId);
+		termPrivateServiceImpl.saveTermPrivate(termPrivate);
 		return "success";
 	}
 	
