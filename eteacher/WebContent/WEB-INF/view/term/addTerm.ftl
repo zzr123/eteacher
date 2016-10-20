@@ -20,15 +20,13 @@
 		$('#weekCount').validatorZZS('学期时长');
 	});
          
-	function ChangeValue(termId){
-		 $.post('../term/getListTerm',{termId:termId},function(data){
-			window.location.reload(); 
-
+	function selectData(termId){//alert(termId);
+		 $.post('../term/getListTerm',{termId:termId},function(term){//alert(term.startDate);
 			$("#startDate").val(term.startDate);//开始日期
 			$("#endDate").val(term.endDate);//结束日期
 	 		$("#weekCount").val(term.weekCount);//周数
 		}); 
-
+	}
 		
  		/* $.ajax({
 			type : "POST",
@@ -45,21 +43,7 @@
 			 	});
 			}
 		}); */
-		}
-		
-	
-	    
-       /*   function ChangeValue(){
-          document.getElementById("termName").value="4";
-         document.getElementById("termName").fireEvent("onChange");
-             var d=document.getElementById("termName").value;
-             document.getElementById("startDate").value=d;
-             document.getElementById("endDate").value=d;
-             document.getElementById("weekCount").value=d;
-	     
-	     }; */
-
-	     
+		 
 	
 </script>
 </head>
@@ -72,36 +56,29 @@
                     <div class="message-left">学期名称：</div>
                     <div class="message-right">
                         <!--<input id="termName" name="termName" maxlength="20" type="text" class="mess-control" value="2015-2016学年第2学期" />-->
-                        <select id="termName" onChange="ChangeValue(termId)"> 
-<%-- <% 
-do while not rs.eof 
-Response.Write "<option value="---("tpId")---" startDate='"&rs("开始日期")&"' endDate='"&rs("结束日期")&"'> ---请选择--- </option> " & vbCrLf 
-rs.movenext loop %> --%>
-                       		<#list termlist as term> 
+                        <select id="termName" name="termId" onchange="selectData($(this).val())"> 
+
+                       		<option>-------------请选择-------------</option>
+                        	<#list termlist as term> 
 									<option value=${term.termId} 
 										<#if term.termId == termId?default("")>
 											selected="selected"
 										</#if>>
-										${term.termName}
-									</option>
+										${term.termName}</option>
 							</#list> 
-                        	
                         </select>
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">起始日期：</div>
                     <div class="message-right">
-                    <#list termlist as term>
-                         <input id="startDate" name="startDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" value="${term.startDate}"/> 
-                        </#list>
-                        
+                         <input id="startDate" name="startDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" /> 
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">终止日期：</div>
                     <div class="message-right">
-                        <input id="endDate" name="endDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择终止时间" />
+                        <input id="endDate" name="endDate" readonly type="text" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择终止时间"/>
                         
                     </div>                   	
                 </div>
