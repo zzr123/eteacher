@@ -26,42 +26,40 @@
 	<div class="maincont">
 		<div class="title"><span>编辑学期</span></div>
         <div class="enter-message">
-          <#list term as term>
             <form id="termForm" method="post" action="updateTerm">
-            	<input name="termId" type="hidden" value="${term.termId}" />
+            	<input name="termId" type="hidden" value="${termPrivate.termId}" />
                 <div class="message-group">
                     <div class="message-left">学期名称：</div>
                     <div class="message-right">
-                        <input id="termName" name="termName" type="text" maxlength="20" class="mess-control" value="${term.termName}" />
+                        <input id="termName" name="termName" type="text" maxlength="20" class="mess-control" value="${termPrivate.termName}" />
                         
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">起始日期：</div>
                     <div class="message-right">
-                        <input id="startDate" name="startDate" readonly type="text" value="${term.startDate}" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" />
+                        <input id="startDate" name="startDate" readonly type="text" value="${termPrivate.startDate}" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择起始时间" />
                         
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">终止日期：</div>
                     <div class="message-right">
-                        <input id="endDate" name="endDate" readonly type="text" value="${term.endDate}" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择终止时间" />
+                        <input id="endDate" name="endDate" readonly type="text" value="${termPrivate.endDate}" class="mess-control" onClick="WdatePicker({dateFmt:'yyyy-MM-dd'})" placeholder="请选择终止时间" />
                         
                     </div>                   	
                 </div>
                 <div class="message-group">
                     <div class="message-left">学期时长：</div>
                     <div class="message-right">
-                        <input id="weekCount" name="weekCount" maxlength="3" type="text" style="width:80px" class="mess-control" value="${term.weekCount}" /> 周
+                        <input id="weekCount" name="weekCount" maxlength="3" type="text" style="width:80px" class="mess-control" value="${termPrivate.weekCount}" /> 周
                     </div>                   	
                 </div>
                 <div class="btnsub">
-                    <button type="submit" class="btn-submit" style="float:left;">保存</button>
+                    <button type="submit" class="btn-submit" style="float:left;" onclick="window.location.href='viewListTerm'">保存</button>
                     <button type="button" class="btn-submit" style="float:right;" onclick="history.back();">返回</button>
                 </div>
             </form> 
-           </#list> 
         </div>
 	</div>
 	<#include "/footer.ftl" />

@@ -53,7 +53,7 @@
 		        },
 		        events : {
 		        	'click .glyphicon-edit': function (e, value, row, index) {
-			            window.location.href = 'viewEditTerm?termId=' + value;
+			            window.location.href = 'viewEditTerm?tpId=' + value;
 			        },
 			        'click .glyphicon-trash': function (e, value, row, index) {
 			        	if(confirm("确定删除")){
