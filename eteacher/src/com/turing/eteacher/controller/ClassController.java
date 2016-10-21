@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.Classes;
+import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.IMajorService;
@@ -85,5 +86,32 @@ public class ClassController extends BaseController {
 		String classId = request.getParameter("classId");
 		classServiceImpl.deleteById(classId);
 		return "success";
+	}
+	/**
+	 * 通过专业筛选班级
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("getClassByMajor")
+	@ResponseBody
+	public Object getClassByMajor(HttpServletRequest request){
+		String majorId = request.getParameter("majorId");
+		Teacher teacher = getCurrentTeacher(request);
+		List list = classServiceImpl.getClassByMajor(majorId, teacher.getSchoolId());
+		System.out.println("我的list:"+list);
+		return list;
+	}
+	/**
+	 * 通过关键字筛选班级
+	 */
+	@RequestMapping("getClassByKey")
+	@ResponseBody
+	public Object getClassByKey(HttpServletRequest request){
+		String key = request.getParameter("key");
+		System.out.println("key:"+key);
+		Teacher teacher = getCurrentTeacher(request);
+		List list = classServiceImpl.getClassByKey(key, teacher.getSchoolId());
+		System.out.println("我的list:"+list);
+		return list;
 	}
 }

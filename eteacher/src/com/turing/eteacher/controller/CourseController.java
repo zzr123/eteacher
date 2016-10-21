@@ -28,8 +28,10 @@ import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
+import com.turing.eteacher.service.ICourseScoreService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IDictionary2PrivateService;
+import com.turing.eteacher.service.IDictionary2PublicService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.ITextbookService;
 import com.turing.eteacher.util.CustomIdGenerator;
@@ -54,7 +56,12 @@ public class CourseController extends BaseController {
 	@Autowired
 	private IDictionary2PrivateService dictionary2PrivateServiceImpl;
 	
-
+	@Autowired
+	private ICourseScoreService courseScoreServiceImpl;
+	
+	@Autowired
+	private IDictionary2PublicService dictionary2PublicServiceImpl;
+	
 	@RequestMapping("viewListCourse")
 	public String viewListCourse(HttpServletRequest request){
 		String termId = request.getParameter("termId");
@@ -87,10 +94,11 @@ public class CourseController extends BaseController {
 		String courseJson = new ObjectMapper().writeValueAsString(course);
 		request.setAttribute("courseJson", courseJson);
 		//授课班级
-		List<String> classIds = classServiceImpl.getClassIdsByCourseId(courseId);
+		List<Map> classIds = classServiceImpl.getClassByCourseId(courseId);
 		if(classIds != null && classIds.size()>0){
-			String classIdsJson = new ObjectMapper().writeValueAsString(classIds);
-			request.setAttribute("classIdsJson", classIdsJson);
+			String courseClassJson = new ObjectMapper().writeValueAsString(classIds);
+			System.out.println("授课班级："+courseClassJson);
+			request.setAttribute("courseClassJson", courseClassJson);
 		}
 		//工作量组成
 //		List<CourseWorkload> courseWorkloads = courseServiceImpl.getCoureWorkloadByCourseId(courseId);
@@ -108,11 +116,22 @@ public class CourseController extends BaseController {
 		Map examinationMode = dictionary2PrivateServiceImpl.getValueById(course.getExaminationModeId());
 		request.setAttribute("examinationMode", examinationMode);
 		//成绩组成
-		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
-		if(courseScores != null && courseScores.size()>0){
-			String courseScoresJson = new ObjectMapper().writeValueAsString(courseScores);
-			request.setAttribute("courseScoresJson", courseScoresJson);
-		}
+		List list = courseScoreServiceImpl.getScoresByCourseId(courseId);
+		String courseScoresJson = new ObjectMapper().writeValueAsString(list);
+		System.out.println("courseScoresJson："+courseScoresJson);
+		request.setAttribute("courseScoresJson", courseScoresJson);
+		//分数组成
+		List pointList = dictionary2PublicServiceImpl.getListByType(7);
+		String pointListJson = new ObjectMapper().writeValueAsString(pointList);
+		System.out.println("pointListJson："+pointListJson);
+		request.setAttribute("pointListJson", pointListJson);
+		//分制组成
+//		List<CourseScorePrivate> courseScores = courseServiceImpl.getCoureScoreByCourseId(courseId);
+//		if(courseScores != null && courseScores.size()>0){
+//			String courseScoresJson = new ObjectMapper().writeValueAsString(courseScores);
+//			System.out.println("courseScoresJson："+courseScoresJson);
+//			request.setAttribute("courseScoresJson", courseScoresJson);
+//		}
 		//教材
 		Textbook textbook = textbookServiceImpl.getMainTextbook(courseId);
 		if(textbook != null){

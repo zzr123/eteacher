@@ -59,7 +59,6 @@ public class IndexController extends BaseController {
 			User currentUser = userServiceImpl.getUserByAcctAndPwd(account, password);
 			if (currentUser != null) {
 				Teacher currentTeacher = teacherServiceImpl.get(currentUser.getUserId());
-				//Map currentTeacher = teacherServiceImpl.getTeacherDetail(currentUser.getUserId());
 				request.getSession().setAttribute(EteacherConstants.CURRENT_USER, currentUser);
 				request.getSession().setAttribute(EteacherConstants.CURRENT_TEACHER, currentTeacher);
 				request.getSession().setAttribute(EteacherConstants.CURRENT_TERM, termServiceImpl.getCurrentTerm(currentUser.getUserId()));

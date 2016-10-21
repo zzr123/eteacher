@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Student;
+import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
@@ -54,5 +55,10 @@ public class BaseController {
 	public Student getCurrentStudent(HttpServletRequest request){
 		Student student = (Student)request.getSession().getAttribute(EteacherConstants.CURRENT_STUDENT);
 		return student;
+	}
+	
+	public Teacher getCurrentTeacher(HttpServletRequest request){
+		Teacher teacher = (Teacher)request.getSession().getAttribute(EteacherConstants.CURRENT_TEACHER);
+		return teacher;
 	}
 }

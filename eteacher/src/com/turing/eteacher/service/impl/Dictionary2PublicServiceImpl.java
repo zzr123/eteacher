@@ -59,5 +59,19 @@ public class Dictionary2PublicServiceImpl extends
 		return map;
 	}
 
+	@Override
+	public List<Map> getListByType(int type) {
+		String sql = "SELECT t_dictionary2_public.DICTIONARY_ID AS id, "+
+					 "t_dictionary2_public.VALUE AS content "+ 
+					 "FROM t_dictionary2_public WHERE "+ 
+					 "t_dictionary2_public.PARENT_CODE = ( "+
+					 "SELECT t_dictionary2_public.CODE "+ 
+					 "FROM t_dictionary2_public "+
+					 "WHERE t_dictionary2_public.TYPE = ? " +
+					 "AND t_dictionary2_public.PARENT_CODE IS NULL ) "; 
+		List list = dictionary2PubliceDAO.findBySql(sql, type);
+		return list;
+	}
+
 	
 }

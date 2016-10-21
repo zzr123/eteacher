@@ -57,14 +57,17 @@ public class CustomIdGenerator implements IdentifierGenerator, Configurable {
 	}
 	
 	public static void main(String[] args) {
-		String uuid1 = CustomIdGenerator.generateShortUuid();
-		String uuid2 = null;
-		int i = 0;
-		System.out.println(uuid1);
-		do {
-			uuid2 = CustomIdGenerator.generateShortUuid();
-			i++;
-			System.out.println(i + "           :" + uuid2);
-		} while (!uuid2.equals(uuid1));
+		for (int i = 0;i< 20;i++){
+			String uuid1 = CustomIdGenerator.generateShortUuid();
+			System.out.println(uuid1);
+		}
+//		String uuid2 = null;
+//		int i = 0;
+//		System.out.println(uuid1);
+//		do {
+//			uuid2 = CustomIdGenerator.generateShortUuid();
+//			i++;
+//			System.out.println(i + "           :" + uuid2);
+//		} while (!uuid2.equals(uuid1));
 	}
 }

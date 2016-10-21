@@ -3,6 +3,7 @@ package com.turing.eteacher.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.annotations.common.util.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +35,16 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	}
 
 	@Override
-	public List<String> getClassIdsByCourseId(String courseId) {
-		String hql = "select classId from CourseClasses where courseId = ?";
-		List<String> classIds = classDAO.find(hql, courseId); 
+	public List<Map> getClassByCourseId(String courseId) {
+		String hql = "SELECT "+
+				"t_class.CLASS_ID AS classId ,"+
+				"t_class.CLASS_NAME AS className "+ 
+				"FROM t_class WHERE "+
+				"t_class.CLASS_ID IN ( "+
+				"SELECT t_course_class.CLASS_ID "+
+				"FROM t_course_class WHERE "+
+				"t_course_class.COURSE_ID = ?)";
+		List<Map> classIds = classDAO.findBySql(hql, courseId); 
 		return classIds;
 	}
 
@@ -63,5 +71,29 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 		String hql="insert into CourseClasses(courseId,classId) values(?,?)";
 		classDAO.executeHql(hql, courseId,classId);
 	}
+
+	@Override
+	public List<Map> getClassByMajor(String majorId, String schoolId) {
+		String sql = "SELECT t_class.CLASS_ID AS classId, "+
+					 "t_class.CLASS_NAME AS className "+
+					 "FROM t_class WHERE "+
+					 "t_class.MAJOR_ID = ? "+
+					 "AND t_class.SCHOOL_ID = ?";
+		List<Map> list = classDAO.findBySql(sql, majorId,schoolId);
+		return list;
+	}
+
+	@Override
+	public List<Map> getClassByKey(String key, String schoolId) {
+		String sql = "SELECT t_class.CLASS_ID AS classId, "+
+				 	 "t_class.CLASS_NAME AS className "+
+				 	 "FROM t_class WHERE t_class.SCHOOL_ID = ? " +
+				 	 "AND t_class.CLASS_NAME LIKE '%"+key+"%' " +
+				 	 "ORDER BY t_class.CLASS_NAME";
+		List<Map> list = classDAO.findBySql(sql,schoolId);
+		return list;
+	}
+
+
 
 }

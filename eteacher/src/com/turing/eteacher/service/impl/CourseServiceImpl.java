@@ -28,6 +28,7 @@ import com.turing.eteacher.dao.TextbookDAO;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseClasses;
 import com.turing.eteacher.model.CourseFile;
+import com.turing.eteacher.model.CourseScore;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseTable;
 import com.turing.eteacher.model.CourseWorkload;
@@ -758,7 +759,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
     //修改课程成绩组成项信息
 	@Override
 	public void updateCoursescore(CourseScorePrivate cs) {
-		CourseScorePrivate score=courseScoreDAO.get(cs.getCsId());
+		CourseScore score=courseScoreDAO.get(cs.getCsId());
 		cs.setCourseId(score.getCourseId());
 		cs.setCsOrder(score.getCsOrder());
 		courseScoreDAO.saveOrUpdate(cs);

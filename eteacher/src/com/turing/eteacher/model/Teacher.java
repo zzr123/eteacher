@@ -24,6 +24,7 @@ public class Teacher implements Serializable {
 	private String postId;
 	private String schoolId;
 	private String department;
+	private String picture;
 	private String introduction;
 	
 	@Id
@@ -85,6 +86,13 @@ public class Teacher implements Serializable {
 	public void setDepartment(String department) {
 		this.department = department;
 	}
+	@Column(name = "PICTURE")
+	public String getPicture() {
+		return picture;
+	}
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
 	@Column(name = "INTRODUCTION")
 	public String getIntroduction() {
 		return introduction;
@@ -92,13 +100,5 @@ public class Teacher implements Serializable {
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
 	}
-	@Override
-	public String toString() {
-		return "Teacher [teacherId=" + teacherId + ", teacherNo=" + teacherNo + ", name=" + name + ", sex=" + sex
-				+ ", titleId=" + titleId + ", postId=" + postId + ", schoolId=" + schoolId + ", department="
-				+ department + ",introduction="
-				+ introduction + "]";
-	}
-	
 	
 }

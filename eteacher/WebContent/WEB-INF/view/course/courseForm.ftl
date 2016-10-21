@@ -19,10 +19,11 @@
 	$(function(){
 		$('#courseForm').validatorNormalInit(prepareData);
 		$('#courseName').validatorEmpty('课程名称');
+		$('.scoreName').validatorEmpty('类型');
 		$('#classHours').validatorZZS('学时');
 		$('#studentNumber').validatorZZS('学生数');
 		//班级多选下拉
-		$.post('${context}/class/getClassListData',function(data){
+/* 		$.post('${context}/class/getClassListData',function(data){
 			$.each(data.data,function(i,r){
 				$('#classes').append('<option value="'+r.classId+'">'+r.className+'</option>');
 			});
@@ -33,6 +34,7 @@
 			}
 			$('#classes').chosen();
 		},'json');
+ */
 		init();
 	});
 	function init(){
@@ -43,6 +45,9 @@
 			loadMajorData($('#specialty1'),'0',courseJson.majorId.substring(0,2));
 			loadMajorData($('#specialty2'),courseJson.majorId.substring(0,2),courseJson.majorId.substring(0,4));
 			loadMajorData($('#specialty3'),courseJson.majorId.substring(0,4),courseJson.majorId);
+			loadMajorData($('#tabinput1'),'0',courseJson.majorId.substring(0,2));
+			loadMajorData($('#tabinput2'),courseJson.majorId.substring(0,2),courseJson.majorId.substring(0,4));
+			loadMajorData($('#tabinput3'),courseJson.majorId.substring(0,4),courseJson.majorId);
 			//工作量组成
 //			var courseWorkloadsJson = '${courseWorkloadsJson?default("")}';
 //			if(courseWorkloadsJson){
@@ -54,6 +59,17 @@
 			if(courseScoresJson){
 				courseScoreArr = $.parseJSON(courseScoresJson);
 				initScore();
+			}
+			//授课班级
+			var courseClassJson = '${courseClassJson?default("")}';
+			if(courseClassJson){
+				courseClassArr = $.parseJSON(courseClassJson);
+				initClass();
+			}
+			//分制组成
+			var pointListJson = '${pointListJson?default("")}';
+			if(pointListJson){
+				pointArr = $.parseJSON(pointListJson);
 			}
 			//教材
 			var textbookJson = '${textbookJson?default("")}';
@@ -80,6 +96,7 @@
 		else{
 			//专业
 			loadMajorData($('#specialty1'),'0');
+			loadMajorData($('#tabinput1'),'0');
 		}
 	}
 	function loadMajorData(select,parentId,value){
@@ -204,21 +221,15 @@
                 </div>
                 <div>
                     <div class="message-left">授课班级：</div>
-                    <div style="margin-left:10px;float:left;">      
-                    	<select id="classes" name="classes" data-placeholder="请选择班级" class="" multiple style="width:567px;">
-                    	</select> 
+                    <div id="courseClassDiv" style="margin-left:10px;float:left;">      
+                    	<input type="hidden" id="courseClassDiv" name="classes" />
+                    	<i style="cursor: pointer;" data-toggle="modal" data-target="#classSelectModal" title="设置" class="glyphicon glyphicon-edit"></i>
                     </div>                   	
                 </div>
-<!--                 <div class="message-group">
-                    <div class="message-left">学生数：</div>
-                    <div class="message-right">
-                        <input id="studentNumber" name="studentNumber" maxlength="5" type="text" class="mess-control" placeholder="请输入学生数" />                        
-                    </div>                   	
-                </div> -->
                 <div class="message-group">
                     <div class="message-left">成绩组成：</div>
                     <div class="message-right" id="courseScoreDiv">
-                    	<input type="hidden" id="courseScoreArr" name="courseScoreArr" />
+                    	<input type="hidden" id="#courseScoreArr" name="courseScoreArr" />
                    		<i style="cursor: pointer;" data-toggle="modal" data-target="#courseScorekModal" title="设置" class="glyphicon glyphicon-edit"></i>
                     </div>                   	
                 </div>
@@ -273,6 +284,7 @@
 	</div>
 	<#include "/footer.ftl" />
 </body>
+<#include "classSelectModal.ftl"/>
 <#include "textbookModal.ftl" />
 <#include "scorePercentModal.ftl" />
 <#include "workloadModal.ftl" />

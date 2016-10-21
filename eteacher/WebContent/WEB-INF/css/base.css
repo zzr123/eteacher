@@ -263,3 +263,14 @@ table.altrowstable td {
 .tabAdd { margin:10px auto 15px; width:100%; height:30px;}
 .tabinput { float:left; border:1px solid #e1e1e1; height:28px; border-radius:3px; font-size:14px; padding:0 3px;}
 a.tabAddbtn, a.tabAddbtn:hover { display:inline-block; margin:0 0 0 10px; width:60px; height:28px; border-radius:3px; line-height:30px; text-align:center; background:#09F; color:#fff; text-decoration:none;}
+/*选择授课班级*/
+.searchAdd { margin:10px 0 0 0; width:100%; height:30px;}
+.searchAdd label { float:left; line-height:30px; font-weight:normal;}
+.searchAdd label:first-child { margin-left:0;}
+.searchAdd select { width:400px;}
+.addtitle { font-size:18px; font-weight:bold; line-height:36px;}
+.classAdd { margin:10px 0 0 0; width:100%; height:auto; overflow:hidden;}
+.classCheck { display:inline-block; float:left; margin-right:18px;}
+.classCheck label { margin-left:5px; font-weight:normal;}
+.addBtn { width:128px; height:40px; margin:10px auto;}
+.addBtn button { width:128px; height:40px;}

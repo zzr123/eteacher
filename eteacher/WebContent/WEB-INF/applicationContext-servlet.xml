@@ -73,7 +73,7 @@
 			<!-- 对所有的请求拦截使用/** ,对某个模块下的请求拦截使用：/myPath/* -->
 			<mvc:mapping path="/**" />
 			<!-- 不拦截的 -->
-			<mvc:exclude-mapping path="/**" /> <!--测试 -->
+			<!--<mvc:exclude-mapping path="/**" /> 测试 -->
 			<mvc:exclude-mapping path="/login" />
 			<mvc:exclude-mapping path="/loginOk" />
 			<mvc:exclude-mapping path="/register" />
