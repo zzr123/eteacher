@@ -178,10 +178,27 @@ public class Dictionary2PrivateServiceImpl extends
 		String sql = "SELECT t_dictionary2_private.DP_ID AS id, t_dictionary2_private.VALUE AS value FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = ? "+
 					 "UNION " +
 				 	 "SELECT t_dictionary2_public.DICTIONARY_ID AS id, t_dictionary2_public.VALUE FROM t_dictionary2_public WHERE t_dictionary2_public.DICTIONARY_ID = ?";
-		List<Map> list = dictionary2PrivateDAO.findBySql(sql, dId,dId);
+		List<Map> list = dictionary2PrivateDAO.findBySql(sql, dId, dId);
 		if (null != list && list.size() > 0) {
 			return list.get(0);
 		}
 		return null;
 	}
+	/**
+	 * 根基ID获取字典表对象的值
+	 */
+	/*
+	@Override
+	public String getVlauesById(String id){
+		String hql = "select dpr.value from Dictionary2Private dpr where dpr.dpId = ? and dpr.status=1";
+		List value = dictionary2PrivateDAO.find(hql, id);
+		if(null==value || value.size()==0){
+			String hql2 = "select dp.value from Dictionary2Public where dp.dictionaryId= ? and dp.status=1";
+			List values = dictionary2PrivateDAO.find(hql2, id);
+			return values.toString();
+		}else{
+			return value.toString();
+		}
+		return null;
+	}*/
 }

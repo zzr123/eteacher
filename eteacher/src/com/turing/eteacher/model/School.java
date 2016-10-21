@@ -59,7 +59,7 @@ public class School extends BaseModel implements Serializable {
 		this.code = code;
 	}
 
-	@Column(name = "PARENTCODE")
+	@Column(name = "PARENT_CODE")
 	public int getParentCode() {
 		return parentCode;
 	}
@@ -93,6 +93,12 @@ public class School extends BaseModel implements Serializable {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "School [schoolId=" + schoolId + ", type=" + type + ", code=" + code + ", parentCode=" + parentCode
+				+ ", value=" + value + ", level=" + level + ", status=" + status + "]";
 	}
 
 }
