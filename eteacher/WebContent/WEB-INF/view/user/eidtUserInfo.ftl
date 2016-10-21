@@ -15,6 +15,7 @@
 <script type="text/javascript" src="${context}/js/turingLib/modal.js"></script>
 <script type="text/javascript">
 	var editFlag = '${editFlag?default("")}';
+	//页面效果：点击增加按钮，新增一行输入框；点击删除按钮后，删除该按钮对应的一行数据；
 	function addRecord(type, value){
 		var title = type=='email'?'邮箱':((type=='phone')?'联系电话':'IM');
 		var value = value?value:'';
@@ -48,72 +49,34 @@
 	function delRecord(btn){
 		$(btn).parent().parent().remove();
 	}
-	
-	function init(){
-		var emails = $('#email').val();
-		if(emails != ''){
-			var emailsArr = emails.split('||');
-			if(emailsArr.length>0){
-				$('#emailText').val(emailsArr[0]);
-			}
-			for(var i=1;i<emailsArr.length;i++){
-				addRecord('email',emailsArr[i]);
-			}
-		}
-		
-		var phones = $('#phone').val();
-		if(phones != ''){
-			var phonesArr = phones.split('||');
-			if(phonesArr.length>0){
-				$('#phoneText').val(phonesArr[0]);
-			}
-			for(var i=1;i<phonesArr.length;i++){
-				addRecord('phone',phonesArr[i]);
-			}
-		}
-	}
-
+	//页面加载时执行，将查询到的用户信息进行展示。
 	$(function(){
 		$('#userInfoForm').json2form({url:'getCurrentTeacherJson'});
-		$('#userInfoForm').validatorInit(callback, prepareData);
+		$('#userInfoForm').validatorInit(callback);
 		function callback(data){
 			JAlert('保存成功');
 		}
-		function prepareData(){
-			var emailArray = [];
-			$("input[name='emailText']").each(function(){
-				if($(this).val() != ''){
-					emailArray.push($(this).val());
-				}
-			});
-			$('#email').val(emailArray.join('||'));
-			var phoneArray = [];
-			$("input[name='phoneText']").each(function(){
-				if($(this).val() != ''){
-					phoneArray.push($(this).val());
-				}
-			});
-			$('#phone').val(phoneArray.join('||'));
-			return true;
-		}
-		init();
+		//获取专业信息
+		loadSchoolData($('#specialty1'), 1 , "fistLoad");
 	});
 	
+	
 	//学校的级联查询
-	function loadSchoolData(select,parentId,value){
-		select.html('<option value="">--请选择学校--</option>');
-		if(parentId||parent=='0'){
-			$.post('${context}/user/getSchoolSelectData',{parentId:parentId},function(data){
+	function loadSchoolData(select,type,id){
+		//alert("select:"+select+"   type:"+type+"   id:"+id);
+		select.html('<option value="${school[2].id!' '}">${school[2].province!'--请选择所在城市--'}</option>');
+		if(type){
+			$.post('${context}/user/getSchoolSelectData',{type:type,id:id},function(data){
 				$.each(data,function(i,r){
-					select.append('<option value="'+r.Id+'">'+r.Name+'</option>');
+					select.append('<option value="'+r.id+'">'+r.value+'</option>');
 				});
-				if(value){
-					select.val(value);
+				if(id){
+					select.val(id);
 				}
 			},'json');
 		}
 	}
-	
+	//用户自定义菜单项的弹窗操作
 	function openModal(dtype,pid){
 		$.modal.open({
 			title:'选择',
@@ -146,20 +109,25 @@
             <div class="message-group">
         		<div class="message-left">性别：</div>
                 <div class="message-right">
-                	<input name="sex" type="radio" value="0" checked="checked"  style=" margin-top:10px;"/> 男
-                	<input name="sex" type="radio" value="1" style=" margin:12px 0 0 20px;" /> 女	
+                	<#if teacher.sex == '0'>
+                	<input name="sex" type="radio" value="0" checked  style=" margin-top:10px;"/> 男
+                	<input name="sex" type="radio" value="1" style="margin:12px 0 0 20px;" /> 女
+                	<#else>
+                	<input name="sex" type="radio" value="0" style="margin:12px 0 0 20px;" /> 男
+                	<input name="sex" type="radio" value="1" checked style="margin:12px 0 0 20px;" /> 女
+                	</#if>
                 </div>                   	
         	</div>
             <div class="message-group">
         		<div class="message-left">职称：</div>
                 <div class="message-right" >       
-                    <input id="titleSel" onclick="openModal(4,'titleSel');" type="text" class="mess-control" placeholder="请选择职称" />
-                </div>                   	
+                    <input id="titleSel" onclick="openModal(4,'titleSel');" type="text" class="mess-control" placeholder="请选择职称" value="${(title.value)!''}">
+                </div>                 	
         	</div>
             <div class="message-group">
         		<div class="message-left">职务：</div>
                 <div class="message-right" >       
-                    <input id="postSel" onclick="openModal(5,'postSel');" data-toggle="modal" data-target="#dictionaryModal" type="text" class="mess-control" placeholder="请选择职称" />
+                    <input id="postSel" onclick="openModal(5,'postSel');" type="text" class="mess-control" placeholder="请选择职称" value="${(post.value)!''}">
                 </div>                   	
         	</div>
             <!--
@@ -174,14 +142,14 @@
         	<div class="message-group">
                     <div class="message-left">学校：</div>
                     <div class="message-right">
-                        <select id="specialty1" onchange="loadSchoolData($('#specialty2'),this.value);loadSchoolData($('#specialty3'));">
-                            <option value="">--请选择省份/直辖市--</option>
+                        <select id="specialty1" onchange="loadSchoolData($('#specialty2'), 1 ,this.value);loadSchoolData($('#specialty3'));">
+                            <option value="${school[2].id!''}">${school[2].province!'--请选择所在城市--'}</option>
                         </select>    
-                        <select id="specialty2" onchange="loadSchoolData($('#specialty3'),this.value);" style="margin-top:5px">
-                            <option value="">--请选择所在城市--</option>
+                        <select id="specialty2" onchange="loadSchoolData($('#specialty3'), 2 ,this.value);" style="margin-top:5px">
+                            <option value="${school[1].id!''}">${school[1].city!'--请选择所在城市--'}</option>
                         </select>      
-                        <select id="specialty3" name="specialty" style="margin-top:5px">
-                            <option value="">--请选择学校--</option>
+                        <select id="specialty3" name="specialty" style="margin-top:5px" style=" width:100%;">
+                            <option value="${school[0].id!''}">${school[0].school!'--请选择学校--'}</option>
                         </select>                 
                     </div>                   	
                 </div>
@@ -213,7 +181,8 @@
                 <div class="message-right" id="phoneDiv">
                 	<div class="message-wrap">
                         <div class="mess-input">
-                            <input id="phoneText" name="phoneText" type="text" class="mess-control" placeholder="请添加您的联系电话" id="" style=" width:100%;" />   
+                            <input id="phoneName" name="phoneName" type="text" class="mess-control" placeholder="请输入您电话的类型" id="" style=" width:30%;" />   
+                            <input id="phoneValue" name="phoneValue" type="text" class="mess-control" placeholder="请输入您的电话号码" id="" style=" width:69.3%;" />   
                         </div>
                         <div class="mess-img">
                             <a href="javascript:void(0);" class="add-message" onclick="addRecord('phone')"></a>
@@ -229,13 +198,16 @@
                 <div class="message-right" id="IMDiv">
                 	<div class="message-wrap">
                         <div class="mess-input">
+                        	<!--
  							<select style="width:40%">
  								<option>--请选择IM类型--</option>
  								<option>Q Q</option>
  								<option>微信</option>
  								<option>GitHub</option>
  							</select>                       
-                            <input id="IMText" name="IMText" type="text" class="mess-control" placeholder="请添加您的IM" id="" style=" width:58.7%;" />   
+                            -->
+                            <input id="IMName" name="IMName" type="text" class="mess-control" placeholder="请输入您的IM类型" id="" style=" width:30%;" />   
+                            <input id="IMValue" name="IMValue" type="text" class="mess-control" placeholder="请输入您的IM号码" id="" style=" width:69.3%;" />   
                         </div>
                         <div class="mess-img">
                             <a href="javascript:void(0);" class="add-message" onclick="addRecord('IM')"></a>
