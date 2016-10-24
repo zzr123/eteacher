@@ -107,7 +107,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			hql+="w.endTime as endTime,SUBSTRING(w.content,1,20) as content " +
 				 "from Work w,Course c " +
 				 "where w.courseId = c.courseId and w.status=1 " +
-				 "and c.userId = ? and w.publishType=02" +
+				 "and c.userId = ? " +
 				 "and w.endTime < ? order by w.endTime desc";
 			list= workDAO.findMap(hql,userId ,new Date());
 		}
@@ -115,23 +115,23 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			hql+="w.publishTime as publishTime,w.endTime as endTime,"+
 				 "SUBSTRING(w.content,1,20) as content from Work w,Course c "+
 	             "where w.courseId=c.courseId and w.status=1 "+
-				 "and c.userId=? and w.publishType=02 "+
+				 "and c.userId=? and "+
 	             "and w.publishTime<? and w.endTime > ? "+
 				 "order by w.publishTime desc";
 			list= workDAO.findMap(hql,userId ,new Date() ,new Date());	
 		}
 		if("2".equals(status)){//获取待发布作业（草稿和待发布）
 			hql+="w.publishTime as publishTime,SUBSTRING(w.content,1,20) as content,w.publishType as publishType "+
-				 "from Work w,Course c where w.courseId=c.courseId and c.userId=? and w.status=1 "+
-		         "and (w.publishType=01 or (w.publishType=02 and w.publishTime>now())) "+
+				 "from Work w,Course c where w.courseId=c.courseId and c.userId=? "+
+		         "and (w.status=2 or (w.status=1 and w.publishTime>now())) "+
 			     "order by w.publishTime asc";
 			list=workDAO.findMap(hql, userId);
 		}
 		if("3".equals(status)){//获取指定截止日期的作业
 			hql+="w.content as content "+
-			    "from Work w,Course c where w.courseId=c.courseId and w.status=1 "+
+			    "from Work w,Course c where w.courseId=c.courseId "+
 		        "and c.userId=? and  substring(w.endTime,1,10)=? "+
-			    "and w.publishType=02 and w.publishTime<now()";
+			    "and w.status=1 and w.publishTime<now()";
 			list=workDAO.findMap(hql, userId, date);
 		}
 		return list;
@@ -153,16 +153,16 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	public void updateWorkStatus(String workId,String status) {
 		String hql="update Work w ";
 		if("0".equals(status)){//已发布作业撤回到草稿状态
-			hql+="set w.publishType='01'";
+			hql+="set w.status='2'";
 		}
 		if("1".equals(status)){//（未发布作业->立即发布）
-			hql+="set w.publishType='02',w.publishTime=now()";
+			hql+="set w.status='1',w.publishTime=now()";
 		}
 		if("2".equals(status)){//删除作业
 			hql+="set w.status=0";
 		}
 		hql+=" where w.workId=?";
-		workDAO.executeHql(hql, workId);
+		workDAO.executeHql(hql, workId,status);
 	}
 
 }
