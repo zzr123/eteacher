@@ -100,7 +100,7 @@ public class TermController extends BaseController {
 		termPrivate.setUserId(currentUser.getUserId());
 		//String termId=request.getParameter("termId");
 		//List<Map> termPrivate = termPrivateServiceImpl.getListTerm(termId);
-		termPrivateServiceImpl.saveTermPrivate(termPrivate);
+		termPrivateServiceImpl.updateTermPrivate(termPrivate);
 		return "success";
 	}
 	
