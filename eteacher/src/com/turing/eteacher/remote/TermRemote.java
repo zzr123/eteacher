@@ -47,8 +47,7 @@ public class TermRemote extends BaseRemote {
 	public ReturnBody studentWorks(HttpServletRequest request){
 		try{
 			Student student = this.getCurrentStudent(request);
-//			String grade = classServiceImpl.get(student.getClassId()).getGrade
-();
+//			String grade = classServiceImpl.get(student.getClassId()).getGrade();
 			String grade = classServiceImpl.get("1").getGrade();
 			List list = termServiceImpl.getListByGrade(Integer.parseInt
 (grade));
