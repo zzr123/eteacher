@@ -14,7 +14,7 @@ public class SystemConstants {
 	/**
 	 * 请求有效时间
 	 */
-	public static final long REQUEST_TIME_SPACE = 120 * 1000;
+	public static final long REQUEST_TIME_SPACE = 1200 * 1000;
 	/**
 	 * token的有效时间
 	 */
