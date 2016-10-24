@@ -76,4 +76,9 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		}
 		return null;
 	}
+	@Override
+	public void updateTermPrivate(TermPrivate termPrivate) {
+		// TODO Auto-generated method stub
+		termPrivateDAO.update(termPrivate);
+	}
 }
