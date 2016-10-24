@@ -64,7 +64,7 @@
 	//学校的级联查询
 	function loadSchoolData(select,type,id){
 		//alert("select:"+select+"   type:"+type+"   id:"+id);
-		select.html('<option value="${school[2].id!' '}">${school[2].province!'--请选择所在城市--'}</option>');
+		//select.html('<option value="${school[2].id!' '}">${school[2].province!'--请选择所在城市--'}</option>');
 		if(type){
 			$.post('${context}/user/getSchoolSelectData',{type:type,id:id},function(data){
 				$.each(data,function(i,r){

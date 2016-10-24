@@ -1,5 +1,6 @@
 package com.turing.eteacher.remote;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,11 +17,8 @@ import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Work;
 import com.turing.eteacher.model.WorkStatus;
 import com.turing.eteacher.service.IWorkService;
+import com.turing.eteacher.util.CustomIdGenerator;
 
-/**
- * @author Administrator
- *
- */
 /**
  * @author Administrator
  *
@@ -40,7 +38,7 @@ public class WorkRemote extends BaseRemote {
 	private IWorkService workServiceImpl;
 
 	/**
-	 * 获取学生作业列表 
+	 * 获取作业列表 
 	 * @param request
 	 * @return
 	 */
@@ -150,8 +148,8 @@ public class WorkRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="teacher/work/getWorkDetail/{work_id}", method=RequestMethod.GET)
-	public ReturnBody getWorkDetail(HttpServletRequest request,@PathVariable String work_id){
+	@RequestMapping(value="teacher/work/getWorkDetail", method=RequestMethod.POST)
+	public ReturnBody getWorkDetail(HttpServletRequest request, String work_id){
 		try{
 			List list = workServiceImpl.getWorkDetail(work_id);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
@@ -169,28 +167,33 @@ public class WorkRemote extends BaseRemote {
 	 */	
 	@RequestMapping(value = "teacher/work/addWork", method = RequestMethod.POST)
 	public ReturnBody addWork(HttpServletRequest request, Work work){
-		/*work.setCourseId("DDJHAT0SKb");
-		work.setContent("22222222222222222222222");
-		work.setEndTime(new Date());
-		work.setPublishTime(new Date());
-		work.setRemindTime("2");
-		work.setTimeLength(2);*/
 		try{
-			String status=request.getParameter("status");
-			String operator=request.getParameter("operator");
-//			if("0".equals(status)){
-//				work.setPublishType("01");
-//			}
-//			else{
-//				work.setPublishType("02");
-//			}
-			work.setStatus(1);
-			if("add".equals(operator)){
+			String endTime = request.getParameter("endTime");
+			String publishTime = request.getParameter("publishTime");
+			Date endDate = Date.valueOf(endTime);
+			Date publistDate = Date.valueOf("publishTime"); 
+			//赋值
+			work.setCourseId(request.getParameter("courseId"));
+			work.setContent(request.getParameter("content"));
+			work.setEndTime(endDate);
+			work.setPublishTime(publistDate);
+			work.setRemindTime(request.getParameter("remindTime"));
+			work.setStatus(Integer.parseInt(request.getParameter("status")));			
+			//作业（除附件之外）的操作
+			if(null!=request.getParameter("workId")){
+				//编辑作业
+				work.setWorkId(request.getParameter("workId"));
+				workServiceImpl.saveOrUpdate(work);
+			}else if(null == request.getParameter("workId")){
+				//新增作业
+				//生成作业表主键（uuid）
+				String uuid = CustomIdGenerator.generateShortUuid();
+				work.setWorkId(uuid);
 				workServiceImpl.add(work);
 			}
-			else if("update".equals(operator)){
-				//work.setWorkId("SIf0nz0YHw");
-				workServiceImpl.saveOrUpdate(work);
+			//对作业附件的处理
+			if(null!= request.getParameter("file")){
+				//..
 			}
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}

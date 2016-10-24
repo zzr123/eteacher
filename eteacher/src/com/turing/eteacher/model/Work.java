@@ -23,7 +23,7 @@ public class Work implements Serializable {
 	private Date endTime;
 	private Date createTime;
 	private String remindTime;
-	private Integer status;  //状态：0代表学生端不可见，1代表学生端可见
+	private Integer status;  //0：发布/待发布作业； 1：草稿
 	
 	@Id
 	@GeneratedValue(generator = "customId")

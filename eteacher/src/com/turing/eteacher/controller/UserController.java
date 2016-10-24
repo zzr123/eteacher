@@ -120,6 +120,9 @@ public class UserController extends BaseController {
 		String id = request.getParameter("id");
 		System.out.println("type:"+type+"  ID:"+id);
 		List<Map> list = SchoolServiceImpl.getListByParentType(type,id);
+		for(int i=0;i<list.size();i++){
+			System.out.println("结果："+list.get(i).toString());
+		}
 		return list;
 	}
 
