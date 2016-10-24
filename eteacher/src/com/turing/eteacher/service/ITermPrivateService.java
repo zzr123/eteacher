@@ -17,5 +17,7 @@ public interface ITermPrivateService  extends IService<TermPrivate>{
 	public void saveTermPrivate(TermPrivate termPrivate);
 
 	public Map getListTerm(String tpId);
+	
+	public void updateTermPrivate(TermPrivate termPrivate);
 
 }
