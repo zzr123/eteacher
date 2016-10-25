@@ -2,6 +2,7 @@ package com.turing.eteacher.interceptor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +52,12 @@ public class EteacherInterceptor extends HandlerInterceptorAdapter {
 			remote = true;
 		}
 		if (remote) {
+			Enumeration rnames=request.getParameterNames();
+			for (Enumeration e = rnames ; e.hasMoreElements() ;) {
+			       String thisName=e.nextElement().toString();
+			       String thisValue=request.getParameter(thisName);
+			       System.out.println("参数名："+thisName+"-------"+thisValue);
+			} 
 			try {
 				response.setContentType("text/html");
 				String appKey = (String) request.getParameter("appKey");
