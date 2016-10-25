@@ -79,6 +79,7 @@ public class WorkController extends BaseController {
 		return "work/workForm";
 	}
 	
+	/*
 	@RequestMapping("viewEditWork")
 	public String viewEditWork(HttpServletRequest request) throws JsonProcessingException{
 		String workId = request.getParameter("workId");
@@ -96,7 +97,7 @@ public class WorkController extends BaseController {
 		request.setAttribute("editFlag", "true");
 		return "work/workForm";
 	}
-	
+	*/
 	@RequestMapping("getWorkData")
 	@ResponseBody
 	public Object getWorkData(HttpServletRequest request){

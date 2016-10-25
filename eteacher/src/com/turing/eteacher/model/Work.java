@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
-import com.turing.eteacher.base.CreateTimeModel;
 
 @Entity
 @Table(name = "T_WORK")
@@ -17,10 +16,10 @@ public class Work implements Serializable {
 	private static final long serialVersionUID = 8523575661624181680L;
 	
 	private String workId;
-	private String courseId;
+	//private String courseId;
 	private String content;
-	private Date publishTime;
-	private Date endTime;
+	private String publishTime;
+	private String endTime;
 	private Date createTime;
 	private String remindTime;
 	private Integer status;  //0：发布/待发布作业； 1：草稿
@@ -35,13 +34,13 @@ public class Work implements Serializable {
 	public void setWorkId(String workId) {
 		this.workId = workId;
 	}
-	@Column(name = "COURSE_ID")
+	/*@Column(name = "COURSE_ID")
 	public String getCourseId() {
 		return courseId;
 	}
 	public void setCourseId(String courseId) {
 		this.courseId = courseId;
-	}
+	}*/
 	@Column(name = "CONTENT")
 	public String getContent() {
 		return content;
@@ -60,17 +59,17 @@ public class Work implements Serializable {
 	@Column(name = "PUBLISH_TIME")
 //	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 //	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
-	public Date getPublishTime() {
+	public String getPublishTime() {
 		return publishTime;
 	}
-	public void setPublishTime(Date publishTime) {
+	public void setPublishTime(String publishTime) {
 		this.publishTime = publishTime;
 	}
 	@Column(name = "END_TIME")
-	public Date getEndTime() {
+	public String getEndTime() {
 		return endTime;
 	}
-	public void setEndTime(Date endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 	@Column(name="REMIND_TIME")
