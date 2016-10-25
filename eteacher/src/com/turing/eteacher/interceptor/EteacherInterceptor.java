@@ -75,9 +75,8 @@ public class EteacherInterceptor extends HandlerInterceptorAdapter {
 									//token有效期验证
 									if (DateUtil.isAvailable(Long.parseLong(user.getLastAccessTime()), System.currentTimeMillis(), SystemConstants.TOKEN_AVAILABLE)) {
 										System.out.println("signature:"+signature);
-										System.out.println("signatru1:"+Encryption.encryption(user.getToken()+user.getPassword())+timeStamp);
-										System.out.println("signatru2:"+Encryption.encryption(Encryption.encryption(user.getToken()+user.getPassword())+timeStamp));
-										if (signature.equals(Encryption.encryption(Encryption.encryption(user.getToken()+user.getPassword())+timeStamp))) {
+										System.out.println("signatru1:"+Encryption.encryption(user.getToken()+timeStamp));
+										if (signature.equals(Encryption.encryption(user.getToken()+timeStamp))) {
 											user.setLastAccessTime(String.valueOf(System.currentTimeMillis()));
 											userServiceImpl.update(user);
 											return super.preHandle(request, response, handler);
