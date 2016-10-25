@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Work;
+import com.turing.eteacher.model.WorkCourse;
 import com.turing.eteacher.model.WorkStatus;
+import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.CustomIdGenerator;
 
@@ -36,7 +38,9 @@ public class WorkRemote extends BaseRemote {
 	
 	@Autowired
 	private IWorkService workServiceImpl;
-
+	
+	@Autowired
+	private IWorkCourseService workCourseServiceImpl;
 	/**
 	 * 获取作业列表 
 	 * @param request
@@ -162,25 +166,26 @@ public class WorkRemote extends BaseRemote {
 		}
 	}
 	/**
+	 * @author macong
 	 * 添加作业/修改作业信息
 	 * @param request
 	 * @param work
 	 * @return
 	 */	
+	@SuppressWarnings("null")
 	@RequestMapping(value = "teacher/work/addWork", method = RequestMethod.POST)
-	public ReturnBody addWork(HttpServletRequest request, Work work){
+	public ReturnBody addWork(HttpServletRequest request, Work work ,WorkCourse workCourse){
 		try{
 			String endTime = request.getParameter("endTime");
 			String publishTime = request.getParameter("publishTime");
-			Date endDate = Date.valueOf(endTime);
-			Date publistDate = Date.valueOf("publishTime"); 
+			//Date endDate = Date.valueOf(endTime);
+			//Date publistDate = Date.valueOf(publishTime); 
 			//赋值
-			work.setCourseId(request.getParameter("courseId"));
 			work.setContent(request.getParameter("content"));
-			work.setEndTime(endDate);
-			work.setPublishTime(publistDate);
+			work.setEndTime(endTime);
+			work.setPublishTime(publishTime);
 			work.setRemindTime(request.getParameter("remindTime"));
-			work.setStatus(Integer.parseInt(request.getParameter("status")));			
+			work.setStatus(Integer.parseInt(request.getParameter("status")));
 			//作业（除附件之外）的操作
 			if(null!=request.getParameter("workId")){
 				//编辑作业
@@ -189,9 +194,24 @@ public class WorkRemote extends BaseRemote {
 			}else if(null == request.getParameter("workId")){
 				//新增作业
 				//生成作业表主键（uuid）
-				String uuid = CustomIdGenerator.generateShortUuid();
-				work.setWorkId(uuid);
+				String wId = CustomIdGenerator.generateShortUuid();
+				work.setWorkId(wId);
 				workServiceImpl.add(work);
+				//获取该作业作用的班级列表
+				String list = request.getParameter("courseIds");
+				//System.out.println(list);
+				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
+				String [] cIds = lists.split(",");
+				//数据库插入数据，每个courseId生成一条数据。
+				
+				for(int n=0;n<cIds.length;n++){
+					//生成作业表主键（uuid）
+					String wcId = CustomIdGenerator.generateShortUuid();
+					workCourse.setWcId(wcId);
+					workCourse.setWorkId(wId);
+					workCourse.setCourseId(cIds[n]);
+					workCourseServiceImpl.add(workCourse);
+				}
 			}
 			//对作业附件的处理
 			if(null!= request.getParameter("file")){
