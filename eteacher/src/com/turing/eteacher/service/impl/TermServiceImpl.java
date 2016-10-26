@@ -18,7 +18,6 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.dao.TermDAO;
 import com.turing.eteacher.model.CourseClasses;
-import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Term;

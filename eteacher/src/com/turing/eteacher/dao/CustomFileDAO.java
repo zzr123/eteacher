@@ -3,9 +3,9 @@ package com.turing.eteacher.dao;
 import org.springframework.stereotype.Repository;
 
 import com.turing.eteacher.base.BaseDAO;
-import com.turing.eteacher.model.CourseFile;
+import com.turing.eteacher.model.CustomFile;
 
 @Repository
-public class CourseFileDAO extends BaseDAO<CourseFile> {
+public class CustomFileDAO extends BaseDAO<CustomFile> {
 
 }

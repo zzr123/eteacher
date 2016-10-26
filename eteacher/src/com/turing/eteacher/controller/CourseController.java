@@ -21,9 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
@@ -145,7 +145,7 @@ public class CourseController extends BaseController {
 			request.setAttribute("textbookOthersJson", textbookOthersJson);
 		}
 		//资源
-		List<CourseFile> courseFiles = courseServiceImpl.getCourseFilesByCourseId(courseId);
+		List<CustomFile> courseFiles = courseServiceImpl.getCourseFilesByCourseId(courseId);
 		if(courseFiles != null && courseFiles.size()>0){
 			String courseFilesJson = new ObjectMapper().writeValueAsString(courseFiles);
 			request.setAttribute("courseFilesJson", courseFilesJson);
@@ -196,8 +196,8 @@ public class CourseController extends BaseController {
 		//资源
 		String[] fileTypes = request.getParameterValues("fileTypes");
 		String[] fileAuths = request.getParameterValues("fileAuths");
-		List<CourseFile> courseFiles = new ArrayList();
-		CourseFile courseFile = null;
+		List<CustomFile> courseFiles = new ArrayList();
+		CustomFile courseFile = null;
 		String pathRoot = request.getSession().getServletContext().getRealPath("");
 		for (int i = 0; i < files.length; i++) {
             if(!files[i].isEmpty()){
@@ -205,7 +205,7 @@ public class CourseController extends BaseController {
             	String uuid = CustomIdGenerator.generateShortUuid();
                 String path="/upload/"+uuid;//+"."+type;
                 files[i].transferTo(new File(pathRoot+path));
-                courseFile = new CourseFile();
+                courseFile = new CustomFile();
                 courseFile.setFileName(files[i].getOriginalFilename());
                 courseFile.setServerName(uuid);
                 //TODO 这里临时注掉

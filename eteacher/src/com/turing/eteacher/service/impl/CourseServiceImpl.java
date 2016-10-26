@@ -27,11 +27,11 @@ import com.turing.eteacher.dao.MajorDAO;
 import com.turing.eteacher.dao.TextbookDAO;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseClasses;
-import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScore;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseTable;
 import com.turing.eteacher.model.CourseWorkload;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Major;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
@@ -126,20 +126,20 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	}
 	
 	@Override
-	public List<CourseFile> getCourseFilesByCourseId(String courseId) {
-		String hql = "from CourseFile cFile where cFile.dataId = ?";
+	public List<CustomFile> getCourseFilesByCourseId(String courseId) {
+		String hql = "from CustomFile cFile where cFile.dataId = ?";
 		return courseDAO.find(hql, courseId);
 	}
 	
 	@Override
-	public List<CourseFile> getPublicCourseFilesByCourseId(String courseId) {
-		String hql = "from CourseFile where courseId = ? and fileAuth = ?";
+	public List<CustomFile> getPublicCourseFilesByCourseId(String courseId) {
+		String hql = "from customFile where courseId = ? and fileAuth = ?";
 		return courseDAO.find(hql, courseId, EteacherConstants.COURSE_FILE_AUTH_PUBLIC);
 	}
 
 	@Override
 	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook,
-			List<Textbook> textbookOthers, List<CourseFile> courseFiles) {
+			List<Textbook> textbookOthers, List<CustomFile> customFile) {
 		String courseId = (String) courseDAO.save(course);
 		//授课班级
 		if(classIds!=null){
@@ -183,7 +183,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 			}
 		}
 		// 资源
-		for (CourseFile record : courseFiles) {
+		for (CustomFile record : customFile) {
 			record.setDataId(courseId);
 			courseDAO.save(record);
 		}
@@ -191,7 +191,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 
 	@Override
 	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook,
-			List<Textbook> textbookOthers, List<CourseFile> courseFiles) {
+			List<Textbook> textbookOthers, List<CustomFile> customFile) {
 		Course serverCourse = courseDAO.get(course.getCourseId());
 		BeanUtils.copyToModel(course, serverCourse);
 		courseDAO.update(serverCourse);
@@ -264,7 +264,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 			}
 		}
 		// 资源
-		for (CourseFile record : courseFiles) {
+		for (CustomFile record : customFile) {
 			record.setDataId(course.getCourseId());
 			courseDAO.save(record);
 		}
@@ -272,7 +272,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	
 	@Override
 	public void deleteCourseFile(String cfId) {
-		String hql = "delete from CourseFile where cfId = ?";
+		String hql = "delete from CustomFile where cfId = ?";
 		courseDAO.executeHql(hql, cfId);
 	}
 	
@@ -698,10 +698,10 @@ public class CourseServiceImpl extends BaseService<Course> implements
 			hql1="select fileName as fileName,f.vocabularyId as vocabularyId from CustomFile f where f.dataId=?";
 			list2=courseDAO.findMap(hql1, courseId);
 			if(list2==null || list2.size()==0){
-				list.get(0).put("courseFile", null);
+				list.get(0).put("customFile", null);
 			}
 			else{
-				list.get(0).put("courseFile", list2);
+				list.get(0).put("customFile", list2);
 			}
 			//获取上课信息
 			hql1="select ct.ctId as ctId,ct.weekDay as weekDay,ct.lessonNumber as lessonNumber,ct.location as location,ct.classRoom as classRoom,c.courseName "+

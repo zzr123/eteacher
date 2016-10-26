@@ -5,10 +5,9 @@ import java.util.Map;
 
 import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
-import com.turing.eteacher.model.Term;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 
@@ -18,13 +17,13 @@ public interface ICourseService extends IService<Course> {
 	
 	public List<Course> getListByTermId(String termId, String userId);
 	
-	public List<CourseFile> getCourseFilesByCourseId(String courseId);
+	public List<CustomFile> getCourseFilesByCourseId(String courseId);
 	
-	public List<CourseFile> getPublicCourseFilesByCourseId(String courseId);
+	public List<CustomFile> getPublicCourseFilesByCourseId(String courseId);
 
-	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
+	public void addCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CustomFile> CustomFile);
 	
-	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CourseFile> courseFiles);
+	public void updateCourse(Course course, String[] classIds, List<CourseWorkload> courseWorkloads, List<CourseScorePrivate> courseScores, Textbook textbook, List<Textbook> textbookOthers, List<CustomFile> CustomFile);
 	
 	public void deleteCourseFile(String cfId);
 	

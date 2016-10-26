@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.dao.FileDAO;
+import com.turing.eteacher.dao.CustomFileDAO;
 import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.service.IFileService;
 
@@ -15,7 +15,7 @@ import com.turing.eteacher.service.IFileService;
 public class FileServiceImpl extends BaseService<CustomFile> implements IFileService {
 
 	@Autowired
-	private FileDAO fileDAO;
+	private CustomFileDAO fileDAO;
 	
 	@Override
 	public BaseDAO<CustomFile> getDAO() {

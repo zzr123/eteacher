@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseFile;
 import com.turing.eteacher.model.CourseScorePrivate;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
@@ -163,7 +163,7 @@ public class CourseRemote extends BaseRemote {
 	@RequestMapping(value = "course/{courseId}/files", method = RequestMethod.GET)
 	public ReturnBody courseFiles(HttpServletRequest request, @PathVariable String courseId){
 		try{
-			List<CourseFile> courseFiles = courseServiceImpl.getPublicCourseFilesByCourseId(courseId);
+			List<CustomFile> courseFiles = courseServiceImpl.getPublicCourseFilesByCourseId(courseId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, courseFiles);
 		}
 		catch (Exception e) {
@@ -185,7 +185,7 @@ public class CourseRemote extends BaseRemote {
 		InputStream is = null;
         OutputStream os = null;
 		try{
-			CourseFile courseFile = (CourseFile)courseServiceImpl.get(CourseFile.class, cfId);
+			CustomFile courseFile = (CustomFile)courseServiceImpl.get(CustomFile.class, cfId);
 			String pathRoot = request.getSession().getServletContext().getRealPath("");
 			System.out.println("----"+pathRoot);
 			File file = new File(pathRoot + "/upload/" + courseFile.getServerName());
