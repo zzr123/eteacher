@@ -22,6 +22,13 @@
 				JAlert(data);
 			}
 		});
+		$('#account').formValidator({
+			onFocus : '请输入手机号',
+			onCorrect : '手机号输入格式正确'
+		}).regexValidator( {
+			regExp : '^[1][3578][0-9]{9}$',
+			onError : '请输入正确手机号'
+		});
 		$('#account').validatorEmpty('账号');
 		$('#password').validatorEmpty('密码');
 	});
@@ -40,12 +47,12 @@
             	<div class="register-body">
             		<div class="form-group">
                     	<label>账号：</label>
-                        <input id="account" name="account" type="text" class="form-control" placeholder="手机号" />
+                        <input id="account" onkeyup="value=value.replace(/[^\d{1,}\d{1,}|\d{1,}]/g,'')" maxlength="11" name="account" type="text" class="form-control" placeholder="手机号" />
                     </div>
                     
                     <div class="form-group">
                     	<label>密码：</label>
-                        <input id="password" name="password" type="password" class="form-control" placeholder="密码" />
+                        <input id="password" maxlength="20" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))" name="password" type="password" class="form-control" placeholder="密码" />
                     </div>                   
                     
                     <div class="checkbox-custom">

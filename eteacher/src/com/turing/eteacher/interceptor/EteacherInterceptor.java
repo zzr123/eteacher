@@ -64,7 +64,6 @@ public class EteacherInterceptor extends HandlerInterceptorAdapter {
 				String userId = (String) request.getParameter("userId");
 				String timeStamp = (String) request.getParameter("timeStamp");
 				String signature = (String) request.getParameter("signature");
-				System.out.println("appKey:"+appKey+" userId:"+userId+" timeStamp:"+timeStamp+" signature:"+signature);
 				if (StringUtil.checkParams(appKey,userId,timeStamp,signature)) {
 					if (DateUtil.isAvailable(Long.parseLong(timeStamp), System.currentTimeMillis(), SystemConstants.REQUEST_TIME_SPACE)) {
 						App app = appServiceImpl.getAppByKey(appKey);

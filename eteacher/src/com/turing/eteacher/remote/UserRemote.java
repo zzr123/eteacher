@@ -2,6 +2,7 @@ package com.turing.eteacher.remote;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -70,6 +71,12 @@ public class UserRemote extends BaseRemote {
 	 */
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public ReturnBody login(HttpServletRequest request) {
+		Enumeration rnames=request.getParameterNames();
+		for (Enumeration e = rnames ; e.hasMoreElements() ;) {
+		       String thisName=e.nextElement().toString();
+		       String thisValue=request.getParameter(thisName);
+		       System.out.println("参数名："+thisName+"-------"+thisValue);
+		} 
 		try {
 			String appKey = request.getParameter("appKey");
 			String timestamp = request.getParameter("timeStamp");
@@ -115,16 +122,18 @@ public class UserRemote extends BaseRemote {
 	}
 
 	/**
-	 * 登出
+	 * 注销
 	 * 
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "loginout", method = RequestMethod.POST)
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
 	public ReturnBody loginout(HttpServletRequest request) {
 		try {
 			//TODO 清除登录记录
-			request.getSession().invalidate();
+			User user = getCurrentUser(request);
+			user.setToken("");
+			userServiceImpl.update(user);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,15 +153,17 @@ public class UserRemote extends BaseRemote {
 	 * @return
 	 *  "verifyCode": "123212"
 	 */
-	@RequestMapping(value = "verifycode", method = RequestMethod.GET)
+	@RequestMapping(value = "verifycode", method = RequestMethod.POST)
 	public ReturnBody verifycode(HttpServletRequest request) {
 		try {
 			String mobile = request.getParameter("mobile");
+			String appKey = request.getParameter("appKey");
 			String imei = request.getParameter("imei");
-			if(StringUtil.checkParams(mobile,imei)){
-				int type = Integer.parseInt(request.getParameter("type"));
+			String type = request.getParameter("type");
+			if(StringUtil.checkParams(appKey,type,mobile,imei)){
+				int Itype = Integer.parseInt(request.getParameter("type"));
 				User user;
-					switch (type) {
+					switch (Itype) {
 					case 0:// 注册
 						user = userServiceImpl.getUserByAcct(mobile);
 						if (null != user) {
@@ -168,21 +179,25 @@ public class UserRemote extends BaseRemote {
 					default:
 						return ReturnBody.getParamError();
 					}
-					int code = 100000 + new Random().nextInt(899999);
-					VerifyCode verifyCode = verifyCodeServiceImpl.getVerifyByMobile(mobile);
+					String code = String.valueOf(100000 + new Random().nextInt(899999));
+					VerifyCode verifyCode = verifyCodeServiceImpl.getVerifyByMobile(mobile,Itype);
 					if (null != verifyCode) {
-						verifyCode.setType(type);
-						verifyCode.setImei(imei);
-						verifyCode.setVerifyCode(String.valueOf(code));
-						verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
-						verifyCodeServiceImpl.update(verifyCode);
+						if(DateUtil.isAvailable(Long.parseLong(verifyCode.getTime()), System.currentTimeMillis(), SystemConstants.MESSAGE_DISTANCE)){
+							code = verifyCode.getVerifyCode();
+							System.out.println("未超时");
+						}else{
+							System.out.println("已超时");
+							verifyCode.setVerifyCode(code);
+							verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
+							verifyCodeServiceImpl.update(verifyCode);
+						}
 					}else{
 						verifyCode = new VerifyCode();
 						verifyCode.setCodeId(mobile);
 						verifyCode.setImei(imei);
 						verifyCode.setVerifyCode(String.valueOf(code));
 						verifyCode.setTime(String.valueOf(System.currentTimeMillis()));
-						verifyCode.setType(type);
+						verifyCode.setType(Itype);
 						verifyCodeServiceImpl.add(verifyCode);
 					}
 					// 使用聚合数据发送验证码
@@ -220,8 +235,8 @@ public class UserRemote extends BaseRemote {
 			String password = request.getParameter("password"); 
 			String userType = request.getParameter("userType");
 			if (StringUtil.checkParams(verifyCode,account,password,userType)) {
-				VerifyCode verify = verifyCodeServiceImpl.getVerifyByMobile(account);
-				if (null != verify && verify.getType() == 0) {
+				VerifyCode verify = verifyCodeServiceImpl.getVerifyByMobile(account,0);
+				if (null != verify) {
 					long before = Long.parseLong(verify.getTime());
 					if (DateUtil.isAvailable(before, System.currentTimeMillis(),SystemConstants.MESSAGE_DISTANCE)) {
 						if (verifyCode.equals(verify.getVerifyCode())) {
@@ -230,6 +245,8 @@ public class UserRemote extends BaseRemote {
 								return new ReturnBody(ReturnBody.RESULT_FAILURE, "手机号已被注册");
 							}
 							serverUser = new User();
+							serverUser.setAccount(account);
+							serverUser.setUserType(userType);
 							serverUser.setPassword(password);
 							serverUser.setCreateTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 							userServiceImpl.add(serverUser);
@@ -249,6 +266,7 @@ public class UserRemote extends BaseRemote {
 							return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码错误");
 						}
 					} else {
+						verifyCodeServiceImpl.delete(verify);
 						return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
 					}
 				}else{
@@ -269,12 +287,7 @@ public class UserRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	// {
-	// result : 'success',//成功success，失败failure
-	// data : '短信验证码',
-	// msg : '提示信息XXX'
-	// }
-	@RequestMapping(value = "updatePassword", method = RequestMethod.POST)
+	@RequestMapping(value = "changePwd", method = RequestMethod.POST)
 	public ReturnBody updatePassword(HttpServletRequest request) {
 		try {
 			String password = request.getParameter("password");
@@ -315,14 +328,11 @@ public class UserRemote extends BaseRemote {
 			if (null != request.getSession().getAttribute("timestamp")) {
 				long before = (long) request.getSession().getAttribute("timestamp");
 				if (DateUtil.isAvailable(before, System.currentTimeMillis(),SystemConstants.MESSAGE_DISTANCE)) {
-					if (!verifycode.equals(request.getSession().getAttribute(
-							"verifyCode"))) {
-						return new ReturnBody(ReturnBody.RESULT_FAILURE,
-								"验证码输入有误");
+					if (!verifycode.equals(request.getSession().getAttribute("verifyCode"))) {
+						return new ReturnBody(ReturnBody.RESULT_FAILURE,"验证码输入有误");
 					} else {
 						request.getSession().setAttribute("timestamp", null);
-						return new ReturnBody(ReturnBody.RESULT_SUCCESS,
-								"短信验证成功");
+						return new ReturnBody(ReturnBody.RESULT_SUCCESS,"短信验证成功");
 					}
 				} else {
 					return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
@@ -353,23 +363,40 @@ public class UserRemote extends BaseRemote {
 	@RequestMapping(value = "recovered", method = RequestMethod.POST)
 	public ReturnBody recovered(HttpServletRequest request) {
 		try {
-			String mobile = request.getParameter("mobile");
-			String password = request.getParameter("password");
-			if (StringUtil.checkParams(mobile,password)) {
-				User user = userServiceImpl.getUserByAcct(mobile);
-				if (null != user) {
-					user.setPassword(password);
-					userServiceImpl.update(user);
-					return new ReturnBody(ReturnBody.RESULT_SUCCESS, "密码已修改，请登录");
+			String verifyCode = request.getParameter("verifyCode");
+			String account = request.getParameter("account");
+			String password = request.getParameter("password"); 
+			if (StringUtil.checkParams(verifyCode,account,password)) {
+				VerifyCode verify = verifyCodeServiceImpl.getVerifyByMobile(account,1);
+				if (null != verify) {
+					long before = Long.parseLong(verify.getTime());
+					if (DateUtil.isAvailable(before, System.currentTimeMillis(),SystemConstants.MESSAGE_DISTANCE)) {
+						if (verifyCode.equals(verify.getVerifyCode())) {
+							User serverUser = userServiceImpl.getUserByAcct(account);
+							if (serverUser == null) {
+								return new ReturnBody(ReturnBody.RESULT_FAILURE, "该手机号未注册");
+							}
+							serverUser.setPassword(password);
+							userServiceImpl.update(serverUser);
+							String userId = userServiceImpl.getUserByAcct(account).getUserId();
+							verifyCodeServiceImpl.delete(verify);
+							return new ReturnBody(ReturnBody.RESULT_SUCCESS, userId,"密码修改成功！");
+						}else{
+							return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码错误");
+						}
+					} else {
+						verifyCodeServiceImpl.delete(verify);
+						return new ReturnBody(ReturnBody.RESULT_FAILURE, "验证码已失效");
+					}
 				}else{
-					return ReturnBody.getParamError();
+					return new ReturnBody(ReturnBody.RESULT_FAILURE,"验证码失效");
 				}
-			}else{
+			} else {
 				return ReturnBody.getParamError();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ReturnBody.getSystemError();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 		}
 	}
 }

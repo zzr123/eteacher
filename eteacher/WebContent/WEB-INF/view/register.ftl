@@ -23,7 +23,7 @@
 			updateBtn(btn);
 		}
 		else{
-			alert('手机号未通过校验');
+			alert('该手机号已注册！');
 			$('#account').focus();
 		}
 	}
@@ -101,21 +101,21 @@
             	<div class="register-body">
             		<div class="form-group">
                     	<label>账号：</label><br/>
-                        <input id="account" name="account" type="text" class="form-control" placeholder="手机号" />
+                        <input id="account" onkeyup="value=value.replace(/[^\d{1,}\d{1,}|\d{1,}]/g,'')" maxlength="11" name="account" type="text" class="form-control" placeholder="手机号" />
                     </div>
                     
                     <div class="form-group">
                     	<label>设置密码：</label>
-                        <input id="password" name="password" type="password" class="form-control" placeholder="设置密码" />
+                        <input id="password" maxlength="2" name="password" type="password" class="form-control" placeholder="设置密码" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>
                     </div>
                     <div class="form-group">
                     	<label>确认密码：</label>
-                        <input id="pwdConfirm" name="pwdConfirm" type="password" class="form-control" placeholder="确认密码" />
+                        <input id="pwdConfirm" maxlength="20" name="pwdConfirm" type="password" class="form-control" placeholder="确认密码" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>
                     </div>
                     <div class="form-group">
                     	<label>验证码：</label>
                         <div class="yzm">
-                        	<input name="verifyCode" type="text" class="form-control srinput" placeholder="验证码" id="verifyCode"/>
+                        	<input name="verifyCode" maxlength="6" type="text" class="form-control srinput" placeholder="验证码" id="verifyCode" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))" />
                             <input type="button" class="form-control yzminput" value="获取验证码" id="verifyCodeBtn" onclick="getVerifyCode(this)"/>
                         </div>
                     </div>
