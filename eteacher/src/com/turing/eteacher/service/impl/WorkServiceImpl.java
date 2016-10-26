@@ -104,14 +104,15 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		String hql = "select distinct w.workId as workId,c.courseName as courseName," ;
 		List<Map> list = null ;
 		
-		userId="Qsq73xbQDS";
+	//	userId="Qsq73xbQDS";
 		if("0".equals(status)){//已过期作业
 			hql+="w.endTime as endTime,SUBSTRING(w.content,1,20) as content " +
-				 "from Work w,Course c " +
-				 "where w.courseId = c.courseId and w.status=1 " +
+				 "from Work w,Course c,WorkCourse wc " +
+				 "where w.workId = wc.workId and c.courseId = wc.courseId " +
+				 "and w.status=1 " +
 				 "and c.userId = ? " +
 				 "and w.endTime < ? order by w.endTime desc";
-			list= workDAO.findMap(hql,userId ,new Date());
+			list= workDAO.findMap(hql,userId ,date);
 		}
 		if("1".equals(status)){//未过期作业（已发布但未到期）
 			hql+="w.publishTime as publishTime,w.endTime as endTime,"+
@@ -123,8 +124,9 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			list= workDAO.findMap(hql,userId ,new Date() ,new Date());	
 		}
 		if("2".equals(status)){//获取待发布作业（草稿和待发布）
-			hql+="w.publishTime as publishTime,SUBSTRING(w.content,1,20) as content,w.publishType as publishType "+
-				 "from Work w,Course c where w.courseId=c.courseId and c.userId=? "+
+			hql+="w.publishTime as publishTime,SUBSTRING(w.content,1,20) as content,w.status as status "+
+				 "from Work w,Course c,WorkCourse wc " +
+				 "where w.workId=wc.workId and wc.courseId = c.courseId and c.userId=? "+
 		         "and (w.status=2 or (w.status=1 and w.publishTime>now())) "+
 			     "order by w.publishTime asc";
 			list=workDAO.findMap(hql, userId);

@@ -22,7 +22,7 @@ public class Work implements Serializable {
 	private String endTime;
 	private Date createTime;
 	private String remindTime;
-	private Integer status;  //0：发布/待发布作业； 1：草稿
+	private Integer status;  //1：发布/待发布作业； 2：草稿
 	
 	@Id
 	@GeneratedValue(generator = "customId")
