@@ -3,6 +3,7 @@ package com.turing.eteacher.service.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.constants.EteacherConstants;
+import com.turing.eteacher.dao.WorkCourseDAO;
 import com.turing.eteacher.dao.WorkDAO;
 import com.turing.eteacher.model.Work;
+import com.turing.eteacher.model.WorkCourse;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.DateUtil;
 import com.turing.eteacher.util.StringUtil;
@@ -29,7 +32,6 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	public BaseDAO<Work> getDAO() {
 		return workDAO;
 	}
-
 	@Override
 	public List<Map> getListForTable(String termId, String courseId) {
 		List args = new ArrayList();
@@ -136,16 +138,61 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		}
 		return list;
 	}
-	//查看作业详情
+	/**
+	 * @author macong
+	 *  查询作业详情
+	 *  返回结果： 作业ID，作业所属课程名称[],作业内容，作业开始时间，作业结束时间，作业附件ID，作业附件名称，作业附件地址
+	 */
 	@Override
 	public List<Map> getWorkDetail(String workId) {
-		String hql="select distinct w.workId as workId,w.publishTime as publishTime,"+
+		/*String hql="select distinct w.workId as workId,w.publishTime as publishTime,"+
 	               "w.endTime as endTime,w.content as content,w.remindTime as remindTime,f.fileId as fileId,"+
 				   "f.fileName as fileName,c.courseName as courseName,cl.className as className "+
 	               "from Work w,Course c,Classes cl,CustomFile f,CourseClasses cc "+
 				   "where w.workId=f.dataId and w.courseId=c.courseId and "+
-	               "c.courseId=cc.courseId and cc.classId=cl.classId and w.workId=? ";
-		List<Map> list = workDAO.findMap(hql, workId) ;
+	               "c.courseId=cc.courseId and cc.classId=cl.classId and w.workId=? ";*/
+		/*String hql = "select w.workId as workId ,w.publishTime as publishTime,"
+				+ "w.endTime as endTime,w.content as content,w.remindTime as remindTime, "
+				+ "f.fileId as fileId,f.fileName as fileName, "
+				+ "c.courseName as courseName, cl.className as className "
+				+ "from Work w, CustomFile f, Course c ,WorkCourse wc, "
+				+ "CourseClasses cc, Classes cl "
+				+ "where f.dataId = w.workId and wc.workId = w.workId and "
+				+ "c.courseId = wc.courseId and cc.courseId = wc.courseId and "
+				+ "cl.classId = cc.classId and w.workId = ?";*/
+		//第一步，根据作业ID查询该作业的内容，开始时间，结束时间（ＷＯＲＫ）
+		String wi = "select w.workId as workId, w.publishTime as publishTime, "
+				+ "w.endTime as endTime, w.content as content, w.remindTime as remindTime "
+				+ "from Work w where w.workId = ?";
+		List<Map> wlist = workDAO.findMap(wi, workId);
+		System.out.println("----wlist:"+wlist.get(0).toString());
+		//第二步，通过作业-课程关联表，查询出该作业所属的课程ID（ＷＯＲＫCＯＵＲＳＥ，可能会有多个）
+		//第三步，根据课程ＩＤ查询出课程名称（ＣＯＵＲＳＥ）
+		String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName from t_course LEFT JOIN t_work_course "
+				+ "ON t_course.COURSE_ID = t_work_course.COURSE_ID "
+				+ "WHERE t_work_course.WORK_ID = ?";
+		List<Map> clist = workDAO.findBySql(ci, workId);
+		System.out.println("----courseName:"+clist.get(0).toString());
+		//第四步，根据课程-班级关联表，查询出该课程ID的班级ID（CLASSES,可能会有多个）
+		//第五步，根据班级ID，查询出班级名称。
+		String cli = "SELECT t_class.CLASS_NAME AS className FROM t_class LEFT JOIN t_course_class "
+				+ "ON t_class.CLASS_ID = t_course_class.CLASS_ID "
+				+ "WHERE t_course_class.COURSE_ID = ? ";
+		ArrayList<String> cns =new ArrayList<String>();//定义数组，用于存储某一课程所“管辖”的班级。
+		for(int i=0;i<clist.size();i++){
+			List<Map> cllist = workDAO.findBySql(cli, clist.get(i).get("courseId"));
+			String a = (String) cllist.get(0).get("className");
+			cns.add(a);
+		}
+		System.out.println("----cns:"+cns.get(0).toString());
+		//第六步，根据作业ID，查询出附件ID，附件name，附件URL。
+		String fi = "select f.fileId as fileId ,f.fileName as fileName from CustomFile f where f.dataId = ?";
+		List<Map> flist = workDAO.findMap(fi, workId);
+		List<Map> list = workDAO.findMap(fi, workId);
+		System.out.println("----flist:"+list.get(0).toString());
+		
+		//将查询结果拼装为固定格式：课程名（班级名），作业内容，开始时间，结束时间，作业附件名称，作业附件URL，作业附件ID
+		
 		return list;
 	}
     //改变作业状态

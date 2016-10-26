@@ -154,7 +154,7 @@ public class WorkRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="teacher/work/getWorkDetail", method=RequestMethod.POST)
+	@RequestMapping(value="teacher/work/detail", method=RequestMethod.POST)
 	public ReturnBody getWorkDetail(HttpServletRequest request, String work_id){
 		try{
 			List list = workServiceImpl.getWorkDetail(work_id);
@@ -172,10 +172,11 @@ public class WorkRemote extends BaseRemote {
 	 * @param work
 	 * @return
 	 */	
-	@SuppressWarnings("null")
 	@RequestMapping(value = "teacher/work/addWork", method = RequestMethod.POST)
 	public ReturnBody addWork(HttpServletRequest request, Work work ,WorkCourse workCourse){
 		try{
+			String file = request.getParameter("fileURL");
+			System.out.println("file:"+file);
 			String endTime = request.getParameter("endTime");
 			String publishTime = request.getParameter("publishTime");
 			//Date endDate = Date.valueOf(endTime);
