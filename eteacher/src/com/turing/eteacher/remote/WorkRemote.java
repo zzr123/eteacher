@@ -3,6 +3,7 @@ package com.turing.eteacher.remote;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -157,8 +158,9 @@ public class WorkRemote extends BaseRemote {
 	@RequestMapping(value="teacher/work/detail", method=RequestMethod.POST)
 	public ReturnBody getWorkDetail(HttpServletRequest request, String work_id){
 		try{
-			List list = workServiceImpl.getWorkDetail(work_id);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			Map data = workServiceImpl.getWorkDetail(work_id);
+			System.out.println("-------------data:"+data.toString());
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		}
 		catch(Exception e){
 			e.printStackTrace();
