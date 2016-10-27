@@ -108,20 +108,20 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		if("0".equals(status)){//已过期作业
 			hql+="w.endTime as endTime,SUBSTRING(w.content,1,20) as content " +
 				 "from Work w,Course c,WorkCourse wc " +
-				 "where w.workId = wc.workId and c.courseId = wc.courseId " +
+				 "where w.workId=wc.workId and wc.courseId = c.courseId  " +
 				 "and w.status=1 " +
 				 "and c.userId = ? " +
-				 "and w.endTime < ? order by w.endTime desc";
-			list= workDAO.findMap(hql,userId ,date);
+				 "and w.endTime < now() order by w.endTime desc";
+			list= workDAO.findMap(hql,userId );
 		}
 		if("1".equals(status)){//未过期作业（已发布但未到期）
 			hql+="w.publishTime as publishTime,w.endTime as endTime,"+
-				 "SUBSTRING(w.content,1,20) as content from Work w,Course c "+
-	             "where w.courseId=c.courseId and w.status=1 "+
-				 "and c.userId=? and "+
-	             "and w.publishTime<? and w.endTime > ? "+
+				 "SUBSTRING(w.content,1,20) as content from Work w,Course c,WorkCourse wc "+
+	             "where w.workId=wc.workId and wc.courseId = c.courseId and w.status=1 "+
+				 "and c.userId=? "+
+	             "and w.publishTime<now() and w.endTime > now() "+
 				 "order by w.publishTime desc";
-			list= workDAO.findMap(hql,userId ,new Date() ,new Date());	
+			list= workDAO.findMap(hql,userId );	
 		}
 		if("2".equals(status)){//获取待发布作业（草稿和待发布）
 			hql+="w.publishTime as publishTime,SUBSTRING(w.content,1,20) as content,w.status as status "+
@@ -133,7 +133,8 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		}
 		if("3".equals(status)){//获取指定截止日期的作业
 			hql+="w.content as content "+
-			    "from Work w,Course c where w.courseId=c.courseId "+
+			    "from Work w,Course c,WorkCourse wc " +
+			    "where w.workId=wc.workId and wc.courseId = c.courseId "+
 		        "and c.userId=? and  substring(w.endTime,1,10)=? "+
 			    "and w.status=1 and w.publishTime<now()";
 			list=workDAO.findMap(hql, userId, date);
@@ -211,7 +212,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			hql+="set w.status=0";
 		}
 		hql+=" where w.workId=?";
-		workDAO.executeHql(hql, workId,status);
+		workDAO.executeHql(hql, workId);
 	}
 
 }
