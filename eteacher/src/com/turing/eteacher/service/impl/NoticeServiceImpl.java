@@ -85,14 +85,14 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 		List<Map> list=null,list1=null;
 		String hql="select n.noticeId as noticeId,n.title as titile,substring(n.publishTime,1,10) as publishTime,SUBSTRING(n.content,1,20) as content ";
 		if("0".equals(status)){//待发布通知
-			hql+="from Notice n where n.userId=? and n.publishTime>now() and n.status=1 order by n.publishTime asc";
+			hql+="from Notice n where n.userId=? and n.publishTime>now() and n.status=0 order by n.publishTime asc";
 			list=noticeDAO.findMap(hql, userId);
 		}
 		if("1".equals(status)){//已发布通知
 			hql+=",c.studentNumber as allstudentNum from Notice n,Course c "+
 		         "where n.courseId=c.courseId and n.userId=? and n.publishTime<now() and n.status=1 order by n.publishTime desc";
 			list=noticeDAO.findMap(hql, userId);
-			String hql1="select n.noticeId as noticeId,count(l.targetId) as readstudentNum from Log l,Notice n where n.noticeId=l.targetId and n.userId=? "+
+			String hql1="select n.noticeId as noticeId,count(l.noticeId) as readstudentNum from Log l,Notice n where n.noticeId=l.noticeId and n.userId=? "+
 			            "and n.status=1 group by n.noticeId";
 			list1=noticeDAO.findMap(hql1, userId);
 			for(int i=0;i<list.size();i++){
