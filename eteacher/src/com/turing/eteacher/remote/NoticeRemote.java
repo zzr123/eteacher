@@ -63,11 +63,12 @@ public class NoticeRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="teacher/notice/getNoticeList/{status}", method=RequestMethod.GET)
+	@RequestMapping(value="teacher/notice/getNoticeList/{status}", method=RequestMethod.POST)
 	public ReturnBody getListEndNotice(HttpServletRequest request, @PathVariable String status){
 		try{
 			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 			List list = noticeServiceImpl.getListNotice(userId,status);
+			System.out.println("mmmmmmm:"+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS,list);
 		}
 		catch(Exception e){
