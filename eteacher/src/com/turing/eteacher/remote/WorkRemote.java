@@ -156,9 +156,10 @@ public class WorkRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value="teacher/work/detail", method=RequestMethod.POST)
-	public ReturnBody getWorkDetail(HttpServletRequest request, String work_id){
+	public ReturnBody getWorkDetail(HttpServletRequest request, String workId){
 		try{
-			Map data = workServiceImpl.getWorkDetail(work_id);
+			System.out.println("workId :"+workId);
+			Map data = workServiceImpl.getWorkDetail(workId);
 			System.out.println("-------------data:"+data.toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		}
@@ -196,10 +197,12 @@ public class WorkRemote extends BaseRemote {
 				workServiceImpl.saveOrUpdate(work);
 			}else if(null == request.getParameter("workId")){
 				//新增作业
-				//生成作业表主键（uuid）
+				/*//生成作业表主键（uuid）
 				String wId = CustomIdGenerator.generateShortUuid();
 				work.setWorkId(wId);
+				System.out.println("wId:"+wId);*/
 				workServiceImpl.add(work);
+				String wId = work.getWorkId();
 				//获取该作业作用的班级列表
 				String list = request.getParameter("courseIds");
 				//System.out.println(list);
@@ -211,6 +214,7 @@ public class WorkRemote extends BaseRemote {
 					//生成作业表主键（uuid）
 					String wcId = CustomIdGenerator.generateShortUuid();
 					workCourse.setWcId(wcId);
+					System.out.println("wId2:"+wId);
 					workCourse.setWorkId(wId);
 					workCourse.setCourseId(cIds[n]);
 					workCourseServiceImpl.add(workCourse);
