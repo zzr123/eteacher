@@ -242,8 +242,8 @@ public class WorkRemote extends BaseRemote {
 	public ReturnBody updateWorkStatus(HttpServletRequest request){
 		try{
 			String status=request.getParameter("status");
-			String workId=request.getParameter("work_id");
-			
+			String workId=request.getParameter("workId");
+			System.out.println("*******workId"+workId+"status"+status);
 			workServiceImpl.updateWorkStatus(workId,status);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}
