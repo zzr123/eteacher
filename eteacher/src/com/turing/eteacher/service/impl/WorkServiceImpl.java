@@ -188,12 +188,12 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 						for (int j = 0; j < classList.size(); j++) {
 							courseName += classList.get(j).get("className")+",";
 						}
-						courseName.substring(0, courseName.length()-1);
+						courseName = courseName.substring(0, courseName.length()-1);
 						courseName += ")";
 					}
-					courseName += "||";
+					courseName = courseName += "||";
 				}
-				courseName.substring(0, courseName.length()-2);
+				courseName = courseName.substring(0, courseName.length()-2);
 			}
 			data.put("courseName", courseName);
 		}
