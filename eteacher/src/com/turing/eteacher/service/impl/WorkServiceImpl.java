@@ -210,10 +210,10 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	public void updateWorkStatus(String workId,String status) {
 		String hql="update Work w ";
 		if("0".equals(status)){//已发布作业撤回到草稿状态
-			hql+="set w.status='2'";
+			hql+="set w.status=2";
 		}
 		if("1".equals(status)){//（未发布作业->立即发布）
-			hql+="set w.status='1',w.publishTime=now()";
+			hql+="set w.status=1,w.publishTime=now()";
 		}
 		if("2".equals(status)){//删除作业
 			hql+="set w.status=0";
