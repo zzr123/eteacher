@@ -136,10 +136,12 @@ public class WorkRemote extends BaseRemote {
 	 * @param request  
 	 * @return
 	 */
-	@RequestMapping(value="teacher/work/getWorkList/{status}/{date}", method=RequestMethod.POST)
-	public ReturnBody getListWork(HttpServletRequest request, @PathVariable String status, @PathVariable String date){
+	@RequestMapping(value="teacher/work/getWorkList", method=RequestMethod.POST)
+	public ReturnBody getListWork(HttpServletRequest request){
 		String userId = getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 		try{
+			String status=request.getParameter("status");
+			String date=request.getParameter("date");
 			System.out.println("userId"+userId+"status"+status+"data"+date);
 			List list = workServiceImpl.getListWork(userId,status,date);
 			System.out.println("12313132:"+list.get(0).toString());
