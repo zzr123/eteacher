@@ -103,36 +103,44 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	 */
 	//获取作业列表（已过期、未过期、待发布、指定截止日期）
 	@Override
-	public List<Map> getListWork(String userId,String status,String date) {
+	public List<Map> getListWork(String userId,String status,String date,int page) {
 		String hql = "select distinct w.workId as workId,c.courseName as courseName," ;
 		List<Map> list = null ;
-		
-	//	userId="Qsq73xbQDS";
 		if("0".equals(status)){//已过期作业
-			hql+="w.endTime as endTime,SUBSTRING(w.content,1,20) as content " +
+			hql+="w.publishTime as publishTime," +
+				 "w.endTime as endTime," +
+				 "w.status as status ,"+
+				 "w.content as content " +
 				 "from Work w,Course c,WorkCourse wc " +
 				 "where w.workId=wc.workId and wc.courseId = c.courseId  " +
 				 "and w.status=1 " +
 				 "and c.userId = ? " +
 				 "and w.endTime < now() order by w.endTime desc";
-			list= workDAO.findMap(hql,userId );
+			list= workDAO.findMapByPage(hql, page*20, 20, userId);
+			System.out.println("list.size():"+list.size());
 		}
 		if("1".equals(status)){//未过期作业（已发布但未到期）
-			hql+="w.publishTime as publishTime,w.endTime as endTime,"+
-				 "SUBSTRING(w.content,1,20) as content from Work w,Course c,WorkCourse wc "+
+			hql+="w.publishTime as publishTime," +
+				 "w.endTime as endTime,"+
+				 "w.status as status "+
+				 "SUBSTRING(w.content,1,20) as content " +
+				 "from Work w,Course c,WorkCourse wc "+
 	             "where w.workId=wc.workId and wc.courseId = c.courseId and w.status=1 "+
 				 "and c.userId=? "+
 	             "and w.publishTime<now() and w.endTime > now() "+
 				 "order by w.publishTime desc";
-			list= workDAO.findMap(hql,userId );	
+			list= workDAO.findMapByPage(hql, page*20, 20, userId);	
 		}
 		if("2".equals(status)){//获取待发布作业（草稿和待发布）
-			hql+="w.publishTime as publishTime,SUBSTRING(w.content,1,20) as content,w.status as status "+
+			hql+="w.publishTime as publishTime," +
+				 "SUBSTRING(w.content,1,20) as content," +
+				 "w.status as status "+
+				 "w.endTime as endTime,"+
 				 "from Work w,Course c,WorkCourse wc " +
 				 "where w.workId=wc.workId and wc.courseId = c.courseId and c.userId=? "+
 		         "and (w.status=2 or (w.status=1 and w.publishTime>now())) "+
 			     "order by w.publishTime asc";
-			list=workDAO.findMap(hql, userId);
+			list=workDAO.findMapByPage(hql, page*20, 20, userId);
 		}
 		if("3".equals(status)){//获取指定截止日期的作业
 			hql+="w.content as content "+
@@ -140,8 +148,9 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			    "where w.workId=wc.workId and wc.courseId = c.courseId "+
 		        "and c.userId=? and  substring(w.endTime,1,10)=? "+
 			    "and w.status=1 and w.publishTime<now()";
-			list=workDAO.findMap(hql, userId, date);
+			list=workDAO.findMapByPage(hql, page*20, 20,userId, date);
 		}
+		
 		return list;
 	}
 	/**

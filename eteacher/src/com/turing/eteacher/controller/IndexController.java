@@ -2,8 +2,6 @@ package com.turing.eteacher.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Teacher;
-import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITermService;

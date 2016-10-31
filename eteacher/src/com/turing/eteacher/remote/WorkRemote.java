@@ -21,6 +21,7 @@ import com.turing.eteacher.model.WorkStatus;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.CustomIdGenerator;
+import com.turing.eteacher.util.StringUtil;
 
 /**
  * @author Administrator
@@ -138,18 +139,21 @@ public class WorkRemote extends BaseRemote {
 	 */
 	@RequestMapping(value="teacher/work/getWorkList", method=RequestMethod.POST)
 	public ReturnBody getListWork(HttpServletRequest request){
-		String userId = getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
-		try{
-			String status=request.getParameter("status");
-			String date=request.getParameter("date");
-			System.out.println("userId"+userId+"status"+status+"data"+date);
-			List list = workServiceImpl.getListWork(userId,status,date);
-			System.out.println("12313132:"+list.get(0).toString());
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		String status = (String) request.getParameter("status");
+		String page = (String) request.getParameter("page");
+		String userId = getCurrentUser(request).getUserId();
+		System.out.println("status:"+status+"  page:"+page+"   userID:"+userId);
+		if(StringUtil.checkParams(status,page,userId)){
+			try{
+				List list = workServiceImpl.getListWork(userId,status,null,Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+			}
+		}else{
+			return ReturnBody.getParamError();
 		}
 	}	
 	/**
