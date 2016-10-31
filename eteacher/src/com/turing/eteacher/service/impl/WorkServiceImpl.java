@@ -173,6 +173,13 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 					+ "WHERE t_work_course.WORK_ID = ?";
 			List<Map> clist = workDAO.findBySql(ci, workId);
 			String courseName = "";
+			String courseIds= "[";
+			for(int i=0;i<clist.size();i++){
+				courseIds += "\""+clist.get(i).get("courseId")+"\",";
+			}
+			String c = courseIds.substring(0, courseIds.length()-1);
+			c = c+"]";
+			System.out.println("courseIds==========="+c);
 			if (null != clist) {
 				for (int i = 0; i < clist.size(); i++) {
 					String courName = (String) clist.get(i).get("courseName");
@@ -196,6 +203,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				courseName = courseName.substring(0, courseName.length()-2);
 			}
 			data.put("courseName", courseName);
+			data.put("courseIds", c);
 		}
 		//第六步，根据作业ID，查询出附件ID，附件name，附件URL。
 		/*String fi = "select f.fileId as fileId ,f.fileName as fileName from CustomFile f where f.dataId = ?";

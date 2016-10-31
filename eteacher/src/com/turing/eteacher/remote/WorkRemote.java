@@ -157,12 +157,14 @@ public class WorkRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
+	int i = 0;
 	@RequestMapping(value="teacher/work/detail", method=RequestMethod.POST)
 	public ReturnBody getWorkDetail(HttpServletRequest request, String workId){
 		try{
+			i++;
 			System.out.println("workId :"+workId);
 			Map data = workServiceImpl.getWorkDetail(workId);
-			System.out.println("-------------data:"+data.toString());
+			System.out.println(data.size()+"------i:"+i+"-------data:"+data.toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		}
 		catch(Exception e){
@@ -241,12 +243,30 @@ public class WorkRemote extends BaseRemote {
 	 * @return
 	 */	
 	@RequestMapping(value="teacher/work/updateWorkStatus", method=RequestMethod.POST)
-	public ReturnBody updateWorkStatus(HttpServletRequest request){
+	public ReturnBody updateWorkStatus(HttpServletRequest request,Work work,WorkCourse workCourse){
 		try{
-			String status=request.getParameter("status");
-			String workId=request.getParameter("workId");
-			System.out.println("*******workId"+workId+"status"+status);
-			workServiceImpl.updateWorkStatus(workId,status);
+			int status=Integer.parseInt(request.getParameter("status"));
+			String wId = request.getParameter("workId");
+			//作业的作用对象ID
+			work.setStatus(status);
+			//获取该作业作用的班级列表
+			String list = request.getParameter("courseIds");
+			//System.out.println(list);
+			if(list!=null){//作业的接受对象发生变化，更新"作业-课程"关联表。
+				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
+				String [] cIds = lists.split(",");
+				//更新“作业-课程”关联表
+				workCourseServiceImpl.deleteData(wId);//删除原有数据
+				for(int n=0;n<cIds.length;n++){
+					//生成作业表主键（uuid）
+					String wcId = CustomIdGenerator.generateShortUuid();
+					workCourse.setWcId(wcId);
+					workCourse.setWorkId(wId);
+					workCourse.setCourseId(cIds[n]);
+					workCourseServiceImpl.add(workCourse);
+				}
+			}
+			workServiceImpl.saveOrUpdate(work);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}
 		catch(Exception e){
