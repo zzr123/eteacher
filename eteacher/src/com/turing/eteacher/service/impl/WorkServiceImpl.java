@@ -122,8 +122,8 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		if("1".equals(status)){//未过期作业（已发布但未到期）
 			hql+="w.publishTime as publishTime," +
 				 "w.endTime as endTime,"+
-				 "w.status as status "+
-				 "SUBSTRING(w.content,1,20) as content " +
+				 "w.status as status,"+
+				 "w.content as content " +
 				 "from Work w,Course c,WorkCourse wc "+
 	             "where w.workId=wc.workId and wc.courseId = c.courseId and w.status=1 "+
 				 "and c.userId=? "+
@@ -133,9 +133,9 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		}
 		if("2".equals(status)){//获取待发布作业（草稿和待发布）
 			hql+="w.publishTime as publishTime," +
-				 "SUBSTRING(w.content,1,20) as content," +
-				 "w.status as status "+
-				 "w.endTime as endTime,"+
+				 "w.content as content," +
+				 "w.status as status,"+
+				 "w.endTime as endTime "+
 				 "from Work w,Course c,WorkCourse wc " +
 				 "where w.workId=wc.workId and wc.courseId = c.courseId and c.userId=? "+
 		         "and (w.status=2 or (w.status=1 and w.publishTime>now())) "+
@@ -226,14 +226,14 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	@Override
 	public void updateWorkStatus(String workId,String status) {
 		String hql="update Work w ";
-		if("0".equals(status)){//已发布作业撤回到草稿状态
-			hql+="set w.status=2";
+		if("0".equals(status)){//删除作业
+			hql+="set w.status=0";
 		}
 		if("1".equals(status)){//（未发布作业->立即发布）
 			hql+="set w.status=1,w.publishTime=now()";
 		}
-		if("2".equals(status)){//删除作业
-			hql+="set w.status=0";
+		if("2".equals(status)){//已发布作业撤回到草稿状态
+			hql+="set w.status=2";
 		}
 		hql+=" where w.workId=?";
 		workDAO.executeHql(hql, workId);
