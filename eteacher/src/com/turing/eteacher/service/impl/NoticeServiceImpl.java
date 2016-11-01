@@ -81,12 +81,12 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	 */
 	//获取通知列表（已发布、待发布）
 	@Override
-	public List<Map> getListNotice(String userId,String status) {
+	public List<Map> getListNotice(String userId,String status,String date,int page) {
 		List<Map> list=null,list1=null;
 		String hql="select n.noticeId as noticeId,n.title as titile,substring(n.publishTime,1,10) as publishTime,SUBSTRING(n.content,1,20) as content ";
 		if("0".equals(status)){//待发布通知
 			hql+="from Notice n where n.userId=? and n.publishTime>now() and n.status=0 order by n.publishTime asc";
-			list=noticeDAO.findMap(hql, userId);
+			list=noticeDAO.findMapByPage(hql, page*20, 20, userId);
 		}
 		if("1".equals(status)){//已发布通知
 			hql+=",c.studentNumber as allstudentNum from Notice n,Course c "+
