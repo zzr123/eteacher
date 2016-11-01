@@ -26,6 +26,7 @@ public class App extends BaseModel implements Serializable {
 	private String aId;
 	private String appKey;
 	private String value;
+	private String userType;
 
 	@Id
 	@GeneratedValue(generator = "customId")
@@ -56,5 +57,14 @@ public class App extends BaseModel implements Serializable {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	@Column(name = "USER_TYPE")
+	public String getUserType() {
+		return userType;
+	}
 
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+	
+	
 }
