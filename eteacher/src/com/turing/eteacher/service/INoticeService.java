@@ -17,7 +17,7 @@ public interface INoticeService extends IService<Notice> {
 	public void publishNotice(String noticeId);
 	
 	//获取已发布的通知列表
-	public List<Map> getListNotice(String userId,String status);
+	public List<Map> getListNotice(String userId,String status,String date,int page);
 	//通知状态的修改
 	public void ChangeNoticeState(String noticeId,String status);
 	//查看通知详情
