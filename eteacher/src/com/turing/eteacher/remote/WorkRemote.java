@@ -186,8 +186,7 @@ public class WorkRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/work/addWork", method = RequestMethod.POST)
 	public ReturnBody addWork(HttpServletRequest request, Work work ,WorkCourse workCourse){
 		try{
-			String file = request.getParameter("fileURL");
-			System.out.println("file:"+file);
+//			String file = request.getParameter("fileURL");
 			String endTime = request.getParameter("endTime");
 			String publishTime = request.getParameter("publishTime");
 			//Date endDate = Date.valueOf(endTime);
@@ -245,32 +244,13 @@ public class WorkRemote extends BaseRemote {
 	 * @param request
 	 * @param WORK_ID
 	 * @return
-	 */	
+	 */
 	@RequestMapping(value="teacher/work/updateWorkStatus", method=RequestMethod.POST)
-	public ReturnBody updateWorkStatus(HttpServletRequest request,Work work,WorkCourse workCourse){
+	public ReturnBody updateWorkStatus(HttpServletRequest request){
 		try{
-			int status=Integer.parseInt(request.getParameter("status"));
-			String wId = request.getParameter("workId");
-			//作业的作用对象ID
-			work.setStatus(status);
-			//获取该作业作用的班级列表
-			String list = request.getParameter("courseIds");
-			//System.out.println(list);
-			if(list!=null){//作业的接受对象发生变化，更新"作业-课程"关联表。
-				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
-				String [] cIds = lists.split(",");
-				//更新“作业-课程”关联表
-				workCourseServiceImpl.deleteData(wId);//删除原有数据
-				for(int n=0;n<cIds.length;n++){
-					//生成作业表主键（uuid）
-					String wcId = CustomIdGenerator.generateShortUuid();
-					workCourse.setWcId(wcId);
-					workCourse.setWorkId(wId);
-					workCourse.setCourseId(cIds[n]);
-					workCourseServiceImpl.add(workCourse);
-				}
-			}
-			workServiceImpl.saveOrUpdate(work);
+			String status=request.getParameter("status");
+			String workId=request.getParameter("workId");
+			workServiceImpl.updateWorkStatus(workId,status);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}
 		catch(Exception e){
@@ -278,4 +258,37 @@ public class WorkRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 		}
 	}
+//	@RequestMapping(value="teacher/work/updateWorkStatus", method=RequestMethod.POST)
+//	public ReturnBody updateWorkStatus(HttpServletRequest request,Work work,WorkCourse workCourse){
+//		try{
+//			int status=Integer.parseInt(request.getParameter("status"));
+//			String wId = request.getParameter("workId");
+//			//作业的作用对象ID
+//			work.setStatus(status);
+//			//获取该作业作用的班级列表
+//			String list = request.getParameter("courseIds");
+//			//System.out.println(list);
+//			if(list!=null){//作业的接受对象发生变化，更新"作业-课程"关联表。
+//				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
+//				String [] cIds = lists.split(",");
+//				//更新“作业-课程”关联表
+//				workCourseServiceImpl.deleteData(wId);//删除原有数据
+//				for(int n=0;n<cIds.length;n++){
+//					//生成作业表主键（uuid）
+//					String wcId = CustomIdGenerator.generateShortUuid();
+//					workCourse.setWcId(wcId);
+//					workCourse.setWorkId(wId);
+//					workCourse.setCourseId(cIds[n]);
+//					workCourseServiceImpl.add(workCourse);
+//				}
+//			}
+//			workServiceImpl.saveOrUpdate(work);
+//			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
+//		}
+//		catch(Exception e){
+//			e.printStackTrace();
+//			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+//		}
+//	}
+	
 }
