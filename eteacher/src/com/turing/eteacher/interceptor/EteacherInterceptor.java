@@ -70,15 +70,23 @@ public class EteacherInterceptor extends HandlerInterceptorAdapter {
 						if (null != app) {
 							User user = userServiceImpl.getUserById(userId);
 							if (null != user) {
-								if (null != user.getToken()) {
-									//token有效期验证
-									if (DateUtil.isAvailable(Long.parseLong(user.getLastAccessTime()), System.currentTimeMillis(), SystemConstants.TOKEN_AVAILABLE)) {
-										System.out.println("signature:"+signature);
-										System.out.println("signatru1:"+Encryption.encryption(user.getToken()+timeStamp));
-										if (signature.equals(Encryption.encryption(user.getToken()+timeStamp))) {
-											user.setLastAccessTime(String.valueOf(System.currentTimeMillis()));
-											userServiceImpl.update(user);
-											return super.preHandle(request, response, handler);
+								System.out.println("user:"+user.toString());
+								System.out.println("app.type:"+app.getUserType()+" user.type:"+user.getUserType());
+								if (app.getUserType().equals(user.getUserType())) {
+									if (null != user.getToken()) {
+										//token有效期验证
+										if (DateUtil.isAvailable(Long.parseLong(user.getLastAccessTime()), System.currentTimeMillis(), SystemConstants.TOKEN_AVAILABLE)) {
+											System.out.println("signature:"+signature);
+											System.out.println("signatru1:"+Encryption.encryption(user.getToken()+timeStamp));
+											if (signature.equals(Encryption.encryption(user.getToken()+timeStamp))) {
+												user.setLastAccessTime(String.valueOf(System.currentTimeMillis()));
+												userServiceImpl.update(user);
+												return super.preHandle(request, response, handler);
+											}else{
+												PrintWriter out = response.getWriter();
+												out.print(new ObjectMapper().writeValueAsString(new ReturnBody(ReturnBody.RESULT_TOKEN_TIMEOUT, "登录状态过期！")));
+												out.close();
+											}
 										}else{
 											PrintWriter out = response.getWriter();
 											out.print(new ObjectMapper().writeValueAsString(new ReturnBody(ReturnBody.RESULT_TOKEN_TIMEOUT, "登录状态过期！")));
@@ -91,7 +99,7 @@ public class EteacherInterceptor extends HandlerInterceptorAdapter {
 									}
 								}else{
 									PrintWriter out = response.getWriter();
-									out.print(new ObjectMapper().writeValueAsString(new ReturnBody(ReturnBody.RESULT_TOKEN_TIMEOUT, "登录状态过期！")));
+									out.print(new ObjectMapper().writeValueAsString(new ReturnBody(ReturnBody.RESULT_FAILURE, "请用正确的身份操作！")));
 									out.close();
 								}
 							}else{

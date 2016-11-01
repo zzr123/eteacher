@@ -18,6 +18,7 @@ import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.constants.SystemConstants;
+import com.turing.eteacher.model.App;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
@@ -85,8 +86,13 @@ public class UserRemote extends BaseRemote {
 			String sign = request.getParameter("sign");
 			if(StringUtil.checkParams(appKey,timestamp,account,imei,sign)){
 				if (DateUtil.isAvailable(Long.parseLong(timestamp), System.currentTimeMillis(), SystemConstants.REQUEST_TIME_SPACE)) {
-					if (null != appServiceImpl.getAppByKey(appKey)) {
+					App app = appServiceImpl.getAppByKey(appKey);
+					if (null != app) {
 						User user = userServiceImpl.getUserByAcct(account);
+						System.out.println("app.type:"+app.getUserType()+"     user.type:"+user.getUserType());
+						if (!app.getUserType().equals(user.getUserType())) {
+							return new ReturnBody(ReturnBody.RESULT_FAILURE,"请用正确的身份账号登录");
+						}
 						if (null != user) {
 							if (sign.equals(Encryption.encryption(appKey+account+timestamp+user.getPassword()+imei))) {
 								LoginReturn loginReturn = new LoginReturn();
