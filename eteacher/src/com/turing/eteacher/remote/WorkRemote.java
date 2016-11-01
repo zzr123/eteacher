@@ -235,6 +235,7 @@ public class WorkRemote extends BaseRemote {
 	/**
 	 * @author macong 接口功能： 编辑作业
 	 * 
+	 * @return
 	 */
 	@RequestMapping(value = "teacher/work/editWork", method = RequestMethod.POST)
 	public ReturnBody editWork(HttpServletRequest request, Work work, WorkCourse workCourse) {
@@ -252,8 +253,7 @@ public class WorkRemote extends BaseRemote {
 			workServiceImpl.saveOrUpdate(work);// 更新“作业表”信息
 			// 获取该作业作用的班级列表
 			String list = request.getParameter("courseIds");
-			// System.out.println(list);
-			if (list != null) {// 作业的接受对象发生变化，更新"作业-课程"关联表。
+//			if (list != null) {// 作业的接受对象发生变化，更新"作业-课程"关联表。
 				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
 				String[] cIds = lists.split(",");
 				// 更新“作业-课程”关联表
@@ -266,7 +266,7 @@ public class WorkRemote extends BaseRemote {
 					workCourse.setCourseId(cIds[n]);
 					workCourseServiceImpl.add(workCourse);
 				}
-			}
+//			}
 			// 对作业附件的处理
 			if (null != request.getParameter("file")) {
 				// ..
