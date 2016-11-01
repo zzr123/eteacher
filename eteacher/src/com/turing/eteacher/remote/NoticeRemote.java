@@ -16,6 +16,7 @@ import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.INoticeService;
+import com.turing.eteacher.util.StringUtil;
 
 @RestController
 @RequestMapping("remote")
@@ -63,9 +64,10 @@ public class NoticeRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="teacher/notice/getNoticeList/{status}", method=RequestMethod.POST)
-	public ReturnBody getListEndNotice(HttpServletRequest request, @PathVariable String status){
-		try{
+	@RequestMapping(value="teacher/notice/getNoticeList", method=RequestMethod.POST)
+	public ReturnBody getListEndNotice(HttpServletRequest request){
+		/*try{
+			String status=request.getParameter("status");
 			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 			List list = noticeServiceImpl.getListNotice(userId,status);
 			System.out.println("mmmmmmm:"+list.get(0).toString());
@@ -74,6 +76,21 @@ public class NoticeRemote extends BaseRemote {
 		catch(Exception e){
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}*/
+		String status = (String) request.getParameter("status");
+		String page = (String) request.getParameter("page");
+		String userId = getCurrentUser(request).getUserId();
+		System.out.println("****status:" + status + "  page:" + page + "   userID:" + userId);
+		if (StringUtil.checkParams(status, page, userId)) {
+			try {
+				List list = noticeServiceImpl.getListNotice(userId, status, null, Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+			}
+		} else {
+			return ReturnBody.getParamError();
 		}
 	}
 	/**
