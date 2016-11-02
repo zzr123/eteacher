@@ -9,8 +9,8 @@ import com.turing.eteacher.model.Work;
 public interface IWorkService extends IService<Work> {
 
 	public List<Map> getListForTable(String termId, String courseId);
-	
-	public List<Map> getListByStuId(String stuId, String status);
+	//学生端获取作业列表
+	public List<Map> getListByStuId(String stuId, String status,int page);
 	
 	/**
 	 * 教师相关接口
