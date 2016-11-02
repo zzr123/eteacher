@@ -50,7 +50,7 @@ public class WorkRemote extends BaseRemote {
 
 	@Autowired
 	private IWorkCourseService workCourseServiceImpl;
-
+//  学生端操作
 	/**
 	 * 获取作业列表
 	 * 
@@ -64,21 +64,30 @@ public class WorkRemote extends BaseRemote {
 	// workId : '作业ID',
 	// courseName : '课程名称',
 	// content : '作业内容',
-	// days : '距离作业提交的时间（天）'
+	// publishTime : '发布日期',
+	// endTime : '截止日期',
 	// }
 	// ],
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "student/works", method = RequestMethod.GET)
+	@RequestMapping(value = "student/works", method = RequestMethod.POST)
 	public ReturnBody studentWorks(HttpServletRequest request) {
-		try {
-			String stuId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
-			String status = request.getParameter("status");
-			List list = workServiceImpl.getListByStuId(stuId, status);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		
+		String stuId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
+		String status = request.getParameter("status");
+		String page = (String)request.getParameter("page");
+
+		System.out.println("   stuId:" + stuId +"status:" + status + "  page:" + page );
+		if (StringUtil.checkParams(stuId,status, page)) {
+			try {
+				List list = workServiceImpl.getListByStuId(stuId, status,Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+			}
+		} else {
+			return ReturnBody.getParamError();
 		}
 	}
 
@@ -94,6 +103,7 @@ public class WorkRemote extends BaseRemote {
 	// data :
 	// {
 	// workId : '作业ID',
+	// courseName :'课程名称',
 	// content : '作业内容',
 	// publishTime : '开始时间',
 	// endTime : '结束时间'
