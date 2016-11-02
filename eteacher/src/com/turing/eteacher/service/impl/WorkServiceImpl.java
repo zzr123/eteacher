@@ -56,30 +56,76 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		List<Map> list = workDAO.findMap(hql, args.toArray());
 		return list;
 	}
-
-
-
+	/**
+	 * 学生端获取作业列表
+	 * 
+	 */
 	@Override
-	public List<Map> getListByStuId(String stuId, String status) {
-		String hql = "select distinct w.workId as workId,c.courseName as courseName," +
-				"w.content as content,w.publishTime as publishTime, w.timeLength as timeLength " +
-				"from Work w,Course c,CourseClasses cc,Student s " +
-				"where w.courseId = c.courseId " +
-				"and w.courseId = cc.courseId " +
+	public List<Map> getListByStuId(String stuId, String status,int page) {
+//		String hql = "select distinct w.workId as workId,c.courseName as courseName," ;
+		String hql ="";
+		List<Map> list = null ;
+		if("0".equals(status)){//未完成作业
+			hql="select distinct w.WORK_ID as workId,c.COURSE_NAME as courseName, " +
+				"w.CONTENT as content,w.PUBLISH_TIME as publishTime, w.END_TIME as endTime " +
+				"from t_work w,t_course c,t_work_course wc,t_course_class cc,t_student s " +
+				"where w.WORK_ID = wc.WORK_ID and wc.COURSE_ID = c.COURSE_ID " +
+				"and c.COURSE_ID =cc.COURSE_ID and cc.CLASS_ID = s.CLASS_ID " +
+				"and w.STATUS = 1 and w.PUBLISH_TIME <= now() " +
+				"and s.STU_ID = ?  " +
+				"and w.WORK_ID not in " +
+				"(select w.WORK_ID from t_status ss,t_work w,t_student s where ss.WORK_ID = w.WORK_ID and ss.STU_ID = s.STU_ID) " +
+				"order by w.PUBLISH_TIME desc";
+			list = workDAO.findBySqlAndPage(hql,page*20, 20, stuId);
+			System.out.println("list.size():"+list.size());
+		}
+		if("1".equals(status)){//已完成作业
+			hql="select distinct w.WORK_ID as workId,c.COURSE_NAME as courseName, " +
+				"w.CONTENT as content,w.PUBLISH_TIME as publishTime, w.END_TIME as endTime " +
+				"from t_work w,t_course c,t_work_course wc,t_course_class cc,t_student s,t_status ss " +
+				"where w.WORK_ID = wc.WORK_ID and wc.COURSE_ID = c.COURSE_ID " +
+				"and c.COURSE_ID =cc.COURSE_ID and cc.CLASS_ID = s.CLASS_ID " +
+				"and ss.WORK_ID = w.WORK_ID and ss.STU_ID = s.STU_ID" +
+				"and w.STATUS = 1 and w.PUBLISH_TIME <= ? " +
+				"and s.STU_ID = ? " ;
+	//			"order by w.PUBLISH_TIME desc";
+			list = workDAO.findBySqlAndPage(hql,page*20, 20, new Date(),stuId);
+			System.out.println("0000list.size():"+list.size());
+		}
+		if("2".equals(status)){//所有作业
+			hql="select distinct w.workId as workId,c.courseName as courseName," +
+					"w.content as content,w.publishTime as publishTime, w.endTime as endTime " +
+					"from Work w,Course c,WorkCourse wc,CourseClasses cc,Student s " +
+					"where w.workId = wc.workId " +
+					"and wc.courseId = c.courseId " +
+					"and c.courseId =cc.courseId " +
+					"and cc.classId = s.classId " +
+					"and w.status = 1 " +
+					"and s.stuId = ? " +
+					"and w.publishTime <= now() order by w.publishTime desc";
+			 list = workDAO.findMapByPage(hql,page*20, 20, stuId);
+		}
+		/*String hql = "select distinct w.workId as workId,c.courseName as courseName," +
+				"w.content as content,w.publishTime as publishTime, w.endTime as endTime " +
+				"from Work w,Course c,WorkCourse wc,CourseClasses cc,Student s " +
+				"where w.workId = wc.workId " +
+				"and wc.courseId = c.courseId " +
+				"and c.courseId =cc.courseId " +
 				"and cc.classId = s.classId " +
+				"and w.status = 1 " +
 				"and s.stuId = ? " +
-				"and w.publishTime <= ? and w.publishType <> ? ";//已发布的作业
+				"and w.publishTime <= now() ";//已发布的作业
 		if(StringUtil.isNotEmpty(status)){
-			if("0".equals(status)){
+			if("0".equals(status)){//待完成作业
 				hql += "and not exists ";
 			}
-			else if("1".equals(status)){
+			else if("1".equals(status)){//已完成作业
 				hql += "and exists ";
 			}
-			hql += "(select ws.wsId from WorkStatus ws where ws.workId = w.workId and ws.stuId = s.stuId) ";
+			hql += "(select ws.wsId from WorkStatus ws,Work w where ws.workId = w.workId and ws.stuId = s.stuId) ";
 		}
 		hql += "order by w.publishTime desc";
-		List<Map> list = workDAO.findMap(hql, stuId, new Date(), EteacherConstants.WORK_STAUTS_DRAFT);
+		List<Map> list = workDAO.findMapByPage(hql,page*20, 20, stuId);
 		if("0".equals(status)){
 			for(Map record : list){
 				Date publishTime = (Date)record.get("publishTime");
@@ -87,7 +133,16 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				int days = DateUtil.getDayBetween(new Date(), publishTime) + timeLength;
 				record.put("days", days);
 			}
-		}
+		}*/
+		
+		/*List<Map> datas = null;
+		List result = new ArrayList();
+		Map record = null;
+		for(Map data : datas){
+			if(record==null||!data.get("workId").equals(record.get("workId"))){
+				record = 
+			}
+		}*/
 		return list;
 	}
 
