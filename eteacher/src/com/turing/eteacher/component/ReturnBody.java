@@ -42,6 +42,11 @@ public class ReturnBody {
 		this.result = result;
 		this.data = data;
 	}
+	
+	public ReturnBody(Object data) {
+		this.result = RESULT_SUCCESS;
+		this.data = data;
+	}
 
 	public ReturnBody(String result, String msg) {
 		this.result = result;

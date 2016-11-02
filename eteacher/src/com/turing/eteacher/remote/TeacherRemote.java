@@ -1,5 +1,7 @@
 package com.turing.eteacher.remote;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.Teacher;
+import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.util.StringUtil;
@@ -82,5 +85,22 @@ public class TeacherRemote extends BaseRemote {
 			}
 		}
 		return null;
+	}
+	/**
+	 * 获取课程列表
+	 * @author lifei
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "teacher/getCourseList", method = RequestMethod.POST)
+	public ReturnBody getCourseList(HttpServletRequest request) {
+		String userId = getCurrentUserId(request);
+		String page = request.getParameter("page");
+		if(StringUtil.checkParams(userId,page)){
+			List list = teacherServiceImpl.getCourseList(userId, Integer.parseInt(page));
+			return new ReturnBody(list);
+		}else {
+			return ReturnBody.getParamError();
+		}
 	}
 }

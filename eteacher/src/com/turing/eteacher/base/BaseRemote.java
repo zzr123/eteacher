@@ -59,6 +59,10 @@ public class BaseRemote {
 		return user;
 	}
 	
+	public String getCurrentUserId(HttpServletRequest request){
+		return request.getParameter("userId"); 
+	}
+	
 	public TermPrivate getCurrentTerm(HttpServletRequest request){
 		TermPrivate tpId = (TermPrivate)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
 		return tpId;

@@ -11,5 +11,12 @@ public interface ITeacherService extends IService<Teacher> {
 	public List<Map> getWorkloadData(String userId, String year);
 
 	public Map getTeacherDetail(String userId);
+	
+	/**
+	 * 获取教师的课程列表
+	 * @param userId
+	 * @return
+	 */
+	public List<Map> getCourseList(String userId, int page);
 
 }
