@@ -181,7 +181,7 @@ public class NoticeRemote extends BaseRemote {
 					if (null != notice) {
 						notice.setTitle(title);
 						notice.setContent(content);
-						notice.setPublishTime(new Date(publishTime));
+						notice.setPublishTime(publishTime);
 						notice.setUserId(getCurrentUserId(request));
 						noticeServiceImpl.update(notice);
 					}
@@ -200,7 +200,7 @@ public class NoticeRemote extends BaseRemote {
 					Notice notice = new Notice();
 					notice.setTitle(title);
 					notice.setContent(content);
-					notice.setPublishTime(new Date(publishTime));
+					notice.setPublishTime(publishTime);
 					noticeServiceImpl.save(notice);
 					noticeId = notice.getNoticeId();
 					// TODO 增加关联表数据

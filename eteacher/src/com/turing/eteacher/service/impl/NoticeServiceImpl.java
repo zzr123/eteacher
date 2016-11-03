@@ -73,7 +73,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	public void publishNotice(String noticeId) {
 		Notice notice = noticeDAO.get(noticeId);
 		//notice.setPublishType(EteacherConstants.WORK_STAUTS_NOW);
-		notice.setPublishTime(new Date());
+		//notice.setPublishTime(new Date().getTime());
 		noticeDAO.update(notice);
 	}
 	/**

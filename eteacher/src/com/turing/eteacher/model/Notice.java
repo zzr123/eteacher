@@ -1,7 +1,6 @@
 package com.turing.eteacher.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,20 +10,19 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.turing.eteacher.base.CreateTimeModel;
+import com.turing.eteacher.base.BaseModel;
 
 @Entity
 @Table(name = "T_NOTICE")
-public class Notice extends CreateTimeModel implements Serializable {
+public class Notice extends BaseModel implements Serializable {
 
 	private static final long serialVersionUID = 1158283469149885596L;
 	
-	
 	private String noticeId;
-	private String courseId;
 	private String title;
 	private String content;
-	private Date publishTime;
+	private String publishTime;
+	private String createTime;
 	private String userId;
 	private Integer status; //0代表不可见，1代表可见
 	
@@ -37,13 +35,6 @@ public class Notice extends CreateTimeModel implements Serializable {
 	}
 	public void setNoticeId(String noticeId) {
 		this.noticeId = noticeId;
-	}
-	@Column(name = "COURSE_ID")
-	public String getCourseId() {
-		return courseId;
-	}
-	public void setCourseId(String courseId) {
-		this.courseId = courseId;
 	}
 	@Column(name = "TITLE")
 	public String getTitle() {
@@ -60,10 +51,10 @@ public class Notice extends CreateTimeModel implements Serializable {
 		this.content = content;
 	}
 	@Column(name = "PUBLISH_TIME")
-	public Date getPublishTime() {
+	public String getPublishTime() {
 		return publishTime;
 	}
-	public void setPublishTime(Date publishTime) {
+	public void setPublishTime(String publishTime) {
 		this.publishTime = publishTime;
 	}
 	@Column(name = "USER_ID")
@@ -80,4 +71,12 @@ public class Notice extends CreateTimeModel implements Serializable {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+	@Column(name="CREATE_TIME")
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	
 }
