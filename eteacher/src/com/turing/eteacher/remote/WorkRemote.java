@@ -109,9 +109,10 @@ public class WorkRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "works/{workId}", method = RequestMethod.GET)
-	public ReturnBody workDetail(HttpServletRequest request, @PathVariable String workId) {
+	@RequestMapping(value = "works", method = RequestMethod.POST)
+	public ReturnBody workDetail(HttpServletRequest request) {
 		try {
+			String workId = request.getParameter("workId");
 			Work work = workServiceImpl.get(workId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, work);
 		} catch (Exception e) {
@@ -131,7 +132,7 @@ public class WorkRemote extends BaseRemote {
 	// data : 'wsId',//作业完成标识数据主键
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "student/work-status", method = RequestMethod.POST)
+	@RequestMapping(value = "student/work_status", method = RequestMethod.POST)
 	public ReturnBody workstatus(HttpServletRequest request) {
 		try {
 			String stuId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
