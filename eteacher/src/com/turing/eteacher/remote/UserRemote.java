@@ -25,9 +25,6 @@ import com.turing.eteacher.model.User;
 import com.turing.eteacher.model.VerifyCode;
 import com.turing.eteacher.remote.model.LoginReturn;
 import com.turing.eteacher.service.IAppService;
-import com.turing.eteacher.service.IStudentService;
-import com.turing.eteacher.service.ITeacherService;
-import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.IUserService;
 import com.turing.eteacher.service.IVerifyCodeService;
 import com.turing.eteacher.util.DateUtil;
@@ -42,15 +39,6 @@ public class UserRemote extends BaseRemote {
 	@Autowired
 	private IUserService userServiceImpl;
 
-	@Autowired
-	private ITeacherService teacherServiceImpl;
-
-	@Autowired
-	private IStudentService studentServiceImpl;
-
-	@Autowired
-	private ITermService termServiceImpl;
-	
 	@Autowired
 	private IAppService appServiceImpl;
 	

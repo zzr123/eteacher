@@ -1,6 +1,8 @@
 package com.turing.eteacher.remote;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.Teacher;
-import com.turing.eteacher.model.User;
+import com.turing.eteacher.model.UserCommunication;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITeacherService;
+import com.turing.eteacher.service.IUserCommunicationService;
 import com.turing.eteacher.util.StringUtil;
 
 @RestController
@@ -29,7 +31,11 @@ public class TeacherRemote extends BaseRemote {
 
 	@Autowired
 	private ITeacherService teacherServiceImpl;
-
+	
+	@Autowired
+	private IUserCommunicationService userCommunicationServiceImpl;
+	
+	
 	/**
 	 * 获取某门课程的授课教师的信息
 	 * 学生端功能
@@ -98,13 +104,11 @@ public class TeacherRemote extends BaseRemote {
 		// name : '姓名',
 		// teacherNO : '教工号',
 		// sex : '性别',
-		// title : '职称',
-		// post : '职务',
-		// school : '学校',
+		// titleName : '职称',
+		// postName : '职务',
+		// schoolId : '学校Id',
+		// schoolName : '学校名称',
 		// department : '院系',
-		// phone[] : '[{'移动电话'},{'15631223549'}]',
-		// IM[] : '[{'QQ','214535086'},{'陌陌'},'521785648']',
-		// email[] : [{'mxconleone@163.com'},0]
 		// introduction : '教师简介'
 		// },
 		// msg : '提示信息XXX'
@@ -113,10 +117,8 @@ public class TeacherRemote extends BaseRemote {
 	public ReturnBody getPersonInfo(HttpServletRequest request) {
 		try {
 			String userId = request.getParameter("userId");
-			Teacher teacher = teacherServiceImpl.get(userId);
-			
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacher);
-			
+			Map teacherInfo = teacherServiceImpl.getUserInfo(userId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacherInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
@@ -138,6 +140,86 @@ public class TeacherRemote extends BaseRemote {
 			return new ReturnBody(list);
 		}else {
 			return ReturnBody.getParamError();
+		}
+	}
+	/**
+	 * 获取（教师）用户的联系方式（邮箱、电话、ＩＭ）
+	 * @author macong
+	 * @return
+	 */
+	// {
+		// result : 'success',//成功success，失败failure
+		// data : {
+		// 	  type : 1,  //1.电话  2.邮箱  3.IM
+		// 	  name : '移动电话',
+		// 	  value : '15631223549',
+		// 	  status : '0',//0：无意义  1：邮箱绑定
+		// 	  }
+		// msg : '提示信息XXX'
+		// }
+	@RequestMapping(value = "teacher/getCommunicationList", method = RequestMethod.POST)
+	public ReturnBody getCommunicationList(HttpServletRequest request) {
+		try {
+			String userId = request.getParameter("userId");
+			Teacher teacher = teacherServiceImpl.get(userId);
+			int type = Integer.parseInt(request.getParameter("type"));
+			List<Map> list =userCommunicationServiceImpl.getComByUserId(userId, type);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
+	 * 新增联系方式（邮箱、电话、ＩＭ）
+	 * @author macong
+	 * @param type 
+	 * @param name
+	 * @param value
+	 * @param status 
+	 */
+	@RequestMapping(value = "teacher/addCommunication", method = RequestMethod.POST)
+	public ReturnBody addCommunication(HttpServletRequest request, UserCommunication userCommunication) {
+		try {
+			String userId = request.getParameter("userId");
+			String name = request.getParameter("name");
+			String value = request.getParameter("value");
+			int status = Integer.parseInt(request.getParameter("status"));
+			int type = Integer.parseInt(request.getParameter("type"));
+			
+			userCommunication.setUserId(userId);
+			userCommunication.setName(name);
+			userCommunication.setValue(value);
+			userCommunication.setStatus(status);
+			userCommunication.setType(type);
+			userCommunicationServiceImpl.save(userCommunication);
+			
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
+	 * 删除联系方式（邮箱、电话、ＩＭ）
+	 * @author macong
+	 * @param type 
+	 * @param name
+	 * @param value
+	 * @param status 
+	 */
+	@RequestMapping(value = "teacher/delCommunication", method = RequestMethod.POST)
+	public ReturnBody delCommunication(HttpServletRequest request) {
+		try {
+			String itemId = request.getParameter("itemId");
+			userCommunicationServiceImpl.deleteById(itemId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
 		}
 	}
 }

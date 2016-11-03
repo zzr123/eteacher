@@ -25,9 +25,10 @@ public class UserCommunicationServiceImpl extends BaseService<UserCommunication>
 	}
 
 	@Override
-	public List getConByUserId(String id,int type) {
+	public List getComByUserId(String id,int type) {
 		// TODO Auto-generated method stub
-		String hql = "select uc.cId as id , uc.name as name , uc.value as value from UserCommunication uc where uc.userId = ? and uc.type = ?";
+		String hql = "select uc.cId as id , uc.name as name , uc.value as value, uc.status as status "
+				+ "from UserCommunication uc where uc.userId = ? and uc.type = ?";
 		List<Map> map = userCommunicationDAO.findMap(hql, id ,type);
 		/*for(int i=0;i<map.size();i++){
 			String name = map.get(i).get("name").toString();
@@ -36,6 +37,5 @@ public class UserCommunicationServiceImpl extends BaseService<UserCommunication>
 		return map;
 	}
 	
-
-
+	
 }

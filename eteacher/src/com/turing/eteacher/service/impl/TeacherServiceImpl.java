@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.CourseDAO;
+import com.turing.eteacher.dao.Dictionary2PrivateDAO;
+import com.turing.eteacher.dao.SchoolDAO;
 import com.turing.eteacher.dao.TeacherDAO;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Teacher;
@@ -24,9 +26,15 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 
 	@Autowired
 	private TeacherDAO teacherDAO;
+	
+	@Autowired
+	private Dictionary2PrivateDAO dictionary2PrivateDAO;
 
 	@Autowired
 	private CourseDAO courseDAO;
+	
+	@Autowired
+	private SchoolDAO schoolDAO;
 
 	@Override
 	public BaseDAO<Teacher> getDAO() {
@@ -115,21 +123,6 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		return list;
 	}
 
-	// 获取用户的详细信息。
-	@Override
-	public Map getTeacherDetail(String userId) {
-		// String hql = "select * from Teacher where teacherId =?";
-		// Teacher teacher = (Teacher) teacherDAO.find(hql);
-		// String titleId = teacher.getTitleId();
-		// String postId = teacher.getPostId();
-		// String schoolId = teacher.getSchoolId();
-
-		String hql2 = "select  from Dictionary2Private pri where pri.dpId = ? union "
-				+ "select * from Dictionary2Public p where p.dictionaryId = ?";
-
-		return null;
-	}
-
 	@Override
 	public List<Map> getCourseList(String userId, int page) {
 		String hql = "select c.courseId as courseId, c.courseName as courseName "
@@ -137,4 +130,62 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		List<Map> list = courseDAO.findMapByPage(hql, page * 20, 20, userId);
 		return list;
 	}
+	/**
+	 * name : '姓名',
+	 * teacherNO : '教工号',
+	 * sex : '性别',
+	 * titleId : '职称Id',
+	 * titleName : '职称名',
+	 * postId : '职务',
+	 * postName : '职务名',
+	 * schoolId : '学校Id',
+	 * schoolName : '学校名称'
+	 * department : '院系',
+	 * introduction : '教师简介' 
+	 */
+	@Override
+	public Map getUserInfo(String userId) {
+		// TODO Auto-generated method stub
+		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
+				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
+				+ "t.department as department, t.introduction as introduction ,t.picture as picture "
+				+ "from Teacher t where t.teacherId = ?";
+		Map<String, String> map = teacherDAO.findMap(hql, userId).get(0);
+		//获取用户的职称、职务信息
+		String titlelId = (String) map.get("titleId");
+		//职称
+		String titleHql = "select d.value as titleName from Dictionary2Private d where d.dpId = ?";
+		List<Map>  title = null;
+		title = dictionary2PrivateDAO.findMap(titleHql,titlelId);
+		if(title.size() <= 0){
+			String titleHql2= "select d.value as titleName from Dictionary2Public d where d.dictionaryId = ?";
+			title = dictionary2PrivateDAO.findMap(titleHql2,titlelId);
+		}
+		map.putAll(title.get(0));
+		//职务
+		String postId = (String) map.get("postId");
+		String postHql = "select d.value as postName from Dictionary2Private d where d.dpId = ?";
+		List<Map>  post = null;
+		post = dictionary2PrivateDAO.findMap(postHql,postId);
+		if(post.size() <= 0){
+			String postHql2= "select d.value as postName from Dictionary2Public d where d.dictionaryId = ?";
+			post = dictionary2PrivateDAO.findMap(postHql2,postId);
+		}
+		map.putAll(post.get(0));
+		//学校信息
+		String schoolId  = map.get("schoolId");
+		String hql4 = "select s.value as schoolName from School s where s.schoolId = ?";
+		Map schoolName = schoolDAO.findMap(hql4, schoolId).get(0);
+		map.putAll(schoolName);
+/*		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
+				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
+				+ "t.department as department, t.introduction as introduction, t.picture as picture, "
+				+ "d.value as titleName, d1.value as postName, s.value as schoolName "
+				+ "form Teacher t, Dictionary2Private d, Dictionary2Private d1, School s "
+				+ "where d.userId=t.teacherId and s.schoolId=t.schoolId and d1.userId=t.teacherId "
+				+ "and t.teacherId = ?";
+		Map teacherInfo = teacherDAO.findMap(hql, userId).get(0);*/
+		return map;
+	}
+
 }

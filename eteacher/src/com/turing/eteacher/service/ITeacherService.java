@@ -9,8 +9,6 @@ import com.turing.eteacher.model.Teacher;
 public interface ITeacherService extends IService<Teacher> {
 
 	public List<Map> getWorkloadData(String userId, String year);
-
-	public Map getTeacherDetail(String userId);
 	
 	/**
 	 * 获取教师的课程列表
@@ -18,5 +16,12 @@ public interface ITeacherService extends IService<Teacher> {
 	 * @return
 	 */
 	public List<Map> getCourseList(String userId, int page);
+	/**
+	 * @author macong
+	 * 获取教师的个人信息
+	 * @param userId
+	 * @return
+	 */
+	public Map getUserInfo(String userId);
 
 }

@@ -80,15 +80,15 @@ public class UserController extends BaseController {
 		}
 		//获取手机、邮箱、IM信息
 		String userId = teacher.getTeacherId();
-		List<Map> phones =UserCommunicationServiceImpl.getConByUserId(userId, 1);//电话
+		List<Map> phones =UserCommunicationServiceImpl.getComByUserId(userId, 1);//电话
 		if(null != phones && phones.size()>0){
 		 	request.setAttribute("phones", phones);
 		 }
-		List<Map> emails =UserCommunicationServiceImpl.getConByUserId(userId, 2);//邮箱
+		List<Map> emails =UserCommunicationServiceImpl.getComByUserId(userId, 2);//邮箱
 		if(null != emails && emails.size()>0){
 			request.setAttribute("emails", emails);
 		}
-		List<Map> IMs =UserCommunicationServiceImpl.getConByUserId(userId, 3);//IM
+		List<Map> IMs =UserCommunicationServiceImpl.getComByUserId(userId, 3);//IM
 		if(null != IMs && IMs.size()>0){
 			request.setAttribute("IMs", IMs);
 		}

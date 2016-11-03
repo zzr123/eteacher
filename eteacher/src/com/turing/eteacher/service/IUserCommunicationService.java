@@ -11,5 +11,5 @@ public interface IUserCommunicationService extends IService<UserCommunication> {
 	 * @author macong
 	 * 2016年10月19日13:37:15
 	 */
-	public List getConByUserId(String id,int type);
+	public List getComByUserId(String id,int type);
 }
