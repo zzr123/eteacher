@@ -100,5 +100,11 @@ public class Teacher implements Serializable {
 	public void setIntroduction(String introduction) {
 		this.introduction = introduction;
 	}
+	@Override
+	public String toString() {
+		return "Teacher [teacherId=" + teacherId + ", teacherNo=" + teacherNo + ", name=" + name + ", sex=" + sex
+				+ ", titleId=" + titleId + ", postId=" + postId + ", schoolId=" + schoolId + ", department="
+				+ department + ", picture=" + picture + ", introduction=" + introduction + "]";
+	}
 	
 }

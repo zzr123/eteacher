@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
@@ -31,7 +32,7 @@ public class TeacherRemote extends BaseRemote {
 
 	/**
 	 * 获取某门课程的授课教师的信息
-	 * 
+	 * 学生端功能
 	 * @param courseId
 	 * @return
 	 */
@@ -49,7 +50,7 @@ public class TeacherRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "courses/{courseId}/teacher", method = RequestMethod.GET)
+	@RequestMapping(value = "student/courses/{courseId}/teacher", method = RequestMethod.GET)
 	public ReturnBody courseTeacher(@PathVariable String courseId) {
 		try {
 			Course course = courseServiceImpl.get(courseId);
@@ -85,6 +86,42 @@ public class TeacherRemote extends BaseRemote {
 			}
 		}
 		return null;
+	}
+	/**
+	 * 获取（教师）用户的个人信息
+	 * @author macong
+	 * @return
+	 */
+	// {
+		// result : 'success',//成功success，失败failure
+		// data : {
+		// name : '姓名',
+		// teacherNO : '教工号',
+		// sex : '性别',
+		// title : '职称',
+		// post : '职务',
+		// school : '学校',
+		// department : '院系',
+		// phone[] : '[{'移动电话'},{'15631223549'}]',
+		// IM[] : '[{'QQ','214535086'},{'陌陌'},'521785648']',
+		// email[] : [{'mxconleone@163.com'},0]
+		// introduction : '教师简介'
+		// },
+		// msg : '提示信息XXX'
+		// }
+	@RequestMapping(value = "teacher/personInfo", method = RequestMethod.POST)
+	public ReturnBody getPersonInfo(HttpServletRequest request) {
+		try {
+			String userId = request.getParameter("userId");
+			Teacher teacher = teacherServiceImpl.get(userId);
+			
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacher);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}
 	}
 	/**
 	 * 获取课程列表

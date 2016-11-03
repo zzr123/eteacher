@@ -149,7 +149,7 @@ public class WorkRemote extends BaseRemote {
 
 	// 教师操作
 	/**
-	 * 获取作业列表（已到期、未到期、待发布、指定截止日期）
+	 * 获取作业列表（已到期、已发布、待发布、指定截止日期）
 	 * 
 	 * @param request
 	 * @return
@@ -187,7 +187,7 @@ public class WorkRemote extends BaseRemote {
 			i++;
 			System.out.println("workId :" + workId);
 			Map data = workServiceImpl.getWorkDetail(workId);
-			System.out.println(data.size() + "------i:" + i + "-------data:" + data.toString());
+			System.out.println("!!!:"+data.toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -197,7 +197,7 @@ public class WorkRemote extends BaseRemote {
 
 	/**
 	 * @author macong
-	 * 添加作业
+	 * 新增作业
 	 * @param request
 	 * @param work
 	 * @return

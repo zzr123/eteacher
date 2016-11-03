@@ -22,40 +22,37 @@ import com.turing.eteacher.service.impl.Dictionary2PublicServiceImpl;
 public class DictionaryController extends BaseController {
 
 	@Autowired
-	private IDictionary2PrivateService Dictionary2PrivateServiceImpl;
-
+	private IDictionary2PrivateService dictionary2PrivateServiceImpl;
+	// 获取字典表的列表项
 	@RequestMapping("viewDictionaryModal")
 	public String viewDictionaryModal(HttpServletRequest request) {
-		// 获取字典表的列表项
 		User currentUser = getCurrentUser(request);
 		int TYPE = Integer.valueOf(request.getParameter("type"));
 		String parentId = request.getParameter("pid");
-		List<Map> titleList = Dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
+		List<Map> titleList = dictionary2PrivateServiceImpl.getListByType(TYPE, currentUser.getUserId());
 		request.setAttribute("titleList", titleList);
 		request.setAttribute("type", TYPE);
 		request.setAttribute("pid", parentId);
 		return "dictionary";
 	}
-
+	// 删除职称下拉列表
 	@RequestMapping("viewDictionaryDel")
 	@ResponseBody
 	public boolean viewDictionaryDel(HttpServletRequest request) {
-		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
 		String id = request.getParameter("id");
 		int TYPE = Integer.valueOf(request.getParameter("type"));
-		boolean result = Dictionary2PrivateServiceImpl.deleteItem(TYPE,currentUser.getUserId(),id);
+		boolean result = dictionary2PrivateServiceImpl.deleteItem(TYPE,currentUser.getUserId(),id);
 		return result;
 	}
 	//增加用户自定义字典项
 	@RequestMapping("viewDictionaryAdd")
 	@ResponseBody
 	public boolean viewDictionaryAdd(HttpServletRequest request) {
-		// 获取职称下拉列表
 		User currentUser = getCurrentUser(request);
 		String value = request.getParameter("value");
 		int TYPE = Integer.valueOf(request.getParameter("type"));
-		boolean result = Dictionary2PrivateServiceImpl.addItem(TYPE, value, currentUser.getUserId());
+		boolean result = dictionary2PrivateServiceImpl.addItem(TYPE, value, currentUser.getUserId());
 		System.out.println("增加结果为："+result);
 		return result;
 	}

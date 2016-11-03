@@ -174,7 +174,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			list= workDAO.findMapByPage(hql, page*20, 20, userId);
 			System.out.println("list.size():"+list.size());
 		}
-		if("1".equals(status)){//未过期作业（已发布但未到期）
+		if("1".equals(status)){//已发布作业（已发布但未到期）
 			hql+="w.publishTime as publishTime," +
 				 "w.endTime as endTime,"+
 				 "w.status as status,"+
@@ -182,7 +182,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				 "from Work w,Course c,WorkCourse wc "+
 	             "where w.workId=wc.workId and wc.courseId = c.courseId and w.status=1 "+
 				 "and c.userId=? "+
-	             "and w.publishTime<now() and w.endTime > now() "+
+	             "and w.publishTime<now() and w.endTime>now() "+
 				 "order by w.publishTime desc";
 			list= workDAO.findMapByPage(hql, page*20, 20, userId);	
 		}

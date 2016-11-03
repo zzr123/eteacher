@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IDictionary2PrivateService;
+import com.turing.eteacher.service.impl.Dictionary2PrivateServiceImpl;
 
 @RestController
 @RequestMapping("remote")
@@ -31,7 +33,7 @@ public class DictionaryRemote extends BaseRemote{
 	 * @param type
 	 * @return
 	 */
-	@RequestMapping(value = "dictionary/{type}/getList", method = RequestMethod.POST)
+	/*@RequestMapping(value = "dictionary/{type}/getList", method = RequestMethod.POST)
 	public ReturnBody getDicList(HttpServletRequest request,@PathVariable String type) {
 		System.out.println("----------------------------");
 	     Enumeration paramNames = request.getParameterNames();  
@@ -53,6 +55,67 @@ public class DictionaryRemote extends BaseRemote{
 		}else{
 			return ReturnBody.getNoLoginError();
 		}
+	}*/
+	/**
+	 * 1.2.1 获取特定类型的子项列表
+	 * @author macong
+	 * @param request
+	 * @param type
+	 * @return
+	 */
+	@RequestMapping(value = "dictionary/getList", method = RequestMethod.POST)
+	public ReturnBody getDicList(HttpServletRequest request) {
+		try {
+			int type = Integer.parseInt(request.getParameter("type"));
+			String userId = request.getParameter("userId");
+			List<Map> titleList = dictionary2PrivateServiceImpl.getListByType(type, userId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, titleList);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}	
 	}
-	
+	/**
+	 * 用户添加自定义字典表的列表项
+	 * @author macong
+	 * @param request
+	 * @param type
+	 * @param content
+	 */
+	@RequestMapping(value = "dictionary/addItem", method = RequestMethod.POST)
+	public ReturnBody addDicItem(HttpServletRequest request) {
+		try {
+			int type = Integer.parseInt(request.getParameter("type"));
+			String userId = request.getParameter("userId");
+			String content = request.getParameter("content");
+			boolean result = dictionary2PrivateServiceImpl.addItem(type,content,userId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}	
+	}
+	/**
+	 * 用户删除自定义字典表的列表项
+	 * @author macong
+	 * @param request
+	 * @param type
+	 * @param itemId
+	 */
+	@RequestMapping(value = "dictionary/delItem", method = RequestMethod.POST)
+	public ReturnBody delDicItem(HttpServletRequest request) {
+		try {
+			int type = Integer.parseInt(request.getParameter("type"));
+			String userId = request.getParameter("userId");
+			String dId = request.getParameter("itemId");
+			boolean result = dictionary2PrivateServiceImpl.deleteItem(type, userId, dId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}	
+	}
 }

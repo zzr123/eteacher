@@ -70,6 +70,7 @@ public class UserRemote extends BaseRemote {
 	 *	"userId": "adfafsfs",
      *  "token": "wejadalina"
 	 */
+	@SuppressWarnings("unused")
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public ReturnBody login(HttpServletRequest request) {
 		Enumeration rnames=request.getParameterNames();
