@@ -1,5 +1,6 @@
 package com.turing.eteacher.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.dao.NoticeDAO;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.service.INoticeService;
+import com.turing.eteacher.service.IStatisticService;
+import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.util.StringUtil;
 
 @Service
@@ -21,6 +23,12 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 
 	@Autowired
 	private NoticeDAO noticeDAO;
+	
+	@Autowired
+	private IWorkCourseService workCourseServiceImpl;
+	
+	@Autowired
+	private IStatisticService statisticServiceImpl;
 	
 	@Override
 	public BaseDAO<Notice> getDAO() {
@@ -82,67 +90,81 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	//获取通知列表（已发布、待发布）
 	@Override
 	public List<Map> getListNotice(String userId,String status,String date,int page) {
-		List<Map> list=null,list1=null;
-		String hql="select n.noticeId as noticeId,n.title as titile,substring(n.publishTime,1,10) as publishTime,SUBSTRING(n.content,1,20) as content ";
+		List<Map> list=null;
+		String hql="select n.noticeId as noticeId,n.title as titile,n.publishTime as publishTime,SUBSTRING(n.content,1,20) as content ";
 		if("0".equals(status)){//待发布通知
-			hql+="from Notice n where n.userId=? and n.publishTime>now() and n.status=0 order by n.publishTime asc";
+			hql+="from Notice n where n.userId=? and n.publishTime > now() and n.status=1 order by n.publishTime asc";
 			list=noticeDAO.findMapByPage(hql, page*20, 20, userId);
-		}
-		if("1".equals(status)){//已发布通知
-			hql+=",c.studentNumber as allstudentNum from Notice n,Course c "+
-		         "where n.courseId=c.courseId and n.userId=? and n.publishTime<now() and n.status=1 order by n.publishTime desc";
-			list=noticeDAO.findMap(hql, userId);
-			String hql1="select n.noticeId as noticeId,count(l.noticeId) as readstudentNum from Log l,Notice n where n.noticeId=l.noticeId and n.userId=? "+
-			            "and n.status=1 group by n.noticeId";
-			list1=noticeDAO.findMap(hql1, userId);
-			for(int i=0;i<list.size();i++){
-				boolean flag=false;
-				String noticeId=(String) list.get(i).get("noticeId");
-				for(int j=0;j<list1.size();j++){
-					if(noticeId.equals(list1.get(j).get("noticeId"))){
-						list.get(i).put("readstudentNum", list1.get(j).get("readstudentNum"));
-						list1.remove(j);
-						flag=true;
-						break;
-					}
-				}
-				if(flag==false){
-					list.get(i).put("readstudentNum", 0);
+		}else if("1".equals(status)){//已发布通知
+			hql+="from Notice n where n.userId=? and n.publishTime < now() and n.status=1 order by n.publishTime asc";
+			list=noticeDAO.findMapByPage(hql, page*20, 20, userId);
+			if (null != list) {
+				for (int i = 0; i < list.size(); i++) {
+					int all = workCourseServiceImpl.getStudentCountByWId((String)list.get(i).get("noticeId"));
+					list.get(i).put("all", all);
+					int statistics = statisticServiceImpl.getCountByTargetId((String)list.get(i).get("noticeId"));
+					list.get(i).put("statistics", statistics);
 				}
 			}
 		}
-		
+		System.out.println("list.size():"+list.size());
 		return list;
 	}
 	//通知状态的修改
 	@Override
 	public void ChangeNoticeState(String noticeId,String status) {
-		String hql = "update Notice n " ;
-		if("0".equals(status)){//待发布通知->立即通知
-			hql+="set n.publishTime=now() where n.noticeId=?";			
+		Notice notice = noticeDAO.get(noticeId);
+		if (null != notice) {
+			if("1".equals(status)){//待发布通知->立即通知
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");//设置日期格式
+				notice.setPublishTime(df.format(new Date(new Date().getTime() - 1000*10*60)));
+			}else if("0".equals(status)){//删除通知，不可见
+				notice.setStatus(0);
+			}
+			noticeDAO.update(notice);
 		}
-		if("1".equals(status)){//删除通知，不可见
-			hql+="set n.status=0 where n.noticeId=?";
-		}
-		noticeDAO.executeHql(hql, noticeId);
 	}
 	//查看通知详情
 	@Override
-	public List<Map> getNoticeDetail(String noticeId) {
-		String hql="select n.noticeId as noticeId,n.title as title,n.content as content,substring(n.publishTime,1,10) as publishTime,"+
-	               "f.fileId as fileId,f.fileName as fileName,c.courseName,cl.className from Notice n,CustomFile f,Course c,Classes cl,CourseClasses cc "+
-				   "where n.noticeId=f.dataId and n.courseId=c.courseId and c.courseId=cc.courseId and cc.classId=cl.classId "+
-	               "and n.noticeId=?";
+	public Map getNoticeDetail(String noticeId) {
+		Map detail = null;
+		String hql="select n.noticeId as noticeId ," +
+				   "n.title as title," +
+				   "n.content as content," +
+				   "n.publishTime as publishTime "+
+	               "from Notice n "+
+				   "where n.noticeId=?";
 		List<Map> list=noticeDAO.findMap(hql, noticeId);
-		return list;
+		if (null != list && list.size() > 0) {
+			detail = list.get(0);
+			detail.put("statistics", statisticServiceImpl.getCountByTargetId(noticeId));
+			detail.put("all", workCourseServiceImpl.getStudentCountByWId(noticeId));
+			detail.put("courses", workCourseServiceImpl.getCoursesByWId(noticeId));
+		}
+		return detail;
 	}
 	//查看通知未读人员列表
 	@Override
-	public List<Map> getNoticeLog(String noticeId) {
-		String hql="select s.stuId as stuId,s.stuName as stuName from Student s where "+
-	               "s.stuId not in(select l.stuId from Log l where l.targetId=?) and "+
-				   "s.classId in (select cc.classId from Notice n,CourseClasses cc where n.noticeId=? and n.courseId=cc.courseId)";
-		List<Map> list=noticeDAO.findMap(hql, noticeId,noticeId);
+	public List<Map> getNoticeReadList(String noticeId,int type, int page) {
+		String sql = "SELECT DISTINCT stu.STU_ID AS studentId, stu.STU_NAME AS studentName ";
+		List<String> params = new ArrayList<>();
+		switch (type) {
+		case 1:
+			sql += "FROM t_student stu WHERE stu.STU_ID IN ( "+
+					"SELECT sta.USER_ID FROM t_statistic sta WHERE sta.TARGET_ID = ?)";
+			params.add(noticeId);
+			break;
+		default:
+			sql += "FROM t_student stu WHERE stu.CLASS_ID IN ( "+
+					"SELECT DISTINCT  cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID IN ( "+
+					"SELECT DISTINCT wc.COURSE_ID FROM t_work_course wc WHERE wc.WORK_ID = ?)) "+
+					"AND "+
+					"stu.STU_ID NOT IN (SELECT sta.USER_ID FROM t_statistic sta WHERE sta.TARGET_ID = ?)";
+			params.add(noticeId);
+			params.add(noticeId);
+			break;
+		}
+		List<Map> list=noticeDAO.findBySqlAndPage(sql, page*20, 20, params);
 		return list;
 	}
 

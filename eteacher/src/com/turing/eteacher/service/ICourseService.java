@@ -71,4 +71,11 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public List<Map> getDictionaryByType(String type); 
+	
+	/**
+	 * 通过课程Id获取本课程的人数
+	 * @param CourseId
+	 * @return
+	 */
+	public int getStudentCountById(String CourseId);
 }

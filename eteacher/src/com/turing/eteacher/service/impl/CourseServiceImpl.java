@@ -770,5 +770,11 @@ public class CourseServiceImpl extends BaseService<Course> implements
 		//String sql = ""
 		return null;
 	}
+
+	@Override
+	public int getStudentCountById(String CourseId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

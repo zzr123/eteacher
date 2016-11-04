@@ -1,6 +1,7 @@
 package com.turing.eteacher.util;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;

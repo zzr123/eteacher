@@ -21,7 +21,12 @@ public interface INoticeService extends IService<Notice> {
 	//通知状态的修改
 	public void ChangeNoticeState(String noticeId,String status);
 	//查看通知详情
-	public List<Map> getNoticeDetail(String noticeId);
-	//查看通知未读人员列表
-	public List<Map> getNoticeLog(String noticeId);
+	public Map getNoticeDetail(String noticeId);
+	/**
+	 * 查看通知已读读人员列表
+	 * @author lifei
+	 * @param noticeId
+	 * @return
+	 */
+	public List<Map> getNoticeReadList(String noticeId,int type, int page);
 }

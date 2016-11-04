@@ -216,6 +216,18 @@ public class BaseDAO<T> {
         setQueryParams(query, params);
         return query.uniqueResult();
     }
+    
+    /**
+     * 通过hql查询单个结果
+     * @param hql 查询语句
+     * @param params 查询参数
+     * @return
+     */
+    public Object getUniqueResultBySql(String sql, Object... params) {
+        Query query = getSession().createSQLQuery(sql);
+        setQueryParams(query, params);
+        return query.uniqueResult();
+    }
 	
 	public int executeHql(String hql, Object...params){
 		Query query = getSession().createQuery(hql);

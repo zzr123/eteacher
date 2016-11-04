@@ -1,5 +1,6 @@
 package com.turing.eteacher.remote;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,9 @@ import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.model.WorkCourse;
+import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.INoticeService;
+import com.turing.eteacher.service.IStatisticService;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -32,6 +35,12 @@ public class NoticeRemote extends BaseRemote {
 	
 	@Autowired
 	private IWorkCourseService workCourseServiceImpl;
+	
+	@Autowired
+	private ICourseService courseServiceImpl;
+	
+	@Autowired
+	private IStatisticService statisticServiceImpl;
 
 	/**
 	 * 教师端通知展示列表
@@ -76,16 +85,13 @@ public class NoticeRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/notice/getNoticeList", method = RequestMethod.POST)
-	public ReturnBody getListEndNotice(HttpServletRequest request) {
+	public ReturnBody getNoticeList(HttpServletRequest request) {
 		String status = (String) request.getParameter("status");
 		String page = (String) request.getParameter("page");
-		String userId = getCurrentUser(request).getUserId();
-		System.out.println("****status:" + status + "  page:" + page
-				+ "   userID:" + userId);
+		String userId = getCurrentUserId(request);
 		if (StringUtil.checkParams(status, page, userId)) {
 			try {
-				List list = noticeServiceImpl.getListNotice(userId, status,
-						null, Integer.parseInt(page));
+				List list = noticeServiceImpl.getListNotice(userId, status,null, Integer.parseInt(page));
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -105,7 +111,7 @@ public class NoticeRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/notice/updateNotice", method = RequestMethod.POST)
-	public ReturnBody ChangeNoticeState_Publish(HttpServletRequest request) {
+	public ReturnBody updateNotice(HttpServletRequest request) {
 		try {
 			String noticeId = request.getParameter("noticeId");
 			String status = request.getParameter("status");
@@ -125,37 +131,47 @@ public class NoticeRemote extends BaseRemote {
 	 * @param noticeId
 	 * @return
 	 */
-	@RequestMapping(value = "teacher/notice/getNoticeDetail/{noticeId}", method = RequestMethod.GET)
-	public ReturnBody getNoticeDetail(HttpServletRequest request,
-			@PathVariable String noticeId) {
-		try {
-			List list = noticeServiceImpl.getNoticeDetail(noticeId);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+	@RequestMapping(value = "teacher/notice/getDetail", method = RequestMethod.POST)
+	public ReturnBody getDetail(HttpServletRequest request) {
+		String noticeId = request.getParameter("noticeId");
+		if(StringUtil.checkParams(noticeId)){
+			try {
+				Map detail = noticeServiceImpl.getNoticeDetail(noticeId);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, detail);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+		}else{
+			return ReturnBody.getParamError();
 		}
 	}
 
 	/**
-	 * 查看通知未读人员列表
-	 * 
+	 * 1.2.30	查看通知的已读/未读人员列表
 	 * @param request
 	 * @param notice_id
 	 * @return
 	 */
-	@RequestMapping(value = "teacher/notice/getNoticeLog/{notice_id}", method = RequestMethod.GET)
-	public ReturnBody getNoticeLog(HttpServletRequest request,
-			@PathVariable String notice_id) {
-		try {
-			List list = noticeServiceImpl.getNoticeLog(notice_id);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+	@RequestMapping(value = "teacher/notice/statistics", method = RequestMethod.POST)
+	public ReturnBody statistics(HttpServletRequest request) {
+		String noticeId = request.getParameter("noticeId");
+		String page = request.getParameter("page");
+		String type = request.getParameter("type");
+		if(StringUtil.checkParams(noticeId,page,type)){
+			try {
+				List list = noticeServiceImpl.getNoticeReadList(noticeId,Integer.parseInt(type),Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+		}else{
+			return ReturnBody.getParamError();
 		}
+	
 	}
 
 	/**
@@ -174,7 +190,9 @@ public class NoticeRemote extends BaseRemote {
 			String publishTime = request.getParameter("publishTime");
 			String course = request.getParameter("course");
 			if (StringUtil.checkParams(title, content, publishTime, course)) {
-				List<Map> list = (List<Map>) JSONUtils.parse(course);
+		        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		        publishTime = simpleDateFormat.format(new Date(Long.parseLong(publishTime)*1000));
+		        List<Map> list = (List<Map>) JSONUtils.parse(course);
 				if (StringUtil.isNotEmpty(noticeId)) {
 					// TODO 更新通知内容
 					Notice notice = noticeServiceImpl.get(noticeId);
@@ -183,6 +201,7 @@ public class NoticeRemote extends BaseRemote {
 						notice.setContent(content);
 						notice.setPublishTime(publishTime);
 						notice.setUserId(getCurrentUserId(request));
+						notice.setStatus(1);
 						noticeServiceImpl.update(notice);
 					}
 					// TODO 删除关联表中的数据
@@ -201,6 +220,9 @@ public class NoticeRemote extends BaseRemote {
 					notice.setTitle(title);
 					notice.setContent(content);
 					notice.setPublishTime(publishTime);
+					notice.setCreateTime(simpleDateFormat.format(new Date()));
+					notice.setUserId(getCurrentUserId(request));
+					notice.setStatus(1);
 					noticeServiceImpl.save(notice);
 					noticeId = notice.getNoticeId();
 					// TODO 增加关联表数据
