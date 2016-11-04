@@ -126,6 +126,44 @@ public class TeacherRemote extends BaseRemote {
 		}
 	}
 	/**
+	 * （教师）用户的个人信息的编辑操作
+	 * @author macong
+	 * @return
+	 */
+	// {
+		// result : 'success',//成功success，失败failure
+		// data : {
+		// name : '姓名',
+		// teacherNO : '教工号',
+		// sex : '性别',
+		// titleName : '职称',
+		// postName : '职务',
+		// schoolId : '学校Id',
+		// schoolName : '学校名称',
+		// department : '院系',
+		// introduction : '教师简介'
+		// },
+		// msg : '提示信息XXX'
+		// }
+	@RequestMapping(value = "teacher/editPersonInfo", method = RequestMethod.POST)
+	public ReturnBody editPersonInfo(HttpServletRequest request,Teacher teacher) {
+		try {
+			String userId = request.getParameter("userId");
+			teacher.setTeacherId(userId);
+//			Teacher t = teacherServiceImpl.get(userId);
+//			if(!t.equals(teacher)){
+				System.out.println(teacher);
+				teacherServiceImpl.saveOrUpdate(teacher);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS,"true");
+//			}
+//			return new ReturnBody(ReturnBody.RESULT_SUCCESS,"");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
 	 * 获取课程列表
 	 * @author lifei
 	 * @param request

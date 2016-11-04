@@ -131,6 +131,7 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		return list;
 	}
 	/**
+	 * 查看用户详细信息
 	 * name : '姓名',
 	 * teacherNO : '教工号',
 	 * sex : '性别',
@@ -161,7 +162,9 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 			String titleHql2= "select d.value as titleName from Dictionary2Public d where d.dictionaryId = ?";
 			title = dictionary2PrivateDAO.findMap(titleHql2,titlelId);
 		}
-		map.putAll(title.get(0));
+		if(title.size()>0){
+			map.putAll(title.get(0));
+		}
 		//职务
 		String postId = (String) map.get("postId");
 		String postHql = "select d.value as postName from Dictionary2Private d where d.dpId = ?";
@@ -171,12 +174,16 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 			String postHql2= "select d.value as postName from Dictionary2Public d where d.dictionaryId = ?";
 			post = dictionary2PrivateDAO.findMap(postHql2,postId);
 		}
-		map.putAll(post.get(0));
+		if(post.size()>0){
+			map.putAll(post.get(0));
+		}
 		//学校信息
 		String schoolId  = map.get("schoolId");
 		String hql4 = "select s.value as schoolName from School s where s.schoolId = ?";
-		Map schoolName = schoolDAO.findMap(hql4, schoolId).get(0);
-		map.putAll(schoolName);
+		List<Map> schoolName = schoolDAO.findMap(hql4, schoolId);
+		if(schoolName.size()>0){
+			map.putAll(schoolName.get(0));
+		}
 /*		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
 				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
 				+ "t.department as department, t.introduction as introduction, t.picture as picture, "
