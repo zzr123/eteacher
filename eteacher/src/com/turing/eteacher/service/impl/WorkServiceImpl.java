@@ -58,82 +58,49 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	}
 	/**
 	 * 学生端获取作业列表
-	 * 
+	 * @author zjx
+	 * 返回结果 ：作业ID，作业所属课程名称[],作业内容，作业发布时间，作业到期时间
 	 */
 	@Override
 	public List<Map> getListByStuId(String stuId, String status,int page) {
 //		String hql = "select distinct w.workId as workId,c.courseName as courseName," ;
 		String hql ="";
 		List<Map> list = null ;
-		if("0".equals(status)){//未完成作业
+		if("0".equals(status)){//获取未完成作业列表
 			hql="select distinct w.WORK_ID as workId,c.COURSE_NAME as courseName, " +
 				"w.CONTENT as content,w.PUBLISH_TIME as publishTime, w.END_TIME as endTime " +
 				"from t_work w,t_course c,t_work_course wc,t_course_class cc,t_student s " +
 				"where w.WORK_ID = wc.WORK_ID and wc.COURSE_ID = c.COURSE_ID " +
 				"and c.COURSE_ID =cc.COURSE_ID and cc.CLASS_ID = s.CLASS_ID " +
 				"and w.STATUS = 1 and w.PUBLISH_TIME <= now() " +
-				"and s.STU_ID = ?  " +
-				"and w.WORK_ID not in " +
+				"and s.STU_ID = ? and w.WORK_ID not in " +
 				"(select w.WORK_ID from t_status ss,t_work w,t_student s where ss.WORK_ID = w.WORK_ID and ss.STU_ID = s.STU_ID) " +
 				"order by w.PUBLISH_TIME desc";
 			list = workDAO.findBySqlAndPage(hql,page*20, 20, stuId);
 			System.out.println("list.size():"+list.size());
 		}
-		if("1".equals(status)){//已完成作业
-			hql="select distinct w.WORK_ID as workId,c.COURSE_NAME as courseName, " +
-				"w.CONTENT as content,w.PUBLISH_TIME as publishTime, w.END_TIME as endTime " +
-				"from t_work w,t_course c,t_work_course wc,t_course_class cc,t_student s,t_status ss " +
-				"where w.WORK_ID = wc.WORK_ID and wc.COURSE_ID = c.COURSE_ID " +
-				"and c.COURSE_ID =cc.COURSE_ID and cc.CLASS_ID = s.CLASS_ID " +
-				"and ss.WORK_ID = w.WORK_ID and ss.STU_ID = s.STU_ID" +
-				"and w.STATUS = 1 and w.PUBLISH_TIME <= ? " +
-				"and s.STU_ID = ? " ;
-	//			"order by w.PUBLISH_TIME desc";
-			list = workDAO.findBySqlAndPage(hql,page*20, 20, new Date(),stuId);
+		if("1".equals(status)){//获取已完成作业列表
+			hql="select distinct w.workId as workId,c.courseName as courseName, " +
+				"w.content as content,w.publishTime as publishTime, w.endTime as endTime " +
+				"from Work w,Course c,WorkCourse wc,CourseClasses cc,Student s,WorkStatus ss " +
+				"where w.workId = wc.workId and wc.courseId = c.courseId " +
+				"and c.courseId =cc.courseId and cc.classId = s.classId " +
+				"and ss.workId = w.workId and ss.stuId = s.stuId " +
+				"and w.status = 1 and w.publishTime <= now() " +
+				"and s.stuId = ? order by w.publishTime desc" ;
+			list = workDAO.findMapByPage(hql,page*20, 20, stuId);
 			System.out.println("0000list.size():"+list.size());
 		}
-		if("2".equals(status)){//所有作业
+		if("2".equals(status)){//获取所有作业列表
 			hql="select distinct w.workId as workId,c.courseName as courseName," +
-					"w.content as content,w.publishTime as publishTime, w.endTime as endTime " +
-					"from Work w,Course c,WorkCourse wc,CourseClasses cc,Student s " +
-					"where w.workId = wc.workId " +
-					"and wc.courseId = c.courseId " +
-					"and c.courseId =cc.courseId " +
-					"and cc.classId = s.classId " +
-					"and w.status = 1 " +
-					"and s.stuId = ? " +
-					"and w.publishTime <= now() order by w.publishTime desc";
-			 list = workDAO.findMapByPage(hql,page*20, 20, stuId);
-		}
-		/*String hql = "select distinct w.workId as workId,c.courseName as courseName," +
 				"w.content as content,w.publishTime as publishTime, w.endTime as endTime " +
 				"from Work w,Course c,WorkCourse wc,CourseClasses cc,Student s " +
-				"where w.workId = wc.workId " +
-				"and wc.courseId = c.courseId " +
-				"and c.courseId =cc.courseId " +
-				"and cc.classId = s.classId " +
-				"and w.status = 1 " +
-				"and s.stuId = ? " +
-				"and w.publishTime <= now() ";//已发布的作业
-		if(StringUtil.isNotEmpty(status)){
-			if("0".equals(status)){//待完成作业
-				hql += "and not exists ";
-			}
-			else if("1".equals(status)){//已完成作业
-				hql += "and exists ";
-			}
-			hql += "(select ws.wsId from WorkStatus ws,Work w where ws.workId = w.workId and ws.stuId = s.stuId) ";
+				"where w.workId = wc.workId and wc.courseId = c.courseId " +
+				"and c.courseId =cc.courseId and cc.classId = s.classId " +
+				"and w.status = 1 and w.publishTime <= now() " +
+				"and s.stuId = ? order by w.publishTime desc";
+			 list = workDAO.findMapByPage(hql,page*20, 20, stuId);
 		}
-		hql += "order by w.publishTime desc";
-		List<Map> list = workDAO.findMapByPage(hql,page*20, 20, stuId);
-		if("0".equals(status)){
-			for(Map record : list){
-				Date publishTime = (Date)record.get("publishTime");
-				int timeLength = (Integer)record.get("timeLength");
-				int days = DateUtil.getDayBetween(new Date(), publishTime) + timeLength;
-				record.put("days", days);
-			}
-		}*/
 		
 		/*List<Map> datas = null;
 		List result = new ArrayList();
@@ -145,18 +112,48 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		}*/
 		return list;
 	}
-
 	/**
-	 * 删除作业
+	 * 学生端查看作业详情
+	 * @author zjx
+	 * 返回结果：作业所属课程名称[],作业内容，作业发布时间（开始时间），作业到期时间（结束时间）
 	 */
 	@Override
-	public void deleteWork(String workId) {
-		workDAO.deleteById(workId);
+	public Map getSWorkDetail(String workId) {
+		Map data=null;
+		String hql = "select w.workId as workId, c.courseName as courseName, " +
+				"w.publishTime as publishTime, w.endTime as endTime, w.content as content " +
+				"from Work w ,WorkCourse wc,Course c " +
+				"where w.workId = wc.workId and wc.courseId = c.courseId and w.workId = ?";
+		List<Map> list = workDAO.findMap(hql, workId);
+		if(null != list && list.size() > 0){
+			String courseName="";
+			String publishTime="";
+			String endTime="";
+			String content="";
+			data = list.get(0);
+			 for (int i = 0; i <list.size(); i++) {
+				 courseName=(String) list.get(i).get("courseName");
+				 publishTime=(String) list.get(i).get("publishTime");
+				 endTime=(String) list.get(i).get("endTime");
+				 content=(String) list.get(i).get("content");
+			}
+			data.put("courseName", courseName);
+			data.put("publishTime", publishTime);
+			data.put("endTime",endTime);
+			data.put("content", content);
+		}	
+		
+		return data;
 	}
+	
 	/**
 	 * 教师相关接口
 	 */
 	//获取作业列表（已过期、未过期、待发布、指定截止日期）
+	/**
+	 * @author zjx
+	 *  返回结果： 作业ID，作业所属课程名称[],作业内容，作业发布时间，作业到期时间，作业状态
+	 */
 	@Override
 	public List<Map> getListWork(String userId,String status,String date,int page) {
 		String hql = "select distinct w.workId as workId,c.courseName as courseName," ;
@@ -277,7 +274,11 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		}*/
 		return data;
 	}
-    //改变作业状态
+	/**
+	 * @author zjx
+	 *  改变作业状态
+	 *  返回结果： 作业状态
+	 */
 	@Override
 	public void updateWorkStatus(String workId,String status) {
 		String hql="update Work w ";
@@ -293,5 +294,12 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		hql+=" where w.workId=?";
 		workDAO.executeHql(hql, workId);
 	}
-
+	/**
+	 * 删除作业
+	 */
+	@Override
+	public void deleteWork(String workId) {
+		workDAO.deleteById(workId);
+	}
+	
 }
