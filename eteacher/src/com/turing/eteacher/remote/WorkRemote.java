@@ -109,11 +109,13 @@ public class WorkRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "works", method = RequestMethod.POST)
+	@RequestMapping(value = "student/workDetail", method = RequestMethod.POST)
 	public ReturnBody workDetail(HttpServletRequest request) {
 		try {
 			String workId = request.getParameter("workId");
-			Work work = workServiceImpl.get(workId);
+			System.out.println("    workId:"+workId);
+			Map work = workServiceImpl.getSWorkDetail(workId);
+			System.out.println("---:"+work.toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, work);
 		} catch (Exception e) {
 			e.printStackTrace();
