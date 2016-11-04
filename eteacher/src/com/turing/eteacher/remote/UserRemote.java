@@ -78,11 +78,10 @@ public class UserRemote extends BaseRemote {
 					App app = appServiceImpl.getAppByKey(appKey);
 					if (null != app) {
 						User user = userServiceImpl.getUserByAcct(account);
-						System.out.println("app.type:"+app.getUserType()+"     user.type:"+user.getUserType());
-						if (!app.getUserType().equals(user.getUserType())) {
-							return new ReturnBody(ReturnBody.RESULT_FAILURE,"请用正确的身份账号登录");
-						}
 						if (null != user) {
+							if (!app.getUserType().equals(user.getUserType())) {
+								return new ReturnBody(ReturnBody.RESULT_FAILURE,"请用正确的身份账号登录");
+							}
 							if (sign.equals(Encryption.encryption(appKey+account+timestamp+user.getPassword()+imei))) {
 								LoginReturn loginReturn = new LoginReturn();
 								String token = Encryption.encryption(System.currentTimeMillis()+user.getUserId()+user.getPassword());

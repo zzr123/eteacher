@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Work;
@@ -206,10 +207,9 @@ public class WorkRemote extends BaseRemote {
 	 * @return
 	 */	
 	@RequestMapping(value = "teacher/work/addWork", method = RequestMethod.POST)
-	public ReturnBody addWork(HttpServletRequest request, Work work ,WorkCourse workCourse){
+	public ReturnBody addWork(HttpServletRequest request){
 		try {	
-//			String file = request.getParameter("fileURL");
-			//赋值
+			Work work = new Work();
 			work.setContent(request.getParameter("content"));
 			work.setEndTime(request.getParameter("endTime"));
 			work.setPublishTime(request.getParameter("publishTime"));
@@ -219,18 +219,12 @@ public class WorkRemote extends BaseRemote {
 			workServiceImpl.add(work);
 			String wId = work.getWorkId();
 			//获取该作业作用的班级列表
-			String list = request.getParameter("courseIds");
-			//System.out.println(list);
-			String lists = list.replace("[", "").replace("]", "").replace("\"", "");
-			String [] cIds = lists.split(",");
-			//数据库插入数据，每个courseId生成一条数据。
-			for(int n=0;n<cIds.length;n++){
-				//生成作业表主键（uuid）
-				String wcId = CustomIdGenerator.generateShortUuid();
-				workCourse.setWcId(wcId);
-				System.out.println("wId2:"+wId);
+			String course = request.getParameter("course");
+			List<Map> list = (List<Map>) JSONUtils.parse(course);
+			for(int n=0;n<list.size();n++){
+				WorkCourse workCourse = new WorkCourse();
 				workCourse.setWorkId(wId);
-				workCourse.setCourseId(cIds[n]);
+				workCourse.setCourseId((String)list.get(n).get("id"));
 				workCourseServiceImpl.add(workCourse);
 			}
 			//对作业附件的处理
