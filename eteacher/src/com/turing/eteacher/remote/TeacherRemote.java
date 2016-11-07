@@ -119,6 +119,7 @@ public class TeacherRemote extends BaseRemote {
 			String userId = request.getParameter("userId");
 			Map teacherInfo = teacherServiceImpl.getUserInfo(userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacherInfo);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
@@ -199,7 +200,6 @@ public class TeacherRemote extends BaseRemote {
 	public ReturnBody getCommunicationList(HttpServletRequest request) {
 		try {
 			String userId = request.getParameter("userId");
-			Teacher teacher = teacherServiceImpl.get(userId);
 			int type = Integer.parseInt(request.getParameter("type"));
 			List<Map> list =userCommunicationServiceImpl.getComByUserId(userId, type);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
