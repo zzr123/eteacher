@@ -27,6 +27,9 @@ public class TermRemote extends BaseRemote {
 	@Autowired
 	private IClassService classServiceImpl;
 	
+	@Autowired
+	private ITermPrivateService termPrivateServiceImpl;
+	
 	/**
 	 * 获取用户学期列表
 	 * @param request
@@ -66,12 +69,35 @@ ReturnBody.ERROR_MSG);
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="teacher/term/getTermList", method=RequestMethod.GET)
+	@RequestMapping(value="teacher/term/getTermList", method=RequestMethod.POST)
 	public ReturnBody getListTerms(HttpServletRequest request){
 		try{
 			String userId=getCurrentUser(request)==null?null:getCurrentUser
 (request).getUserId();
 			List<Map> list = termServiceImpl.getListTermPrivates(userId);
+			System.out.println("---:"+list.toString());
+			
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+ 		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, 
+ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
+	 * 获取公有学期列表信息（学期Id，学期名）
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="teacher/term/getTermName", method=RequestMethod.POST)
+	public ReturnBody getListTermName(HttpServletRequest request){
+		try{
+			String userId=getCurrentUser(request)==null?null:getCurrentUser
+(request).getUserId();
+			List<Map> list = termServiceImpl.getListTerms(userId);
+			System.out.println("---:"+list.toString());
+			
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
  		}
 		catch(Exception e){
@@ -107,18 +133,19 @@ ReturnBody.ERROR_MSG);
 	 */
 	@RequestMapping(value="teacher/term/addTerm", method=RequestMethod.POST)
 	public ReturnBody addTerm(HttpServletRequest request, TermPrivate tp){
-		    /*tp.setStartDate("2016-9-1");
-		    tp.setEndDate("2017-2-1");
-		    tp.setWeekCount(13);*/
+		    tp.setStartDate(request.getParameter("startDate"));
+		    tp.setEndDate(request.getParameter("endDate"));
+		    tp.setWeekCount(Integer.parseInt(request.getParameter("weekCount")));
 		try{
 			String userId=getCurrentUser(request)==null?null:getCurrentUser
 (request).getUserId();
-			String[] termPrivate=request.getParameterValues("termPrivate");
+//			String[] termPrivate=request.getParameterValues("termPrivate");
+//			tp.setUserId(userId);
+//			String tpId=(String) termServiceImpl.save(tp);
+//			for(int i=0;i<termPrivate.length;i++){
+//				termServiceImpl.addTermPrivate(tpId, termPrivate[i]);
 			tp.setUserId(userId);
-			String tpId=(String) termServiceImpl.save(tp);
-			for(int i=0;i<termPrivate.length;i++){
-				termServiceImpl.addTermPrivate(tpId, termPrivate[i]);
-			}
+			termPrivateServiceImpl.saveTermPrivate(tp);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS,new HashMap());
 			
 		}
