@@ -202,7 +202,57 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			    "and w.status=1 and w.publishTime<now()";
 			list=workDAO.findMapByPage(hql, page*20, 20,userId, date);
 		}
+//		
+//		List<Map> datas = null;
+//		List result = new ArrayList();
+		Map record = null;
+		for(Map data : list){
+			if(record==null||!data.get("workId").equals(record.get("workId"))){
+				record =(Map) workDAO.findMapByPage(hql, page*20, 20, userId).get(0); 
 		
+			//查询出该作业所属的课程ID（可能会有多个）
+			//根据课程ＩＤ查询出课程名称
+			String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName "
+					+ "from t_work LEFT JOIN t_work_course ON t_work.WORK_ID=t_work_course.WORK_ID "
+					+ "LEFT JOIN t_course ON t_course.COURSE_ID = t_work_course.COURSE_ID "
+					+ "WHERE t_course.USER_ID = ?";
+			List<Map> clist = workDAO.findBySql(ci, userId);
+			String courseName = "";
+			String courseIds= "[";
+			for(int i=0;i<clist.size();i++){
+				courseIds += "\""+clist.get(i).get("courseId")+"\",";
+			}
+			String c = courseIds.substring(0, courseIds.length()-1);
+			c = c+"]";
+			System.out.println("courseIds==========="+c);
+			if (null != clist) {
+				for (int i = 0; i < clist.size(); i++) {
+					String courName = (String) clist.get(i).get("courseName");
+					String courseId = (String) clist.get(i).get("courseId");
+					//查询出该课程ID的班级ID（CLASSES,可能会有多个）
+					//根据班级ID，查询出班级名称。
+					String cli = "SELECT t_class.CLASS_NAME AS className FROM t_class LEFT JOIN t_course_class "
+							+ "ON t_class.CLASS_ID = t_course_class.CLASS_ID "
+							+ "WHERE t_course_class.COURSE_ID = ? ";
+					List<Map> classList = workDAO.findBySql(cli, courseId);
+					if(null != classList){
+						courseName += courName+"(";
+						for (int j = 0; j < classList.size(); j++) {
+							courseName += classList.get(j).get("className")+",";
+						}
+						courseName = courseName.substring(0, courseName.length()-1);
+						courseName += ")";
+					}
+					courseName = courseName += "||";
+				}
+				courseName = courseName.substring(0, courseName.length()-2);
+			}
+			record.put("courseName", courseName);
+			record.put("courseIds", c);
+		}
+		}
+	
+	
 		return list;
 	}
 	/**
