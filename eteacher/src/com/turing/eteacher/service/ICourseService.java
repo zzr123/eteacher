@@ -14,7 +14,7 @@ import com.turing.eteacher.model.User;
 public interface ICourseService extends IService<Course> {
 	
 	public List<Map> getListByTermId2(String termId, String userId);
-	
+	//通过学期ID获取课程数据，判断该学期下是否含有课程数据
 	public List<Course> getListByTermId(String termId, String userId);
 	
 	public List<CustomFile> getCourseFilesByCourseId(String courseId);

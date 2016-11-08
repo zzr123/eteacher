@@ -96,8 +96,6 @@ ReturnBody.ERROR_MSG);
 			String userId=getCurrentUser(request)==null?null:getCurrentUser
 (request).getUserId();
 			List<Map> list = termServiceImpl.getListTerms(userId);
-			System.out.println("---:"+list.toString());
-			
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
  		}
 		catch(Exception e){

@@ -69,7 +69,7 @@ public class CourseServiceImpl extends BaseService<Course> implements
 	public BaseDAO<Course> getDAO() {
 		return courseDAO;
 	}
-	
+	//获取学期下的课程数据，判断该学期下是否含有课程数据
 	@Override
 	@Transactional(readOnly=true)
 	public List<Course> getListByTermId(String termId, String userId) {
