@@ -108,7 +108,7 @@ public class TermController extends BaseController {
 	@ResponseBody
 	public Object deleteTerm(HttpServletRequest request){
 		String termId = request.getParameter("termId");//tpId
-		List list = courseServiceImpl.getListByTermId(termId, null);
+		List list = courseServiceImpl.getListByTermId(termId, null);//获取学期下的课程数据
 		if(list!=null&&list.size()>0){
 			return "该学期下有课程数据，无法删除。";
 		}
