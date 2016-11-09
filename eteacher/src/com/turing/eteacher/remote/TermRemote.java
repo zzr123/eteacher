@@ -105,16 +105,35 @@ ReturnBody.ERROR_MSG);
 		}
 	}
 	/**
+	 * 获取公有学期列表信息（学期Id，学期名）
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="teacher/term/getNowTerm", method=RequestMethod.POST)
+	public ReturnBody getNowTerm(HttpServletRequest request){
+		try{
+			String userId=getCurrentUser(request)==null?null:getCurrentUser
+(request).getUserId();
+			Map map = termServiceImpl.getCurrentTerm(userId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, map);
+ 		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, 
+ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
 	 * 删除指定的学期
 	 * @param request
 	 * @param termId
 	 * @return
 	 */
-	@RequestMapping(value="teacher/term/delTerm/{tpId}", method=RequestMethod.GET)
-	public ReturnBody delTermById(HttpServletRequest request, @PathVariable String 
-tpId){
+	@RequestMapping(value="teacher/term/delTerm", method=RequestMethod.POST)
+	public ReturnBody delTermById(HttpServletRequest request){
 		try{
-			termServiceImpl.deleteById(tpId);
+			String tpId = request.getParameter("tpId");
+			termPrivateServiceImpl.deleteById(tpId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		}
 		catch(Exception e){
