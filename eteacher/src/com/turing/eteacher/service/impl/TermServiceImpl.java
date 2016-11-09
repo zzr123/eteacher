@@ -145,7 +145,8 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 				+ "tp.startDate as startDate,"
 				+ "tp.endDate as endDate "
 				+ "from TermPrivate tp ,Term t "
-				+ "where tp.userId = ? "
+				+ "where tp.termId=t.termId " 
+				+ "and tp.userId = ? "
 				+ "and ? >= tp.startDate "
 				+ "and ? <= tp.endDate order by tp.createTime desc";
 		List<Map> list = termDAO.findMap(hql, userId, now, now);
@@ -195,7 +196,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		List<Map> list = termDAO.findMap(hql,termId,tpId);
 		
 	}
-
+    //删除学期
 	@Override
 	public void deleteById(String tpId) {
 		// TODO Auto-generated method stub
