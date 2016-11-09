@@ -84,4 +84,10 @@ public class CourseItem implements Serializable{
 	public void setRepeatNumber(Integer repeatNumber) {
 		this.repeatNumber = repeatNumber;
 	}
+	@Override
+	public String toString() {
+		return "CourseItem [ciId=" + ciId + ", courseId=" + courseId + ", startWeek=" + startWeek + ", endWeek="
+				+ endWeek + ", startDay=" + startDay + ", endday=" + endday + ", repeatType=" + repeatType
+				+ ", repeatNumber=" + repeatNumber + "]";
+	}
 }

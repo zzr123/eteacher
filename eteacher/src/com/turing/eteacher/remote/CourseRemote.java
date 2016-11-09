@@ -27,6 +27,7 @@ import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Teacher;
+import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
@@ -55,7 +56,12 @@ public class CourseRemote extends BaseRemote {
 	
 	@Autowired
 	private IClassService classServiceImple;
-
+	
+	/**
+	 * 学生端功能：查看今天要上的课程
+	 * @param request
+	 * @return
+	 */
 //	{
 //	result : 'success',//成功success，失败failure
 //	data : '[{courseId:"课程ID",courseName:"课程名称",courseTime:"课程时间",location:"上课地点"}]',//课程列表数据
@@ -72,6 +78,12 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
+	/**
+	 * 学生端功能：查看课程课表
+	 * @param request
+	 * @param courseId
+	 * @return
+	 */
 //{
 //	result : 'success',//成功success，失败failure
 //	data : {
@@ -115,7 +127,7 @@ public class CourseRemote extends BaseRemote {
 	}
 	
 	/**
-	 * 获取用户某学期下的课程列表
+	 * 学生端功能：获取用户某学期下的课程列表
 	 * @param request
 	 * @return
 	 */
@@ -226,15 +238,18 @@ public class CourseRemote extends BaseRemote {
 	/**
 	 * 获取课程列表（1.根据学期 2.根据指定日期）
 	 * @param request
-	 * @param status
+	 * @param termId
 	 * @param data
 	 * @return
 	 */
-	@RequestMapping(value="teacher/course/courseList/{status}/{data}", method=RequestMethod.GET)
-	public ReturnBody getCourseList(HttpServletRequest request, @PathVariable String status, @PathVariable String data){
+	@RequestMapping(value="teacher/course/courseList", method=RequestMethod.POST)
+	public ReturnBody getCourseList(HttpServletRequest request){
 		try{
-			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
-			List list = courseServiceImpl.getCourseList(status, data,"Qsq73xbQDS");
+			String userId = getCurrentUserId(request);
+			String termId = request.getParameter("termId");//获取前端参数：termId
+			String data = request.getParameter("data");
+			List<Map> list = courseServiceImpl.getCourseList(termId, data, userId);
+			System.out.println("结果："+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}
 		catch(Exception e){

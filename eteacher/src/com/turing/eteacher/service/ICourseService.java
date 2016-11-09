@@ -8,6 +8,7 @@ import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.CustomFile;
+import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 
@@ -32,7 +33,7 @@ public interface ICourseService extends IService<Course> {
 	public List<CourseWorkload> getCoureWorkloadByCourseId(String courseId);
 	
 	/**
-	 * 获取当前时间某课程是否为课堂时间
+	 * 获取当前时间,是否为某门课程的上课时间
 	 * @return 
 	 */
 	public Map getCourseRecordNow(User user, String courseId);
@@ -57,7 +58,7 @@ public interface ICourseService extends IService<Course> {
 	
 	//教师接口
 	//获取课程列表（1.根据学期 2.根据指定日期）
-	public List<Map> getCourseList(String status,String data,String userId);
+	public List<Map> getCourseList(String termId,String data,String userId);
 	//获取课程详细信息
 	public List<Map> getCourseDetail(String courseId, String status);
 	//修改教材教辅信息
