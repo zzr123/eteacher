@@ -21,5 +21,12 @@ public interface ISchoolService extends IService<School>  {
 	 * @return
 	 */
 	public List<Map> getSchoolInfoById(String Id);
+	/**
+	 * 根据用户ID，获取学校信息
+	 * @author macong
+	 * @param userId
+	 * @return
+	 */
+	public Map getSchoolByUserId(String userId);
 
 }

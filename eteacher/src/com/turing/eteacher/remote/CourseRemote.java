@@ -26,6 +26,7 @@ import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CustomFile;
+import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.Textbook;
@@ -35,6 +36,7 @@ import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.ITextbookService;
+import com.turing.eteacher.util.StringUtil;
 
 @RestController
 @RequestMapping("remote")
@@ -247,9 +249,9 @@ public class CourseRemote extends BaseRemote {
 		try{
 			String userId = getCurrentUserId(request);
 			String termId = request.getParameter("termId");//获取前端参数：termId
-			String data = request.getParameter("data");
+			String data = request.getParameter("date");
+			int page = Integer.parseInt(request.getParameter("page"));
 			List<Map> list = courseServiceImpl.getCourseList(termId, data, userId);
-			System.out.println("结果："+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}
 		catch(Exception e){
@@ -396,6 +398,32 @@ public class CourseRemote extends BaseRemote {
 		try{
 			courseServiceImpl.deleteById(textbookId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+		}	
+	}
+	/**
+	 * 查看当前时间正在进行的课程
+	 * @param request
+	 * @param textbookId
+	 * @return
+	 */
+	@RequestMapping(value="course/currentCourse", method=RequestMethod.POST)
+	public ReturnBody getCurrentCourse(HttpServletRequest request){
+		try{
+			String userId = getCurrentUserId(request);
+			String time = request.getParameter("time");
+			Map school = getCurrentSchool(request);
+			Map currentCourse = courseServiceImpl.getCurrentCourse(userId,time,school);
+			if(currentCourse!=null){
+				System.out.println("currentCourse:"+ currentCourse);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, currentCourse);
+			}else{
+				System.out.println("没课");
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS,null);
+			}
 		}
 		catch(Exception e){
 			e.printStackTrace();

@@ -21,7 +21,7 @@ public class CourseItem implements Serializable{
 	private Integer startWeek;
 	private Integer endWeek;
 	private String startDay;
-	private String endday;
+	private String endDay;
 	private String repeatType;
 	private Integer repeatNumber;
 	
@@ -64,11 +64,11 @@ public class CourseItem implements Serializable{
 		this.startDay = startDay;
 	}
 	@Column(name="END_DAY")
-	public String getEndday() {
-		return endday;
+	public String getEndDay() {
+		return endDay;
 	}
-	public void setEndday(String endday) {
-		this.endday = endday;
+	public void setEndDay(String endDay) {
+		this.endDay = endDay;
 	}
 	@Column(name="REPEAT_TYPE")
 	public String getRepeatType() {
@@ -87,7 +87,7 @@ public class CourseItem implements Serializable{
 	@Override
 	public String toString() {
 		return "CourseItem [ciId=" + ciId + ", courseId=" + courseId + ", startWeek=" + startWeek + ", endWeek="
-				+ endWeek + ", startDay=" + startDay + ", endday=" + endday + ", repeatType=" + repeatType
+				+ endWeek + ", startDay=" + startDay + ", endday=" + endDay + ", repeatType=" + repeatType
 				+ ", repeatNumber=" + repeatNumber + "]";
 	}
 }

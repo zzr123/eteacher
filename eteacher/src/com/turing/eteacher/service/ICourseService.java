@@ -8,6 +8,7 @@ import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.CustomFile;
+import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
@@ -79,4 +80,11 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public int getStudentCountById(String CourseId);
+	/**
+	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
+	 * @author macong
+	 * @param userId
+	 * @param time  "2016-11-13 10:21:51"
+	 */
+	public Map getCurrentCourse(String userId, String time,Map school);
 }

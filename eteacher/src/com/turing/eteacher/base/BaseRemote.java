@@ -3,6 +3,7 @@ package com.turing.eteacher.base;
 import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,10 +12,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
 import com.turing.eteacher.constants.EteacherConstants;
+import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
+import com.turing.eteacher.service.ISchoolService;
 import com.turing.eteacher.service.IStudentService;
 import com.turing.eteacher.service.IUserService;
 import com.turing.eteacher.util.StringUtil;
@@ -25,7 +28,8 @@ public class BaseRemote {
 	private IUserService userServiceImpl;
 	@Autowired
 	private IStudentService studentServiceImpl;
-	
+	@Autowired
+	private ISchoolService schoolServiceImpl;
 	/**
 	 * <li>功能描述：设置request中绑定的参数。
 	 * 
@@ -75,5 +79,18 @@ public class BaseRemote {
 			student = studentServiceImpl.getById(userId);
 		}
 		return student;
+	}
+	/**
+	 * 获取用户（学生、教师、管理员）所在的学校信息(schoolId schoolName)
+	 * @param request
+	 * @return
+	 */
+	public Map getCurrentSchool(HttpServletRequest request){
+		Map school = null;
+		String userId = request.getParameter("userId"); 
+		if (StringUtil.isNotEmpty(userId)) {
+			school = schoolServiceImpl.getSchoolByUserId(userId);
+		}
+		return school;
 	}
 }

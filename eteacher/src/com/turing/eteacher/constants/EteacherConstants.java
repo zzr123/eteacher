@@ -78,5 +78,9 @@ public class EteacherConstants {
 	 * 用户类型-学生
 	 */
 	public static final String USER_TYPE_STUDENT = "02";
+	/**
+	 * 用户类型-管理员
+	 */
+	public static final String USER_TYPE_ADMIN = "02";
 	
 }
