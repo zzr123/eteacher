@@ -774,6 +774,25 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	//获取班级课表
+	@Override
+	public List<Map> getClassCourseTable(String classId,int page) {
+		// TODO Auto-generated method stub
+		String sql="SELECT c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay, " +
+				"ce.LESSON_NUMBER as lessonNumber,ce.LOCATION as location, " +
+				"ce.CLASSROOM as classroom "+ 
+				"FROM t_course_cell ce "+
+				"INNER JOIN t_course_item ci ON ce.CI_ID=ci.CI_ID "+
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "+
+				"INNER JOIN t_course_class cl ON c.COURSE_ID =cl.COURSE_ID "+
+				"WHERE cl.CLASS_ID = ?";
+		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,classId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
+		return list;
+	}
+	
 
 	/**
 	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
@@ -816,4 +835,3 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		return null;
 	}
 
-}
