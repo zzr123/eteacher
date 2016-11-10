@@ -80,6 +80,9 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public int getStudentCountById(String CourseId);
+
+	//获取班级课表
+	public List<Map> getClassCourseTable(String classId,int page);
 	/**
 	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
 	 * @author macong
@@ -87,4 +90,4 @@ public interface ICourseService extends IService<Course> {
 	 * @param time  "2016-11-13 10:21:51"
 	 */
 	public Map getCurrentCourse(String userId, String time,Map school);
-}
+
