@@ -205,31 +205,31 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 //		
 //		List<Map> datas = null;
 //		List result = new ArrayList();
-		Map record = null;
-		for(Map data : list){
-			if(record==null||!data.get("workId").equals(record.get("workId"))){
-				record =(Map) workDAO.findMapByPage(hql, page*20, 20, userId).get(0); 
-		
-			//查询出该作业所属的课程ID（可能会有多个），根据课程查询出课程名称
-			String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName "
-					+ "from t_work LEFT JOIN t_work_course ON t_work.WORK_ID=t_work_course.WORK_ID "
-					+ "LEFT JOIN t_course ON t_course.COURSE_ID = t_work_course.COURSE_ID "
-					+ "WHERE t_course.USER_ID = ?";
-			List<Map> clist = workDAO.findBySql(ci, userId);
-			String courseName = "";
-			String courseIds= "[";
-			for(int i=0;i<clist.size();i++){
-				courseIds += "\""+clist.get(i).get("courseId")+"\",";
-			}
-			String c = courseIds.substring(0, courseIds.length()-1);
-			c = c+"]";
-			System.out.println("courseIds==="+c);
-			
-			record.put("courseName", courseName);
-			record.put("courseIds", c);
-		}
-		}
-	
+//		Map record = null;
+//		for(Map data : list){
+//			if(record==null||!data.get("workId").equals(record.get("workId"))){
+//				record =(Map) workDAO.findMapByPage(hql, page*20, 20, userId).get(0); 
+//		
+//			//课程ID（可能会有多个），根据课程查询出课程名称
+//			String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName "
+//					+ "from t_work LEFT JOIN t_work_course ON t_work.WORK_ID=t_work_course.WORK_ID "
+//					+ "LEFT JOIN t_course ON t_course.COURSE_ID = t_work_course.COURSE_ID "
+//					+ "WHERE t_course.USER_ID = ?";
+//			List<Map> clist = workDAO.findBySql(ci, userId);
+//			String courseName = "";
+//			String courseIds= "[";
+//			for(int i=0;i<clist.size();i++){
+//				courseIds += "\""+clist.get(i).get("courseId")+"\",";
+//			}
+//			String c = courseIds.substring(0, courseIds.length()-1);
+//			c = c+"]";
+//			System.out.println("courseIds==="+c);
+//			
+//			record.put("courseName", courseName);
+//			record.put("courseIds", c);
+//		}
+//		}
+//	
 	
 		return list;
 	}
