@@ -1,5 +1,7 @@
 package com.turing.eteacher.controller;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +99,8 @@ public class ClassController extends BaseController {
 	public Object getClassByMajor(HttpServletRequest request){
 		String majorId = request.getParameter("majorId");
 		Teacher teacher = getCurrentTeacher(request);
-		List list = classServiceImpl.getClassByMajor(majorId, teacher.getSchoolId());
+		int endTime = Calendar.getInstance().get(Calendar.YEAR);
+		List list = classServiceImpl.getClassByMajor(majorId, teacher.getSchoolId(),endTime);
 		System.out.println("我的list:"+list);
 		return list;
 	}

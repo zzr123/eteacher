@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
+import com.turing.eteacher.dao.CourseDAO;
 import com.turing.eteacher.model.WorkCourse;
 import com.turing.eteacher.service.IWorkCourseService;
 
@@ -23,6 +24,9 @@ public class WorkCourseServiceImpl extends BaseService<WorkCourse> implements IW
 		// TODO Auto-generated method stub
 		return workCourseDAO;
 	}
+	
+	@Autowired
+	private CourseDAO courseDAO;
 
 	@Override
 	public void deleteData(String wId){
@@ -46,6 +50,21 @@ public class WorkCourseServiceImpl extends BaseService<WorkCourse> implements IW
 			 	 "t_work_course LEFT JOIN t_course ON t_work_course.COURSE_ID = t_course.COURSE_ID "+ 
 			 	 "WHERE t_work_course.WORK_ID = ?";
 		List<Map> list = workCourseDAO.findBySql(sql, wId);
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql2 = "SELECT c.CLASS_NAME AS className  FROM t_class c WHERE c.CLASS_ID IN (SELECT cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID = ?)";
+				List<Map> list2 = courseDAO.findBySql(sql2,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String className = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						className += list2.get(j).get("className") + ",";
+					}
+					className = className.substring(0, className.length() - 1);
+					className += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+className);
+				}
+			}
+		}
 		return list;
 	}
 	

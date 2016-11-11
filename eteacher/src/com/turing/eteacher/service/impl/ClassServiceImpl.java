@@ -1,5 +1,6 @@
 package com.turing.eteacher.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.ClassDAO;
 import com.turing.eteacher.model.Classes;
 import com.turing.eteacher.service.IClassService;
+import com.turing.eteacher.util.StringUtil;
 
 @Service
 public class ClassServiceImpl extends  BaseService<Classes> implements IClassService {
@@ -50,11 +52,22 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 
 	// 获取用户当前学期所有课程对应的班级列表
 	@Override
-	public List<Map> getClassListByUser(String userId, String tpId) {
-		String hql="select cl.classId as classId,cl.className as className,SUBSTRING(cl.grade,3,4) as grade "+
-	               "from Classes cl,Course c,CourseClasses cc where c.userId=? and c.termId=? "+
-				   "and c.courseId=cc.courseId and cc.classId=cl.classId";
-		List<Map> list=classDAO.findMap(hql, userId,tpId);
+	public List<Map> getClassListByUser(String schoolId, int endTime,String majorId,int page) {
+		String sql = null;
+		System.out.println("endTIme:"+endTime+"  majorId:"+majorId);
+		List<Object> params = new ArrayList<>();
+		if(null != majorId && !"null".equals(majorId)){
+			sql="SELECT tc.CLASS_ID AS classId,tc.CLASS_NAME AS className FROM t_class tc WHERE tc.SCHOOL_ID = ? AND tc.MAJOR_ID = ? AND tc.END_TIME > ?";
+			params.add(schoolId);
+			params.add(majorId);
+			params.add(endTime);
+		}else{
+			sql = "SELECT tc.CLASS_ID AS classId,tc.CLASS_NAME AS className FROM t_class tc WHERE tc.SCHOOL_ID = ? AND tc.END_TIME > ?";
+			params.add(schoolId);
+			params.add(endTime);
+		}
+		System.out.println("sql:"+sql);
+		List<Map> list=classDAO.findBySqlAndPage(sql, page*20, 20, params);
 		for(int i = 0;i< list.size();i++){
 			System.out.println("mappp"+i+":"+list.get(i).toString());
 		}
@@ -76,13 +89,14 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	}
 
 	@Override
-	public List<Map> getClassByMajor(String majorId, String schoolId) {
+	public List<Map> getClassByMajor(String majorId, String schoolId,int date) {
 		String sql = "SELECT t_class.CLASS_ID AS classId, "+
 					 "t_class.CLASS_NAME AS className "+
 					 "FROM t_class WHERE "+
 					 "t_class.MAJOR_ID = ? "+
-					 "AND t_class.SCHOOL_ID = ?";
-		List<Map> list = classDAO.findBySql(sql, majorId,schoolId);
+					 "AND t_class.SCHOOL_ID = ? " +
+					 "AND t_class.END_TIME >= ";
+		List<Map> list = classDAO.findBySql(sql, majorId,schoolId,date);
 		return list;
 	}
 

@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.InitBinder;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Student;
-import com.turing.eteacher.model.Term;
+import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ISchoolService;
 import com.turing.eteacher.service.IStudentService;
-import com.turing.eteacher.service.ITermPrivateService;
+import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.IUserService;
 import com.turing.eteacher.util.StringUtil;
@@ -30,6 +30,8 @@ public class BaseRemote {
 	private IUserService userServiceImpl;
 	@Autowired
 	private IStudentService studentServiceImpl;
+	@Autowired
+	private ITeacherService teacherServiceImpl;
 	@Autowired
 	private ISchoolService schoolServiceImpl;
 	@Autowired
@@ -79,11 +81,19 @@ public class BaseRemote {
 	
 	public Student getCurrentStudent(HttpServletRequest request){
 		Student student = null;
-		String userId = request.getParameter("userId");
-		if (StringUtil.isNotEmpty(userId)) {
-			student = studentServiceImpl.getById(userId);
+		User user = getCurrentUser(request);
+		if (null != user && user.getUserType().equals("02")) {
+			student = studentServiceImpl.getById(user.getUserId());
 		}
 		return student;
+	}
+	public Teacher getCurrentTeacher(HttpServletRequest request){
+		Teacher teacher = null;
+		User user = getCurrentUser(request);
+		if (null != user && user.getUserType().equals("01")) {
+			teacher = teacherServiceImpl.get(user.getUserId());
+		}
+		return teacher;
 	}
 	/**
 	 * 获取用户（学生、教师、管理员）所在的学校信息(schoolId schoolName)

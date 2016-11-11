@@ -26,13 +26,13 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 
 	@Autowired
 	private TeacherDAO teacherDAO;
-	
+
 	@Autowired
 	private Dictionary2PrivateDAO dictionary2PrivateDAO;
 
 	@Autowired
 	private CourseDAO courseDAO;
-	
+
 	@Autowired
 	private SchoolDAO schoolDAO;
 
@@ -128,21 +128,28 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		String hql = "select c.courseId as courseId, c.courseName as courseName "
 				+ "from Course c where c.userId = ?";
 		List<Map> list = courseDAO.findMapByPage(hql, page * 20, 20, userId);
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql = "SELECT c.CLASS_NAME AS className  FROM t_class c WHERE c.CLASS_ID IN (SELECT cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID = ?)";
+				List<Map> list2 = courseDAO.findBySql(sql,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String className = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						className += list2.get(j).get("className") + ",";
+					}
+					className = className.substring(0, className.length() - 1);
+					className += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+className);
+				}
+			}
+		}
 		return list;
 	}
+
 	/**
-	 * 查看用户详细信息
-	 * name : '姓名',
-	 * teacherNO : '教工号',
-	 * sex : '性别',
-	 * titleId : '职称Id',
-	 * titleName : '职称名',
-	 * postId : '职务',
-	 * postName : '职务名',
-	 * schoolId : '学校Id',
-	 * schoolName : '学校名称'
-	 * department : '院系',
-	 * introduction : '教师简介' 
+	 * 查看用户详细信息 name : '姓名', teacherNO : '教工号', sex : '性别', titleId : '职称Id',
+	 * titleName : '职称名', postId : '职务', postName : '职务名', schoolId : '学校Id',
+	 * schoolName : '学校名称' department : '院系', introduction : '教师简介'
 	 */
 	@Override
 	public Map getUserInfo(String userId) {
@@ -152,46 +159,53 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 				+ "t.department as department, t.introduction as introduction ,t.picture as picture "
 				+ "from Teacher t where t.teacherId = ?";
 		Map<String, String> map = teacherDAO.findMap(hql, userId).get(0);
-		//获取用户的职称、职务信息
+		// 获取用户的职称、职务信息
 		String titlelId = (String) map.get("titleId");
-		//职称
+		// 职称
 		String titleHql = "select d.value as titleName from Dictionary2Private d where d.dpId = ?";
-		List<Map>  title = null;
-		title = dictionary2PrivateDAO.findMap(titleHql,titlelId);
-		if(title.size() <= 0){
-			String titleHql2= "select d.value as titleName from Dictionary2Public d where d.dictionaryId = ?";
-			title = dictionary2PrivateDAO.findMap(titleHql2,titlelId);
+		List<Map> title = null;
+		title = dictionary2PrivateDAO.findMap(titleHql, titlelId);
+		if (title.size() <= 0) {
+			String titleHql2 = "select d.value as titleName from Dictionary2Public d where d.dictionaryId = ?";
+			title = dictionary2PrivateDAO.findMap(titleHql2, titlelId);
 		}
-		if(title.size()>0){
+		if (title.size() > 0) {
 			map.putAll(title.get(0));
 		}
-		//职务
+		// 职务
 		String postId = (String) map.get("postId");
 		String postHql = "select d.value as postName from Dictionary2Private d where d.dpId = ?";
-		List<Map>  post = null;
-		post = dictionary2PrivateDAO.findMap(postHql,postId);
-		if(post.size() <= 0){
-			String postHql2= "select d.value as postName from Dictionary2Public d where d.dictionaryId = ?";
-			post = dictionary2PrivateDAO.findMap(postHql2,postId);
+		List<Map> post = null;
+		post = dictionary2PrivateDAO.findMap(postHql, postId);
+		if (post.size() <= 0) {
+			String postHql2 = "select d.value as postName from Dictionary2Public d where d.dictionaryId = ?";
+			post = dictionary2PrivateDAO.findMap(postHql2, postId);
 		}
-		if(post.size()>0){
+		if (post.size() > 0) {
 			map.putAll(post.get(0));
 		}
-		//学校信息
-		String schoolId  = map.get("schoolId");
+		// 学校信息
+		String schoolId = map.get("schoolId");
 		String hql4 = "select s.value as schoolName from School s where s.schoolId = ?";
 		List<Map> schoolName = schoolDAO.findMap(hql4, schoolId);
-		if(schoolName.size()>0){
+		if (schoolName.size() > 0) {
 			map.putAll(schoolName.get(0));
 		}
-/*		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
-				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
-				+ "t.department as department, t.introduction as introduction, t.picture as picture, "
-				+ "d.value as titleName, d1.value as postName, s.value as schoolName "
-				+ "form Teacher t, Dictionary2Private d, Dictionary2Private d1, School s "
-				+ "where d.userId=t.teacherId and s.schoolId=t.schoolId and d1.userId=t.teacherId "
-				+ "and t.teacherId = ?";
-		Map teacherInfo = teacherDAO.findMap(hql, userId).get(0);*/
+		/*
+		 * String hql =
+		 * "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, " +
+		 * "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
+		 * +
+		 * "t.department as department, t.introduction as introduction, t.picture as picture, "
+		 * +
+		 * "d.value as titleName, d1.value as postName, s.value as schoolName "
+		 * +
+		 * "form Teacher t, Dictionary2Private d, Dictionary2Private d1, School s "
+		 * +
+		 * "where d.userId=t.teacherId and s.schoolId=t.schoolId and d1.userId=t.teacherId "
+		 * + "and t.teacherId = ?"; Map teacherInfo = teacherDAO.findMap(hql,
+		 * userId).get(0);
+		 */
 		return map;
 	}
 

@@ -1,13 +1,10 @@
 package com.turing.eteacher.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.Term;
-import com.turing.eteacher.model.TermPrivate;
-import com.turing.eteacher.util.DateUtil;
 
 public interface ITermService extends IService<Term> {
 	

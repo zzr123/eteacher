@@ -24,6 +24,7 @@ public class Classes extends BaseModel implements Serializable {
 	private String grade;
 	private String classType;
 	private String schoolId;
+	private int endTime;
 	
 	@Id
 	@GeneratedValue(generator = "customId")
@@ -70,4 +71,12 @@ public class Classes extends BaseModel implements Serializable {
 	public void setSchoolId(String schoolId) {
 		this.schoolId = schoolId;
 	}
+	@Column(name="END_TIME")
+	public int getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(int endTime) {
+		this.endTime = endTime;
+	}
+	
 }

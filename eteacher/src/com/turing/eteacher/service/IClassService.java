@@ -13,8 +13,8 @@ public interface IClassService extends IService<Classes> {
 	//根据课程Id查找班级Id
 	public List<Map> getClassByCourseId(String courseId);
 	
-	// 获取用户当前学期所有课程对应的班级列表
-	public List<Map> getClassListByUser(String userId,String tpId);
+	// 获取班级列表
+	public List<Map> getClassListByUser(String schoolId, int endTime,String MajorId,int page);
 	//删除指定课程的班级
 	public void deleteClassByCourseId(String courseId);
 	//增加班级课程对应信息
@@ -26,7 +26,7 @@ public interface IClassService extends IService<Classes> {
 	 * @param majorId
 	 * @param schoolId
 	 */
-	public List<Map> getClassByMajor(String majorId,String schoolId);
+	public List<Map> getClassByMajor(String majorId,String schoolId,int date);
 	/**
 	 * 通过关键字删选班级
 	 * @author lifei

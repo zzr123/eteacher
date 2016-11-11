@@ -20,4 +20,10 @@ public interface ITextbookService extends IService<Textbook> {
 	 * @return
 	 */
 	public List<Textbook> getTextbookList(String courseId);
+	/**
+	 * 根据课程ID删除对应的书籍
+	 * @param courseId 课程id
+	 * @param type 01教材 02教辅
+	 */
+	public boolean delTextbook(String courseId,String type);
 }

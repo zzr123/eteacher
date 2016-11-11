@@ -49,4 +49,11 @@ public class CourseScorePrivateServiceImpl extends  BaseService<CourseScorePriva
 		}
 	}
 
+	@Override
+	public boolean delScoresByCourseId(String courseId) {
+		String sql = "DELETE FROM t_course_score_private t WHERE t.COURSE_ID = ?";
+		courseScorePrivateDAO.executeBySql(sql, courseId);
+		return true;
+	}
+
 }

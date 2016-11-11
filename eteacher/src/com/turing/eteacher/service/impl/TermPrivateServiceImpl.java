@@ -53,14 +53,6 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 	
 	@Override
 	public Map getListTerm(String tpId) {
-		// TODO Auto-generated method stub
-		/*String sql="select t_term_private.TERM_ID as termId," +
-				" t_term.TERM_NAME as termName , " +
-				"t_term_private.START_DATE as startDate , " +
-				"t_term_private.END_DATE as endDate , " +
-				"t_term_private.WEEK_COUNT as weekCount FROM t_term ,t_term_private " +
-				"WHERE t_term_private.TERM_ID = t_term.TERM_ID and t_term_private.TP_ID =?";
-		List<Map> list=termPrivateDAO.findBySql(sql,tpId);*/
 		System.out.println("tpId:"+tpId);
 		String hql="select tp.termId as termId," +
 				" t.termName as termName , " +

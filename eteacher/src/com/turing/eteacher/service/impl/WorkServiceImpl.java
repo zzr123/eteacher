@@ -21,6 +21,7 @@ import com.turing.eteacher.dao.WorkCourseDAO;
 import com.turing.eteacher.dao.WorkDAO;
 import com.turing.eteacher.model.Work;
 import com.turing.eteacher.model.WorkCourse;
+import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.DateUtil;
 import com.turing.eteacher.util.StringUtil;
@@ -35,6 +36,10 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	public BaseDAO<Work> getDAO() {
 		return workDAO;
 	}
+	
+	@Autowired
+	private IWorkCourseService workCourseServiceImpl;
+	
 	@Override
 	public List<Map> getListForTable(String termId, String courseId) {
 		List args = new ArrayList();
@@ -245,66 +250,16 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	 */
 	@Override
 	public Map getWorkDetail(String workId) {
-		/*String hql="select distinct w.workId as workId,w.publishTime as publishTime,"+
-	               "w.endTime as endTime,w.content as content,w.remindTime as remindTime,f.fileId as fileId,"+
-				   "f.fileName as fileName,c.courseName as courseName,cl.className as className "+
-	               "from Work w,Course c,Classes cl,CustomFile f,CourseClasses cc "+
-				   "where w.workId=f.dataId and w.courseId=c.courseId and "+
-	               "c.courseId=cc.courseId and cc.classId=cl.classId and w.workId=? ";*/
 		//第一步，根据作业ID查询该作业的内容，开始时间，结束时间（ＷＯＲＫ）
 		String wi = "select w.workId as workId, w.publishTime as publishTime, "
 				+ "w.endTime as endTime, w.content as content, w.remindTime as remindTime "
 				+ "from Work w where w.workId = ?";
-		List list = workDAO.findMap(wi, workId);
+		List<Map> list = workDAO.findMap(wi, workId);
 		Map data = null;
 		if(null != list && list.size() > 0){
 			data = workDAO.findMap(wi, workId).get(0);
-			//第二步，通过作业-课程关联表，查询出该作业所属的课程ID（ＷＯＲＫCＯＵＲＳＥ，可能会有多个）
-			//第三步，根据课程ＩＤ查询出课程名称（ＣＯＵＲＳＥ）
-			String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName "
-					+ "from t_course LEFT JOIN t_work_course "
-					+ "ON t_course.COURSE_ID = t_work_course.COURSE_ID "
-					+ "WHERE t_work_course.WORK_ID = ?";
-			List<Map> clist = workDAO.findBySql(ci, workId);
-			String courseName = "";
-			String courseIds= "[";
-			for(int i=0;i<clist.size();i++){
-				courseIds += "\""+clist.get(i).get("courseId")+"\",";
-			}
-			String c = courseIds.substring(0, courseIds.length()-1);
-			c = c+"]";
-			System.out.println("courseIds==========="+c);
-			if (null != clist) {
-				for (int i = 0; i < clist.size(); i++) {
-					String courName = (String) clist.get(i).get("courseName");
-					String courseId = (String) clist.get(i).get("courseId");
-					//第四步，根据课程-班级关联表，查询出该课程ID的班级ID（CLASSES,可能会有多个）
-					//第五步，根据班级ID，查询出班级名称。
-					String cli = "SELECT t_class.CLASS_NAME AS className FROM t_class LEFT JOIN t_course_class "
-							+ "ON t_class.CLASS_ID = t_course_class.CLASS_ID "
-							+ "WHERE t_course_class.COURSE_ID = ? ";
-					List<Map> classList = workDAO.findBySql(cli, courseId);
-					if(null != classList){
-						courseName += courName+"(";
-						for (int j = 0; j < classList.size(); j++) {
-							courseName += classList.get(j).get("className")+",";
-						}
-						courseName = courseName.substring(0, courseName.length()-1);
-						courseName += ")";
-					}
-					courseName = courseName += "||";
-				}
-				courseName = courseName.substring(0, courseName.length()-2);
-			}
-			data.put("courseName", courseName);
-			data.put("courseIds", c);
+			data.put("courses", workCourseServiceImpl.getCoursesByWId(workId));
 		}
-		//第六步，根据作业ID，查询出附件ID，附件name，附件URL。
-		/*String fi = "select f.fileId as fileId ,f.fileName as fileName from CustomFile f where f.dataId = ?";
-		List<Map> flist = workDAO.findMap(fi, workId);
-		for(int i=0;i<flist.size();i++){
-			System.out.println("----flist:"+flist.get(i).toString());
-		}*/
 		return data;
 	}
 	/**
