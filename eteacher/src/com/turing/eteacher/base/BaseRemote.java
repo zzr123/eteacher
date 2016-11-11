@@ -19,6 +19,8 @@ import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ISchoolService;
 import com.turing.eteacher.service.IStudentService;
+import com.turing.eteacher.service.ITermPrivateService;
+import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.IUserService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -30,6 +32,8 @@ public class BaseRemote {
 	private IStudentService studentServiceImpl;
 	@Autowired
 	private ISchoolService schoolServiceImpl;
+	@Autowired
+	private ITermService termServiceImpl;
 	/**
 	 * <li>功能描述：设置request中绑定的参数。
 	 * 
@@ -67,9 +71,10 @@ public class BaseRemote {
 		return request.getParameter("userId"); 
 	}
 	
-	public TermPrivate getCurrentTerm(HttpServletRequest request){
-		TermPrivate tpId = (TermPrivate)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
-		return tpId;
+	public Map getCurrentTerm(HttpServletRequest request){
+//		TermPrivate tpId = (TermPrivate)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
+		Map term = termServiceImpl.getCurrentTerm(getCurrentUserId(request));
+		return term;
 	}
 	
 	public Student getCurrentStudent(HttpServletRequest request){
