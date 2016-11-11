@@ -55,6 +55,9 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	               "from Classes cl,Course c,CourseClasses cc where c.userId=? and c.termId=? "+
 				   "and c.courseId=cc.courseId and cc.classId=cl.classId";
 		List<Map> list=classDAO.findMap(hql, userId,tpId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("mappp"+i+":"+list.get(i).toString());
+		}
 		return list;
 	}
 

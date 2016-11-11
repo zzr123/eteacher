@@ -778,9 +778,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	@Override
 	public List<Map> getClassCourseTable(String classId,int page) {
 		// TODO Auto-generated method stub
-		String sql="SELECT c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay, " +
-				"ce.LESSON_NUMBER as lessonNumber,ce.LOCATION as location, " +
-				"ce.CLASSROOM as classroom "+ 
+		String sql="SELECT c.COURSE_NAME as courseName,c.TERM_ID as tpId, " +
+				"ce.WEEKDAY as weekDay, ce.LESSON_NUMBER as lessonNumber, " +
+				"ce.LOCATION as location, ce.CLASSROOM as classroom "+ 
 				"FROM t_course_cell ce "+
 				"INNER JOIN t_course_item ci ON ce.CI_ID=ci.CI_ID "+
 				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "+
