@@ -250,7 +250,6 @@ public class CourseRemote extends BaseRemote {
 			String userId = getCurrentUserId(request);
 			String termId = request.getParameter("termId");//获取前端参数：termId
 			String data = request.getParameter("date");
-			int page = Integer.parseInt(request.getParameter("page"));
 			List<Map> list = courseServiceImpl.getCourseList(termId, data, userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}

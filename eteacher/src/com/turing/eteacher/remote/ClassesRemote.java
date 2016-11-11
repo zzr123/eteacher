@@ -29,7 +29,7 @@ public class ClassesRemote extends BaseRemote{
 		public ReturnBody getClassListByUser(HttpServletRequest request){
 			try{
 				String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
-				String tpId=getCurrentTerm(request)==null?null:getCurrentTerm(request).getTpId();
+				String tpId=getCurrentTerm(request)==null?null:(String)getCurrentTerm(request).get("termId");
 				List list=classServiceImp.getClassListByUser(userId,tpId);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS,list);
 			}

@@ -161,12 +161,14 @@ public class WorkRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/work/getWorkList", method = RequestMethod.POST)
 	public ReturnBody getListWork(HttpServletRequest request) {
 		String status = (String) request.getParameter("status");
-		String page = (String) request.getParameter("page");
+		String page = request.getParameter("page")==null?"0":(String)request.getParameter("page");
+		
 		String userId = getCurrentUser(request).getUserId();
-		System.out.println("status:" + status + "  page:" + page + "   userID:" + userId);
-		if (StringUtil.checkParams(status, page, userId)) {
+		String date = request.getParameter("date");
+		System.out.println("status:" + status + "  page:" + page + "   userID:" + userId +"    date:"+date);
+		if (StringUtil.checkParams(status, userId)) {
 			try {
-				List list = workServiceImpl.getListWork(userId, status, null, Integer.parseInt(page));
+				List list = workServiceImpl.getListWork(userId, status, date, Integer.parseInt(page));
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 			} catch (Exception e) {
 				e.printStackTrace();
