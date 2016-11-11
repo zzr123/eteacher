@@ -30,7 +30,7 @@ public class CourseTimetableRemote extends BaseRemote {
 	private ITermService termServiceImpl;
 	
 	/**
-	 * 获取课程列表（1.根据学期 2.根据指定日期）
+	 * 获取课程课表
 	 * @return
 	 */
 //{
