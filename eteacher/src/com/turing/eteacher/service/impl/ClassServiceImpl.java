@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.annotations.common.util.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.ClassDAO;
 import com.turing.eteacher.model.Classes;
 import com.turing.eteacher.service.IClassService;
-import com.turing.eteacher.util.StringUtil;
 
 @Service
 public class ClassServiceImpl extends  BaseService<Classes> implements IClassService {
@@ -89,7 +87,7 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	}
 
 	@Override
-	public List<Map> getClassByMajor(String majorId, String schoolId,int date) {
+	public List<Map> getClassByMajor(String majorId, String schoolId,int date,int page) {
 		String sql = "SELECT t_class.CLASS_ID AS classId, "+
 					 "t_class.CLASS_NAME AS className "+
 					 "FROM t_class WHERE "+

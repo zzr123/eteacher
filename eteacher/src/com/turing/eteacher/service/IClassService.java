@@ -26,7 +26,7 @@ public interface IClassService extends IService<Classes> {
 	 * @param majorId
 	 * @param schoolId
 	 */
-	public List<Map> getClassByMajor(String majorId,String schoolId,int date);
+	public List<Map> getClassByMajor(String majorId,String schoolId,int date,int page);
 	/**
 	 * 通过关键字删选班级
 	 * @author lifei

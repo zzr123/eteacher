@@ -100,9 +100,10 @@ public class ClassController extends BaseController {
 		String majorId = request.getParameter("majorId");
 		Teacher teacher = getCurrentTeacher(request);
 		int endTime = Calendar.getInstance().get(Calendar.YEAR);
-		List list = classServiceImpl.getClassByMajor(majorId, teacher.getSchoolId(),endTime);
-		System.out.println("我的list:"+list);
-		return list;
+		//TODO 需要修改
+		//List list = classServiceImpl.getClassByMajor(majorId, teacher.getSchoolId(),endTime);
+		//System.out.println("我的list:"+list);
+		return null;
 	}
 	/**
 	 * 通过关键字筛选班级
