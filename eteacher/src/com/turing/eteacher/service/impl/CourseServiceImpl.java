@@ -467,6 +467,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	/**
 	 * 教师接口
 	 */
+
 	// 获取课程列表（1.根据学期 2.根据指定日期）
 	@Override
 	public List<Map> getCourseList(String termId, String data, String userId) {
@@ -597,6 +598,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 					for (int i = 0; i < cIdList.size(); i++) {
 						System.out.println("....." + cIdList.get(i));
 						Map m = courseDAO.findMap(hql2, cIdList.get(i)).get(0);
+						//当前为本学期的第几周
+						m.put("currentWeek", weekNum);
 						System.out.println("今日课程" + i + ":" + m.toString());
 						courses.add(m);
 					}
@@ -803,15 +806,13 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	 *            "2016-11-13 10:21:51"
 	 */
 	public Map getCurrentCourse(String userId, String times, Map school) {
-		// 1.时间数据的处理 {times："2016-11-13
-		// 10:21:51"-->date:2016-11-13,time:10:21:51}
-		System.out.println("11111time:" + times);
+		// 1.时间数据的处理 {times："2016-11-13 10:21:51"-->date:2016-11-13,time:10:21:51}
 		String[] t = times.split(" ");
 		String date = t[0];
 		String time = t[1];
 		// 2.查询当前time对应的是第几节课
 		String hql = "select tt.timetableId as timetableId, tt.lessonNumber as lessonNumber "
-				+ "from TimeTable tt where tt.endTime>=? and tt.startTime<=? " + "and tt.schoolId=?";
+				+ "from TimeTable tt where tt.endTime >= ? and tt.startTime <= ? and tt.schoolId=?";
 		List<Map> timeTable = courseScoreDAO.findMap(hql, time, time, school.get("schoolId"));
 		if (timeTable.size() > 0 && timeTable.get(0) != null) {
 			// 3.查询出今天要上的课程
@@ -823,6 +824,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				for (int i = 0; i < courseList.size(); i++) {
 					todayCourse = (String) courseList.get(i).get("lessonNumber");
 					if (todayCourse.indexOf(nowLessonNumber) >= 0) {
+						System.out.println("`````````````````````````"+courseList.get(i));
 						return courseList.get(i);
 					} else {
 						return null;// 不在上课时间内
@@ -834,7 +836,45 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return null;
 	}
-
+	
+	/**
+	 * 获取当前课程的出勤情况列表
+	 * @author macong
+	 * @param courseId
+	 * @return
+	 */
+	@Override
+	public List<Map> getRegistSituation(String courseId,String currentWeek,String lessonNum,int status) {
+		// TODO Auto-generated method stub
+//		1.获取当前正在进行的课程信息(course_Id)，并查询出该课程对应的班级列表（t_course_class）。
+//		2.在t_student表中，根据class_Id,查询出学生列表。
+//		3.t_sign_in表中，根据本次课程信息（courseId,第几周，第几节课），查询出状态为“1”的学生列表
+//		4.返回学生列表的studentNo,studentName，以及出勤人数和课程人数。
+		String hql = "select s.stuId as stusentId, s.stuNo as studentNo, s.stuName as studentName "
+				+ "from Student s, SignIn  si, CourseClasses cc where "
+				+ "cc.classId = s.classId and s.stuId = si.studentId and si.courseId = cc.courseId "
+				+ "and cc.courseId = ? and si.currentWeek = ? and si.currentLessons = ? and si.status = ?";
+		
+		String hql1 = "SELECT s.STU_ID as stusentId, s.STU_NO as studentNo, s.STU_NAME as studentName FROM t_student s "
+				+ "WHERE s.STU_ID NOT IN(SELECT si1.STUDENT_ID FROM t_sign_in si1 WHERE "
+				+ "si1.COURSE_ID = ? and si1.CURRENT_WEEK = ? and si1.CURRENT_CELL = ?)";
+		if(status == 1){//签到人员列表
+			System.out.println("-----:"+hql);
+			List<Map> regist = courseDAO.findMap(hql, courseId,currentWeek,lessonNum,status);
+			System.out.println("*****:"+regist.get(0).toString());
+			if(null != regist && regist.size() > 0){
+				return regist;
+			}
+		}else if(status == 0){//未签到人员列表
+			List<Map> unregist = courseDAO.findBySql(hql1, courseId,currentWeek,lessonNum);
+			if(null != unregist && unregist.size() > 0){
+				return unregist;
+			}
+		}else{
+			return null;
+		}
+		return null;
+	}
 	@Override
 	public List<Map> getCourseTableList(String classId, int page) {
 		// TODO Auto-generated method stub

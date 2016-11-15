@@ -547,7 +547,7 @@ public class CourseRemote extends BaseRemote {
 
 	/**
 	 * 查看当前时间正在进行的课程
-	 * 
+	 * @author macong
 	 * @param request
 	 * @param textbookId
 	 * @return
@@ -555,18 +555,48 @@ public class CourseRemote extends BaseRemote {
 	@RequestMapping(value = "course/currentCourse", method = RequestMethod.POST)
 	public ReturnBody getCurrentCourse(HttpServletRequest request) {
 		try {
+			System.out.println(".....................................");
 			String userId = getCurrentUserId(request);
 			String time = request.getParameter("time");
 			Map school = getCurrentSchool(request);
-			Map currentCourse = courseServiceImpl.getCurrentCourse(userId,
-					time, school);
-			if (currentCourse != null) {
-				System.out.println("currentCourse:" + currentCourse);
-				return new ReturnBody(ReturnBody.RESULT_SUCCESS, currentCourse);
-			} else {
-				System.out.println("没课");
-				return new ReturnBody(ReturnBody.RESULT_SUCCESS, null);
+			if(StringUtil.checkParams(userId,time)){
+				Map currentCourse = courseServiceImpl.getCurrentCourse(userId,time, school);
+				if (currentCourse != null) {
+					System.out.println("currentCourse:" + currentCourse);
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, currentCourse);
+				} else {
+					System.out.println("没课");
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, null);
+				}
 			}
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,
+					ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
+	 * 获取本堂课程学生的签到情况
+	 * @author macong
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "course/registSituation", method = RequestMethod.POST)
+	public ReturnBody getRegistSituation(HttpServletRequest request) {
+		try {
+			String courseId = request.getParameter("courseId");
+			String currentWeek = request.getParameter("currentWeek");
+			String lessonNum = request.getParameter("lessonNum");
+			String status = request.getParameter("status");
+			List<Map> student = null;
+			if(StringUtil.checkParams(courseId,currentWeek,lessonNum,status)){
+				student = courseServiceImpl.getRegistSituation(courseId,currentWeek,lessonNum,Integer.parseInt(status));
+			}
+			if(null != student && student.size()>0){
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
+			}
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
