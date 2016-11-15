@@ -22,36 +22,31 @@ import com.turing.eteacher.util.StringUtil;
 @RequestMapping("remote")
 public class ClassesRemote extends BaseRemote {
 
-	@Autowired
-	private IClassService classServiceImp;
-
-	@Autowired
-	private ITermService termServiceImp;
-
-	/**
-	 * 获取用户当前学期所有课程对应的班级列表
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "teacher/classes/getClassList", method = RequestMethod.POST)
-	public ReturnBody getClassListByUser(HttpServletRequest request) {
-//		try {
-//			String userId = getCurrentUser(request) == null ? null
-//					: getCurrentUser(request).getUserId();
-//			String tpId = getCurrentTerm(request) == null ? null
-//					: (String) getCurrentTerm(request).get("termId");
-//			System.out.println("0000  " + tpId);
-//			List list = classServiceImp.getClassListByUser(userId, tpId);
-//			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-//					ReturnBody.ERROR_MSG);
-//		}
-		return new ReturnBody().getSystemError();
-	}
-
+		@Autowired
+		private IClassService classServiceImpl;
+		
+		@Autowired
+		private ITermService termServiceImpl;
+		/**
+		 * 获取用户当前学期所有课程对应的班级列表
+		 * @param request
+		 * @return
+		 */
+		@RequestMapping(value="teacher/classes/getClassList",method=RequestMethod.POST)
+		public ReturnBody getClassList(HttpServletRequest request){
+			try{
+		 		String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
+		    	String tpId=getCurrentTerm(request)==null?null:(String)getCurrentTerm(request).get("termId");
+		    	String page=request.getParameter("page");
+			  	System.out.println("0000  " +tpId);
+				List list=classServiceImpl.getClassList(userId,tpId,Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS,list);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+			}
+		}
 	/**
 	 * 获取用户当前学期所有课程对应的班级列表
 	 * 
@@ -65,7 +60,7 @@ public class ClassesRemote extends BaseRemote {
 				Teacher teacher = getCurrentTeacher(request);
 				if (null != teacher && StringUtil.checkParams(page, teacher.getSchoolId())) {
 					int endTime = Calendar.getInstance().get(Calendar.YEAR);
-					List list = classServiceImp.getClassListByUser(
+					List list = classServiceImpl.getClassListByUser(
 							teacher.getSchoolId(), endTime, majorId,
 							Integer.parseInt(page));
 					System.out.println(list.toString());
