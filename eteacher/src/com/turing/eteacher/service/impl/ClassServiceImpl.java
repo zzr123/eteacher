@@ -111,7 +111,7 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	//选择班级，获取教师当前学期的授课班级
 	@Override
 	public List<Map> getClassList(String userId, String tpId,int page) {
-		String sql = "select c.CLASS_NAME AS className,c.CLASS_ID AS classId " +
+		String sql = "select distinct c.CLASS_NAME AS className,c.CLASS_ID AS classId " +
 				"from t_class c " +
 				"INNER JOIN t_course_class cl ON c.CLASS_ID =cl.CLASS_ID " +
 				"INNER JOIN t_course co ON cl.COURSE_ID = co.COURSE_ID " +
