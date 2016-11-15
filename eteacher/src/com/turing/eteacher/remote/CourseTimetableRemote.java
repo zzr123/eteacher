@@ -30,7 +30,7 @@ public class CourseTimetableRemote extends BaseRemote {
 	private ITermService termServiceImpl;
 	
 	/**
-	 * 获取课程课表
+	 * 获取班级课表
 	 * @return
 	 */
 //{
@@ -51,7 +51,42 @@ public class CourseTimetableRemote extends BaseRemote {
 		try{
 			String classId = request.getParameter("classId");
 			String page =  (String)request.getParameter("page");
+			System.out.println("****:"+classId);
 			List<Map> list = courseServiceImpl.getClassCourseTable(classId,Integer.parseInt(page));
+//			System.out.println("结果："+list.get(0).toString());
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+		}
+	}
+	
+	/**
+	 * 获取课程课表
+	 * @return
+	 */
+//{
+//	result : '200',
+//	data : [
+//		{
+//			courseName : '课程名称',
+//			className : '班级名称',	
+//			weekDay : '星期几',
+//			lessonNumber : '第几节课',
+//			location : '地点'
+//			classRoom : '教室',	
+//		}
+//	],
+//	msg : '提示信息XXX'
+//}
+	@RequestMapping(value="teacher/course/CourseTableList", method=RequestMethod.POST)
+	public ReturnBody getCourseTableList(HttpServletRequest request){
+		try{
+			String classId = request.getParameter("classId");
+			String page =  (String)request.getParameter("page");
+			System.out.println("****:"+classId);
+			List<Map> list = courseServiceImpl.getCourseTableList(classId,Integer.parseInt(page));
 //			System.out.println("结果："+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}
