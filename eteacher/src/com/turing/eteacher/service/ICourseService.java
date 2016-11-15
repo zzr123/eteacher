@@ -104,10 +104,25 @@ public interface ICourseService extends IService<Course> {
 	public List<Map> getRegistSituation(String courseId,String currentWeek,String lessonNum,int status);
 
 	/**
-	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
+	 * 获取课程课表
 	 * @author zjx
-	 * @param userId
+	 * @param courseId
 	 * @param page
 	 */
-	public List<Map> getCourseTableList(String classId,int page);
+	public List<Map> getCourseTableList(String courseId,int page);
+	
+	/**
+	 * 选择课程 （教师当前学期所授课程）
+	 * @author zjx
+	 * @param userId
+	 * @param tpId
+	 */
+	public List<Map> getCourse(String userId,String tpId);
+	/**
+	 * 获取教师个人课表(学期)
+	 * @author zjx
+	 * @param userId
+	 * @param tpId
+	 */
+	public List<Map> getTermCourseTable(String userId,String tpId,int page);
 }
