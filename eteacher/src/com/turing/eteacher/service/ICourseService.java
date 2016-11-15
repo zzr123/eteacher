@@ -81,7 +81,12 @@ public interface ICourseService extends IService<Course> {
 	 */
 	public int getStudentCountById(String CourseId);
 
-	//获取班级课表
+	/**
+	 * 获取班级课表
+	 * @author zjx
+	 * @param classId
+	 * @param page  
+	 */
 	public List<Map> getClassCourseTable(String classId,int page);
 	/**
 	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
@@ -91,4 +96,11 @@ public interface ICourseService extends IService<Course> {
 	 */
 	public Map getCurrentCourse(String userId, String time,Map school);
 
+	/**
+	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
+	 * @author zjx
+	 * @param userId
+	 * @param page
+	 */
+	public List<Map> getCourseTableList(String classId,int page);
 }

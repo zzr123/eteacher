@@ -835,4 +835,10 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		return null;
 	}
 
+	@Override
+	public List<Map> getCourseTableList(String classId, int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

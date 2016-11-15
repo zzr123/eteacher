@@ -97,7 +97,7 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 		List<Map> list = classDAO.findBySql(sql, majorId,schoolId,date);
 		return list;
 	}
-
+	
 	@Override
 	public List<Map> getClassByKey(String key, String schoolId) {
 		String sql = "SELECT t_class.CLASS_ID AS classId, "+
@@ -107,6 +107,17 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 				 	 "ORDER BY t_class.CLASS_NAME";
 		List<Map> list = classDAO.findBySql(sql,schoolId);
 		return list;
+	}
+	//选择班级，获取教师当前学期的授课班级
+	@Override
+	public List<Map> getClassList(String userId, String tpId,int page) {
+		String sql = "select c.CLASS_NAME AS className,c.CLASS_ID AS classId " +
+				"from t_class c " +
+				"INNER JOIN t_course_class cl ON c.CLASS_ID =cl.CLASS_ID " +
+				"INNER JOIN t_course co ON cl.COURSE_ID = co.COURSE_ID " +
+				"WHERE co.USER_ID=? and co.TERM_ID=?";
+	List<Map> list = classDAO.findBySqlAndPage(sql, page*20, 20, userId,tpId);
+	return list;
 	}
 
 

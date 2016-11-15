@@ -35,4 +35,14 @@ public interface IClassService extends IService<Classes> {
 	 * @return
 	 */
 	public List<Map> getClassByKey(String key,String schoolId);
+	/**
+	 * 选择班级，获取教师当前学期的授课班级
+	 * @author zjx
+	 * @param userId
+	 * @param tpId
+	 * @param page
+	 * @return
+	 */
+	public List<Map> getClassList(String userId,String tpId,int page);
+	
 }
