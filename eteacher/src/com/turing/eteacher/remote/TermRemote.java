@@ -105,7 +105,7 @@ ReturnBody.ERROR_MSG);
 		}
 	}
 	/**
-	 * 获取公有学期列表信息（学期Id，学期名）
+	 * 获取当前学期
 	 * @param request
 	 * @return
 	 */
