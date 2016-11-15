@@ -778,6 +778,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		return 0;
 	}
 	//获取班级课表
+	//zjx
 	@Override
 	public List<Map> getClassCourseTable(String classId,int page) {
 		// TODO Auto-generated method stub
@@ -843,7 +844,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	 * @param courseId
 	 * @return
 	 */
-	@Override
+    @Override
 	public List<Map> getRegistSituation(String courseId,String currentWeek,String lessonNum,int status) {
 		// TODO Auto-generated method stub
 //		1.获取当前正在进行的课程信息(course_Id)，并查询出该课程对应的班级列表（t_course_class）。
@@ -875,10 +876,53 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return null;
 	}
+
+	//获取课程课表
 	@Override
-	public List<Map> getCourseTableList(String classId, int page) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Map> getCourseTableList(String courseId, int page) {
+		String sql="SELECT c.COURSE_NAME as courseName,cl.CLASS_NAME as className," +
+				"ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
+				"ce.LOCATION as location, ce.CLASSROOM as classroom " +
+				"FROM t_course_cell ce " +
+				"INNER JOIN t_course_item ci ON ce.CI_ID = ci.CI_ID " +
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+				"INNER JOIN t_course_class cc ON c.COURSE_ID = cc.COURSE_ID " +
+				"INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " +
+				"WHERE c.COURSE_ID = ?";
+		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,courseId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
+		return list;
+
+	//选择课程 （教师当前学期所授课程）
+	@Override
+	public List<Map> getCourse(String userId, String tpId) {
+		String sql="SELECT c.COURSE_ID as courseId,c.COURSE_NAME as courseName " +
+				"FROM t_course c WHERE c.USER_ID=? and c.TERM_ID=?";
+		List<Map> list=courseDAO.findBySql(sql,userId,tpId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("Map"+i+":"+list.get(i).toString());
+		}
+		return list;
+	}
+	//获取教师个人课表(学期)
+	@Override
+	public List<Map> getTermCourseTable(String userId, String tpId,int page) {
+		String sql="SELECT c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay," +
+				"ce.LESSON_NUMBER as lessonNumber,ce.LOCATION as location," +
+				" ce.CLASSROOM as classroom " +
+				"FROM t_course_cell ce " +
+				"INNER JOIN t_course_item ci ON ce.CI_ID = ci.CI_ID " +
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+				"INNER JOIN t_course_class cc ON c.COURSE_ID = cc.COURSE_ID " +
+				"INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " +
+				"WHERE c.USER_ID = ? and c.TERM_ID = ? ";
+		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,userId,tpId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
+		return list;
 	}
 
 }
