@@ -51,9 +51,10 @@ public class CourseTimetableRemote extends BaseRemote {
 	public ReturnBody getClassCourseTable(HttpServletRequest request){
 		try{
 			String classId = request.getParameter("classId");
+			String tpId=getCurrentTerm(request)==null?null:(String)getCurrentTerm(request).get("termId");
 			String page =  (String)request.getParameter("page");
 			System.out.println("****:"+classId);
-			List<Map> list = courseServiceImpl.getClassCourseTable(classId,Integer.parseInt(page));
+			List<Map> list = courseServiceImpl.getClassCourseTable(classId,tpId,Integer.parseInt(page));
 //			System.out.println("结果："+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}

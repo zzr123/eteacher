@@ -34,6 +34,7 @@ import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Major;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
+import com.turing.eteacher.service.ICourseClassService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.BeanUtils;
@@ -63,6 +64,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 
 	@Autowired
 	private ITermService termServiceImpl;
+	
+	@Autowired
+	private ICourseClassService courseClassServiceImpl;
 
 	@Override
 	public BaseDAO<Course> getDAO() {
@@ -780,17 +784,17 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	//获取班级课表
 	//zjx
 	@Override
-	public List<Map> getClassCourseTable(String classId,int page) {
+	public List<Map> getClassCourseTable(String classId,String tpId,int page) {
 		// TODO Auto-generated method stub
-		String sql="SELECT c.COURSE_NAME as courseName,c.TERM_ID as tpId, " +
+		String sql="SELECT c.COURSE_NAME as courseName, " +
 				"ce.WEEKDAY as weekDay, ce.LESSON_NUMBER as lessonNumber, " +
 				"ce.LOCATION as location, ce.CLASSROOM as classroom "+ 
 				"FROM t_course_cell ce "+
 				"INNER JOIN t_course_item ci ON ce.CI_ID=ci.CI_ID "+
 				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "+
 				"INNER JOIN t_course_class cl ON c.COURSE_ID =cl.COURSE_ID "+
-				"WHERE cl.CLASS_ID = ?";
-		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,classId);
+				"WHERE cl.CLASS_ID = ? and c.TERM_ID = ?";
+		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,classId,tpId);
 		for(int i = 0;i< list.size();i++){
 			System.out.println("map"+i+":"+list.get(i).toString());
 		}
@@ -880,7 +884,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	//获取课程课表
 	@Override
 	public List<Map> getCourseTableList(String courseId, int page) {
-		String sql="SELECT c.COURSE_NAME as courseName,cl.CLASS_NAME as className," +
+		String sql="SELECT distinct c.COURSE_ID AS courseId,c.COURSE_NAME as courseName," +
 				"ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
 				"ce.LOCATION as location, ce.CLASSROOM as classroom " +
 				"FROM t_course_cell ce " +
@@ -890,6 +894,22 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				"INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " +
 				"WHERE c.COURSE_ID = ?";
 		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,courseId);
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql2 = "SELECT c.CLASS_NAME AS className  FROM t_class c WHERE c.CLASS_ID IN (SELECT cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID = ?)";
+				List<Map> list2 = courseDAO.findBySql(sql2,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String className = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						className += list2.get(j).get("className") + ",";
+					}
+					className = className.substring(0, className.length() - 1);
+					className += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+className);
+				}
+			}
+		}
+		
 		for(int i = 0;i< list.size();i++){
 			System.out.println("map"+i+":"+list.get(i).toString());
 		}
@@ -909,7 +929,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	//获取教师个人课表(学期)
 	@Override
 	public List<Map> getTermCourseTable(String userId, String tpId,int page) {
-		String sql="SELECT c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay," +
+		String sql="SELECT distinct c.COURSE_ID AS courseId,c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay," +
 				"ce.LESSON_NUMBER as lessonNumber,ce.LOCATION as location," +
 				" ce.CLASSROOM as classroom " +
 				"FROM t_course_cell ce " +
@@ -919,6 +939,22 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				"INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " +
 				"WHERE c.USER_ID = ? and c.TERM_ID = ? ";
 		List<Map> list=courseDAO.findBySqlAndPage(sql,page*20, 20,userId,tpId);
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql2 = "SELECT c.CLASS_NAME AS className  FROM t_class c WHERE c.CLASS_ID IN (SELECT cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID = ?)";
+				List<Map> list2 = courseDAO.findBySql(sql2,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String className = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						className += list2.get(j).get("className") + ",";
+					}
+					className = className.substring(0, className.length() - 1);
+					className += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+className);
+				}
+			}
+		}
+		
 		for(int i = 0;i< list.size();i++){
 			System.out.println("map"+i+":"+list.get(i).toString());
 		}

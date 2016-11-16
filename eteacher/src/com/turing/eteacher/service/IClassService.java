@@ -44,5 +44,4 @@ public interface IClassService extends IService<Classes> {
 	 * @return
 	 */
 	public List<Map> getClassList(String userId,String tpId,int page);
-	
 }

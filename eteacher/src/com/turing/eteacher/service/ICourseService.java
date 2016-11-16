@@ -85,9 +85,10 @@ public interface ICourseService extends IService<Course> {
 	 * 获取班级课表
 	 * @author zjx
 	 * @param classId
+	 * @param tpId
 	 * @param page  
 	 */
-	public List<Map> getClassCourseTable(String classId,int page);
+	public List<Map> getClassCourseTable(String classId,String tpId,int page);
 	/**
 	 * 获取当前时间正在进行的课程（判断当前时间是否为教师的授课时间）
 	 * @author macong
