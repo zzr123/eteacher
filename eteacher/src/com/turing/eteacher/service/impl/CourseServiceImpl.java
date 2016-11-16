@@ -862,8 +862,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		if(status == 1){//签到人员列表
 			System.out.println("-----:"+hql);
 			List<Map> regist = courseDAO.findMap(hql, courseId,currentWeek,lessonNum,status);
-			System.out.println("*****:"+regist.get(0).toString());
 			if(null != regist && regist.size() > 0){
+				System.out.println("*****:"+regist.get(0).toString());
 				return regist;
 			}
 		}else if(status == 0){//未签到人员列表
@@ -894,7 +894,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			System.out.println("map"+i+":"+list.get(i).toString());
 		}
 		return list;
-
+	}
 	//选择课程 （教师当前学期所授课程）
 	@Override
 	public List<Map> getCourse(String userId, String tpId) {
