@@ -581,7 +581,7 @@ public class CourseRemote extends BaseRemote {
 	 * @author macong
 	 * @param request
 	 * @return
-	 */
+	 */ 
 	@RequestMapping(value = "course/registSituation", method = RequestMethod.POST)
 	public ReturnBody getRegistSituation(HttpServletRequest request) {
 		try {

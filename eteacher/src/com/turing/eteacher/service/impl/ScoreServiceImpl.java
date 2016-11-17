@@ -19,6 +19,7 @@ import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IScoreService;
 import com.turing.eteacher.service.IStudentService;
+import com.turing.eteacher.util.CustomIdGenerator;
 import com.turing.eteacher.util.StringUtil;
 
 @Service
@@ -164,6 +165,65 @@ public class ScoreServiceImpl extends BaseService<Score> implements IScoreServic
 				}
 			}
 		}
+	}
+	/**
+	 * 课堂活动-单次成绩录入
+	 * @author macong
+	 * @param score
+	 * @return msg
+	 */
+	@Override
+	public String addAverageScore(String courseId,String studentId,int score) {
+		//1. 根据课程ID，查询出该课程计分方式为“均值”（不超过一项）的成绩组成项ID。
+		String hql = "select d.value from Dictionary2Public d, CourseScorePrivate cs where "
+				+ "cs.status = 2 and cs.scorePointId = d.dictionaryId and cs.courseId = ? ";
+		List result = scoreDAO.find(hql, courseId);
+		if(null != result && result.size()>0){
+			//2. 查询该成绩组成项对应的分制，与参数“score”比较，判断参数score是否符合分制要求
+			switch ((String)result.get(0)) {
+			case EteacherConstants.SCORE_TWO_POINT:
+				if(score == 1 || score == 0){
+					return addScore(courseId,studentId,score,(String)result.get(0));
+				}else{
+					return "二分制成绩类型，分数为0或1";
+				}
+			case EteacherConstants.SCORE_FIVE_POINT:
+				if(0 <= score && score <= 5){
+					return addScore(courseId,studentId,score,(String)result.get(0));
+				}else{
+					return "五分制成绩类型，请输入0~5之间的数字";
+				}
+			case EteacherConstants.SCORE_TEN_POINT:
+				if(0 <= score && score <= 10){
+					return addScore(courseId,studentId,score,(String)result.get(0));
+				}else{
+					return "十分制成绩类型，请输入0~10之间的数字";
+				}
+			case EteacherConstants.SCORE_HUNDRED_POINT:
+				if(0 <= score && score <= 100){
+					return addScore(courseId,studentId,score,(String)result.get(0));
+				}else{
+					return "百分制成绩类型，请输入0~100之间的数字";
+				}
+			default:
+				break;
+			}
+		}else{
+			return "该课程无平时成绩";
+		}
+		
+		return null;
+	}
+	//3. 分数的记录
+	private String addScore(String courseId,String studentId,Integer score,String courseScoreId) {
+		String id = CustomIdGenerator.generateShortUuid();
+		String sql = "INSERT INTO T_SCORE (SCORE_ID, STU_ID , COURSE_ID , SCORE , CS_ID) VALUES (?,?,?,?,?)";
+		int result = scoreDAO.executeBySql(sql, id, studentId, courseId, Integer.toString(score), courseScoreId);
+		if(result>0){
+			return "加分成功";
+		}
+		
+		return null;
 	}
 
 }

@@ -82,5 +82,13 @@ public class EteacherConstants {
 	 * 用户类型-管理员
 	 */
 	public static final String USER_TYPE_ADMIN = "02";
+	/**
+	 * 课程分制
+	 */
+	public static final String SCORE_FIVE_POINT = "五分制";
+	public static final String SCORE_TEN_POINT = "十分制";
+	public static final String SCORE_TWO_POINT = "二分制";
+	public static final String SCORE_HUNDRED_POINT = "百分制";
+	
 	
 }

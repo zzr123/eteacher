@@ -855,7 +855,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 //		2.在t_student表中，根据class_Id,查询出学生列表。
 //		3.t_sign_in表中，根据本次课程信息（courseId,第几周，第几节课），查询出状态为“1”的学生列表
 //		4.返回学生列表的studentNo,studentName，以及出勤人数和课程人数。
-		String hql = "select s.stuId as stusentId, s.stuNo as studentNo, s.stuName as studentName "
+		String hql = "select s.stuId as studentId, s.stuNo as studentNo, s.stuName as studentName "
 				+ "from Student s, SignIn  si, CourseClasses cc where "
 				+ "cc.classId = s.classId and s.stuId = si.studentId and si.courseId = cc.courseId "
 				+ "and cc.courseId = ? and si.currentWeek = ? and si.currentLessons = ? and si.status = ?";
