@@ -20,6 +20,7 @@ import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.ICourseTableService;
+import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.StringUtil;
 
 @Controller
@@ -31,6 +32,9 @@ public class CourseTableController extends BaseController {
 	
 	@Autowired
 	private IClassService classServiceImpl;
+	
+	@Autowired
+	private ITermService termServiceImpl;
 
 	@RequestMapping("viewListCourseTable")
 	public String viewListCourseTable(HttpServletRequest request){
@@ -79,8 +83,12 @@ public class CourseTableController extends BaseController {
 	
 	@RequestMapping("viewCourseTable")
 	public String viewCourseTable(HttpServletRequest request){
-		List classList = classServiceImpl.findAll();
+//		List classList = classServiceImpl.findAll();
+		String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();;
+		Map tpId=termServiceImpl.getCurrentTerm(userId);
+		List classList = courseTableServiceImpl.getClassList(userId, tpId);
 		request.setAttribute("classList", classList);
+		
 		String type = request.getParameter("type");
 		if(type == null){
 			type = "user";
@@ -88,13 +96,13 @@ public class CourseTableController extends BaseController {
 		Map datas = null;
 		if("user".equals(type)){
 			User currentUser = (User)request.getSession().getAttribute(EteacherConstants.CURRENT_USER);
-			datas = courseTableServiceImpl.getCourseTableDatas(currentUser.getUserId(), type);
+			datas = courseTableServiceImpl.getCourseTableDatas(currentUser.getUserId(), tpId,type);
 			request.setAttribute("title", "教师课表");
 		}
 		else{
 			String classId = request.getParameter("classId");
 			request.setAttribute("classId", classId);
-			datas = courseTableServiceImpl.getCourseTableDatas(classId, type);
+			datas = courseTableServiceImpl.getCourseTableDatas(classId,tpId, type);
 			request.setAttribute("title", classServiceImpl.get(classId).getClassName()+"班级课表");
 		}
 		request.setAttribute("datas", datas);
