@@ -208,6 +208,21 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			    "order by w.publishTime asc";
 			list=workDAO.findMap(hql,userId,date);
 		}
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql2 = "SELECT w.WORK_ID AS workId  FROM t_work w WHERE w.WORK_ID IN (SELECT wc.WORK_ID FROM t_work_course wc WHERE wc.COURSE_ID = ?)";
+				List<Map> list2 = workDAO.findBySql(sql2,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String courseName = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						courseName += list2.get(j).get("courseName") + ",";
+					}
+					courseName = courseName.substring(0, courseName.length() - 1);
+					courseName += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+courseName);
+				}
+			}
+		}
 //		
 //		List<Map> datas = null;
 //		List result = new ArrayList();
