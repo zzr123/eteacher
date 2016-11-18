@@ -193,7 +193,6 @@ public class WorkRemote extends BaseRemote {
 			i++;
 			System.out.println("workId :" + workId);
 			Map data = workServiceImpl.getWorkDetail(workId);
-			System.out.println("!!!:"+data.toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -261,17 +260,19 @@ public class WorkRemote extends BaseRemote {
 			workServiceImpl.saveOrUpdate(work);// 更新“作业表”信息
 			// 获取该作业作用的班级列表
 			String list = request.getParameter("courseIds");
+			List<Map<String,String>> wcl = (List<Map<String,String>>) JSONUtils.parse(list);
 //			if (list != null) {// 作业的接受对象发生变化，更新"作业-课程"关联表。
-				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
-				String[] cIds = lists.split(",");
+//				String lists = list.replace("[", "").replace("]", "").replace("\"", "");
+//				String[] cIds = lists.split(",");
 				// 更新“作业-课程”关联表
 				workCourseServiceImpl.deleteData(wId);// 删除原有数据
-				for (int n = 0; n < cIds.length; n++) {
+				for (int n = 0; n < wcl.size(); n++) {
+					String courseId = wcl.get(n).get("id");
 					// 生成作业表主键（uuid）
 					String wcId = CustomIdGenerator.generateShortUuid();
 					workCourse.setWcId(wcId);
 					workCourse.setWorkId(wId);
-					workCourse.setCourseId(cIds[n]);
+					workCourse.setCourseId(courseId);
 					workCourseServiceImpl.add(workCourse);
 				}
 //			}

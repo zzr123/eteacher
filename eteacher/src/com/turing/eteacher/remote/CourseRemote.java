@@ -589,6 +589,7 @@ public class CourseRemote extends BaseRemote {
 			String currentWeek = request.getParameter("currentWeek");
 			String lessonNum = request.getParameter("lessonNum");
 			String status = request.getParameter("status");
+			
 			List<Map> student = null;
 			if(StringUtil.checkParams(courseId,currentWeek,lessonNum,status)){
 				student = courseServiceImpl.getRegistSituation(courseId,currentWeek,lessonNum,Integer.parseInt(status));
