@@ -310,10 +310,11 @@ public class CourseRemote extends BaseRemote {
 	 * @param status
 	 * @return
 	 */
-	@RequestMapping(value = "teacher/course/getCourseDetail/{courseId}/{status}", method = RequestMethod.GET)
-	public ReturnBody getCourseDetail(HttpServletRequest request,
-			@PathVariable String courseId, @PathVariable String status) {
+	@RequestMapping(value = "teacher/course/getCourseDetail", method = RequestMethod.POST)
+	public ReturnBody getCourseDetail(HttpServletRequest request) {
 		try {
+			String courseId = request.getParameter("courseId");
+			String status = request.getParameter("status");
 			List list = courseServiceImpl.getCourseDetail(courseId, status);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {

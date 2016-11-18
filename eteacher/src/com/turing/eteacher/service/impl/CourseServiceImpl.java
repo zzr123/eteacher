@@ -658,7 +658,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	 * } System.out.println("转换结果："+m); return null; }
 	 */
 	// 获取课程的详细信息
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	@Override
 	public List<Map> getCourseDetail(String courseId, String status) {
 		List<Map> list = null;

@@ -8,7 +8,7 @@ import com.turing.eteacher.model.CourseTable;
 
 public interface ICourseTableService extends IService<CourseTable> {
 
-	public List<CourseTable> getListByCourseId(String courseId);
+	public List<Map> getListByCourseId(String courseId);
 	//通过userId获取
 	public List<Map> getListByUserId(String userId,Map tpId);
 	//通过班级Id获取

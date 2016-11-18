@@ -83,10 +83,10 @@ public class CourseTableController extends BaseController {
 	
 	@RequestMapping("viewCourseTable")
 	public String viewCourseTable(HttpServletRequest request){
-//		List classList = classServiceImpl.findAll();
+		List classList = classServiceImpl.findAll();
 		String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();;
 		Map tpId=termServiceImpl.getCurrentTerm(userId);
-		List classList = courseTableServiceImpl.getClassList(userId, tpId);
+//		List classList = courseTableServiceImpl.getClassList(userId, tpId);
 		request.setAttribute("classList", classList);
 		
 		String type = request.getParameter("type");

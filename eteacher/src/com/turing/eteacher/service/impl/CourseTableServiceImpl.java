@@ -42,9 +42,39 @@ public class CourseTableServiceImpl extends BaseService<CourseTable> implements 
 	}
 	
 	@Override
-	public List<CourseTable> getListByCourseId(String courseId) {
-		String hql = "from CourseTable where courseId = ?";
-		List<CourseTable> list = courseTableDAO.find(hql, courseId);
+	public List<Map> getListByCourseId(String courseId) {
+//		String hql = "from CourseTable where courseId = ?";
+//		List<CourseTable> list = courseTableDAO.find(hql, courseId);
+//		return list;
+		String sql="SELECT distinct c.COURSE_ID AS courseId,c.COURSE_NAME as courseName," +
+				"ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
+				"ce.LOCATION as location, ce.CLASSROOM as classroom " +
+				"FROM t_course_cell ce " +
+				"INNER JOIN t_course_item ci ON ce.CI_ID = ci.CI_ID " +
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+				"INNER JOIN t_course_class cc ON c.COURSE_ID = cc.COURSE_ID " +
+				"INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " +
+				"WHERE c.COURSE_ID = ?";
+		List<Map> list=courseDAO.findBySql(sql,courseId);
+		if (null != list && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				String sql2 = "SELECT c.CLASS_NAME AS className  FROM t_class c WHERE c.CLASS_ID IN (SELECT cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID = ?)";
+				List<Map> list2 = courseDAO.findBySql(sql2,list.get(i).get("courseId"));
+				if (null != list2 && list2.size() > 0) {
+					String className = "(";
+					for (int j = 0; j < list2.size(); j++) {
+						className += list2.get(j).get("className") + ",";
+					}
+					className = className.substring(0, className.length() - 1);
+					className += ")";
+					list.get(i).put("courseName", list.get(i).get("courseName")+className);
+				}
+			}
+		}
+		
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
 		return list;
 	}
 
@@ -84,8 +114,21 @@ public class CourseTableServiceImpl extends BaseService<CourseTable> implements 
 	
 	@Override
 	public List<Map> getListByClassId(String classId,Map tpId) {
-		String hql = "select ct from CourseTable ct,Course c,CourseClasses cc where ct.courseId = c.courseId and c.courseId = cc.courseId and cc.classId = ? order by c.courseId,ct.startWeek";
-		List<Map> list = courseTableDAO.find(hql, classId);
+//		String hql = "select ct from CourseTable ct,Course c,CourseClasses cc where ct.courseId = c.courseId and c.courseId = cc.courseId and cc.classId = ? order by c.courseId,ct.startWeek";
+//		List<Map> list = courseTableDAO.find(hql, classId);
+//		return list;
+		String sql="SELECT c.COURSE_NAME as courseName, " +
+				"ce.WEEKDAY as weekDay, ce.LESSON_NUMBER as lessonNumber, " +
+				"ce.LOCATION as location, ce.CLASSROOM as classroom "+ 
+				"FROM t_course_cell ce "+
+				"INNER JOIN t_course_item ci ON ce.CI_ID=ci.CI_ID "+
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "+
+				"INNER JOIN t_course_class cl ON c.COURSE_ID =cl.COURSE_ID "+
+				"WHERE cl.CLASS_ID = ? and c.TERM_ID = ?";
+		List<Map> list=courseDAO.findBySql(sql,classId,tpId);
+		for(int i = 0;i< list.size();i++){
+			System.out.println("map"+i+":"+list.get(i).toString());
+		}
 		return list;
 	}
 
