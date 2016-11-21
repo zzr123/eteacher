@@ -665,9 +665,11 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		String hql = "";
 		if ("0".equals(status)) {
 			// 获取基本信息
-			hql = "select c.courseId as courseId,c.courseName as courseName,c.introduction as introduction,c.classHours as classHours,c.studentNumber as studentNumber,"
-					+ "c.specialty as specialty,c.teachingMethodId as teachingMethodId,c.courseTypeId as courseTypeId,c.examinationModeId as examinationModeId,c.formula as formula,"
-					+ "c.remindTime as remindTime from Course c where c.courseId=?";
+			hql = "select c.courseId as courseId,c.courseName as courseName," +
+					"c.introduction as introduction,c.classHours as classHours," +
+					"m.majorName as majorId,c.formula as formula,c.remindTime as remindTime " +
+					"from Course c ,Major m " +
+					"where c.majorId = m.majorId and c.courseId=?";
 			list = courseDAO.findMap(hql, courseId);
 			// 获取班级信息
 			String hql1 = "select cl.className from Classes cl,CourseClasses cc where cc.classId=cl.classId and cc.courseId=?";
@@ -678,54 +680,100 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			} else {
 				list.get(0).put("className", list1);
 			}
-			// 获取课程组成信息
-			hql1 = "select cs.scoreName as scoreName,cs.scorePercent as scorePercent from CourseScore cs where cs.courseId=?";
-			list2 = courseDAO.findMap(hql1, courseId);
-			if (list2 == null || list2.size() == 0) {
-				list.get(0).put("courseScore", null);
-			} else {
-				list.get(0).put("courseScore", list2);
+			// 获取授课方式
+			String hql2 = "select pu.value as teachingMethodId " +
+					"from Course c,Dictionary2Public pu " +
+					"where c.teachingMethodId=pu.dictionaryId and c.courseId=?";
+			String hql3 = "select pr.value as teachingMethodId " +
+					"from Course c,Dictionary2Private pr " +
+					"where c.teachingMethodId=pr.dpId and c.courseId=?";
+			List<Object> list3 = courseDAO.find(hql2, courseId);
+			List<Object> list4 = courseDAO.find(hql3, courseId);
+			List<Map> list5;
+			if (list3 ==null || list3.size() == 0) {
+				list.get(0).put("teachingMethodId", list4);
+			}else {
+				list.get(0).put("teachingMethodId", list3);
 			}
-			// 获取主教材信息
-			hql1 = "select t.textbookName as textbookName from Textbook t where t.courseId=? and t.textbookType=01";
-			list1 = courseDAO.find(hql1, courseId);
-			if (list1 == null || list1.size() == 0) {
-				list.get(0).put("mainTextbook", null);
-			} else {
-				list.get(0).put("mainTextbook", list1.get(0));
+			// 获取课程类型
+			String hql4 = "select pu.value as courseTypeId " +
+					"from Course c,Dictionary2Public pu " +
+					"where c.courseTypeId=pu.dictionaryId and c.courseId=?";
+			String hql5 = "select pr.value as courseTypeId " +
+					"from Course c,Dictionary2Private pr " +
+					"where c.courseTypeId =pr.dpId and c.courseId=?";
+			List<Object> list6 = courseDAO.find(hql4, courseId);
+			List<Object> list7 = courseDAO.find(hql5, courseId);
+			List<Map> list8;
+			if (list6 ==null || list6.size() == 0) {
+				list.get(0).put("courseTypeId", list7);
+			}else {
+				list.get(0).put("courseTypeId", list6);
 			}
-			// 获取辅助教材信息
-			hql1 = "select t.textbookName as textbookName from Textbook t where t.courseId=? and t.textbookType=02";
-			list1 = courseDAO.find(hql1, courseId);
-			if (list1 == null || list1.size() == 0) {
-				list.get(0).put("fuzhuTextBook", null);
-			} else {
-				list.get(0).put("fuzhuTextBook", list1);
+			// 获取考核类型
+			String hql6 = "select pu.value as examinationModeId " +
+					"from Course c,Dictionary2Public pu " +
+					"where c.examinationModeId=pu.dictionaryId and c.courseId=?";
+			String hql7 = "select pr.value as examinationModeId " +
+					"from Course c,Dictionary2Private pr " +
+					"where c.examinationModeId =pr.dpId and c.courseId=?";
+			List<Object> list9 = courseDAO.find(hql6, courseId);
+			List<Object> list10 = courseDAO.find(hql7, courseId);
+			List<Map> list11;
+			if (list9 ==null || list9.size() == 0) {
+				list.get(0).put("examinationModeId", list10);
+			}else {
+				list.get(0).put("examinationModeId", list9);
 			}
-			// 获取资源信息
-			hql1 = "select fileName as fileName,f.vocabularyId as vocabularyId from CustomFile f where f.dataId=?";
-			list2 = courseDAO.findMap(hql1, courseId);
-			if (list2 == null || list2.size() == 0) {
-				list.get(0).put("customFile", null);
-			} else {
-				list.get(0).put("customFile", list2);
-			}
-			// 获取上课信息
-			hql1 = "select ct.ctId as ctId,ct.weekDay as weekDay,ct.lessonNumber as lessonNumber,ct.location as location,ct.classRoom as classRoom,c.courseName "
-					+ "from Course c,CourseItem ci,CourseCell ct where c.courseId=? and c.courseId=ci.courseId and ci.ciId=ct.ciId";
-			list2 = courseDAO.findMap(hql1, courseId);
-			if (list2 == null || list2.size() == 0) {
-				list.get(0).put("courseTable", null);
-			} else {
-				list.get(0).put("courseTable", list2);
-			}
+//			// 获取课程组成信息
+//			hql1 = "select cs.scoreName as scoreName,cs.scorePercent as scorePercent from CourseScore cs where cs.courseId=?";
+//			list2 = courseDAO.findMap(hql1, courseId);
+//			if (list2 == null || list2.size() == 0) {
+//				list.get(0).put("courseScore", null);
+//			} else {
+//				list.get(0).put("courseScore", list2);
+//			}
+//			// 获取主教材信息
+//			hql1 = "select t.textbookName as textbookName from Textbook t where t.courseId=? and t.textbookType=01";
+//			list1 = courseDAO.find(hql1, courseId);
+//			if (list1 == null || list1.size() == 0) {
+//				list.get(0).put("mainTextbook", null);
+//			} else {
+//				list.get(0).put("mainTextbook", list1.get(0));
+//			}
+//			// 获取辅助教材信息
+//			hql1 = "select t.textbookName as textbookName from Textbook t where t.courseId=? and t.textbookType=02";
+//			list1 = courseDAO.find(hql1, courseId);
+//			if (list1 == null || list1.size() == 0) {
+//				list.get(0).put("fuzhuTextBook", null);
+//			} else {
+//				list.get(0).put("fuzhuTextBook", list1);
+//			}
+//			// 获取资源信息
+//			hql1 = "select fileName as fileName,f.vocabularyId as vocabularyId from CustomFile f where f.dataId=?";
+//			list2 = courseDAO.findMap(hql1, courseId);
+//			if (list2 == null || list2.size() == 0) {
+//				list.get(0).put("customFile", null);
+//			} else {
+//				list.get(0).put("customFile", list2);
+//			}
+//			// 获取上课信息
+//			hql1 = "select ct.ctId as ctId,ct.weekDay as weekDay,ct.lessonNumber as lessonNumber,ct.location as location,ct.classRoom as classRoom,c.courseName "
+//					+ "from Course c,CourseItem ci,CourseCell ct where c.courseId=? and c.courseId=ci.courseId and ci.ciId=ct.ciId";
+//			list2 = courseDAO.findMap(hql1, courseId);
+//			if (list2 == null || list2.size() == 0) {
+//				list.get(0).put("courseTable", null);
+//			} else {
+//				list.get(0).put("courseTable", list2);
+//			}
 			return list;
 		}
 		if ("1".equals(status)) {
-			hql = "select cs.csId as csId,cs.scoreName as scoreName,cs.scorePercent as scorePercent,cs.scorePointId as scorePointId "
-					+ "from CourseScore cs where cs.courseId=?";
+			hql = "select cs.cspId as cspId,cs.scoreName as scoreName," +
+					"cs.scorePercent as scorePercent,cs.scorePointId as scorePointId,cs.status as status "
+					+ "from CourseScorePrivate cs where cs.courseId=?";
 		}
-		if ("2".equals(status) || "3".equals(status)) {
+		if ("2".equals(status) || "3".equals(status)) {//查看教材教辅详情
 			hql = "select t.textbookId as textbookId,t.textbookName as textbookName,t.author as author,t.publisher as publisher,"
 					+ "t.edition as edition,t.isbn as isbn from Textbook t where t.courseId=? and ";
 			if ("2".equals(status)) {

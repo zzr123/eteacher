@@ -315,8 +315,10 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String courseId = request.getParameter("courseId");
 			String status = request.getParameter("status");
+			System.out.println("courseId:"+courseId+"   status:"+status);
 			List list = courseServiceImpl.getCourseDetail(courseId, status);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			System.out.println("结果："+list.get(0).toString());
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
