@@ -28,5 +28,13 @@ public interface ISchoolService extends IService<School>  {
 	 * @return
 	 */
 	public Map getSchoolByUserId(String userId);
-
+	
+	/**
+	 * 根据学校Id获取对应的教学楼
+	 * @author lifei
+	 * @param schoolId
+	 * @return
+	 */
+	public List<Map> getClassroomBySchooId(String schoolId);
+	
 }
