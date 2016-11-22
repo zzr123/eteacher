@@ -25,15 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.dao.CourseItemDAO;
 import com.turing.eteacher.model.Course;
+import com.turing.eteacher.model.CourseCell;
 import com.turing.eteacher.model.CourseClasses;
+import com.turing.eteacher.model.CourseItem;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
+import com.turing.eteacher.service.ICourseCellService;
 import com.turing.eteacher.service.ICourseClassService;
+import com.turing.eteacher.service.ICourseItemService;
 import com.turing.eteacher.service.ICourseScoreService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IMajorService;
@@ -62,14 +67,21 @@ public class CourseRemote extends BaseRemote {
 
 	@Autowired
 	private IClassService classServiceImple;
+	
 	@Autowired
 	private IMajorService majorServiceImpl;
+	
 	@Autowired
 	private ICourseClassService courseClassServiceImpl;
 
 	@Autowired
 	private ICourseScoreService courseScoreServiceImpl;
-
+	
+	@Autowired
+	private ICourseItemService courseItemService;
+	
+	@Autowired
+	private ICourseCellService courseCellService;
 	@RequestMapping(value = "teacher/course/getscoreList", method = RequestMethod.POST)
 	public ReturnBody getscoreList(HttpServletRequest request) {
 		String courseId = request.getParameter("courseId");
@@ -380,8 +392,9 @@ public class CourseRemote extends BaseRemote {
 				courseServiceImpl.add(course);
 			}
 			courseId = course.getCourseId();
-			if(StringUtil.isNotEmpty(classes)){
-				List<Map<String,String>> classesList = (List<Map<String,String>>) JSONUtils.parse(classes);
+			if (StringUtil.isNotEmpty(classes)) {
+				List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils
+						.parse(classes);
 				for (int i = 0; i < classesList.size(); i++) {
 					CourseClasses item = new CourseClasses();
 					item.setCourseId(courseId);
@@ -390,18 +403,22 @@ public class CourseRemote extends BaseRemote {
 				}
 			}
 			// 增加新数据
-			List<Map<String,String>> scoresList = (List<Map<String,String>>) JSONUtils.parse(scores);
+			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils
+					.parse(scores);
 			for (int i = 0; i < scoresList.size(); i++) {
 				CourseScorePrivate item = new CourseScorePrivate();
 				item.setCourseId(courseId);
 				item.setScoreName(scoresList.get(i).get("scoreName"));
-				item.setScorePercent(new BigDecimal(scoresList.get(i).get("scorePercent")));
+				item.setScorePercent(new BigDecimal(scoresList.get(i).get(
+						"scorePercent")));
 				item.setScorePointId(scoresList.get(i).get("scorePoint"));
-				item.setStatus(Integer.parseInt(scoresList.get(i).get("status")));
+				item.setStatus(Integer
+						.parseInt(scoresList.get(i).get("status")));
 				courseScoreServiceImpl.add(item);
 			}
-			if(StringUtil.isNotEmpty(book)){
-				Map<String,String> bookObj = (Map<String, String>) JSONUtils.parse(book);
+			if (StringUtil.isNotEmpty(book)) {
+				Map<String, String> bookObj = (Map<String, String>) JSONUtils
+						.parse(book);
 				Textbook item = new Textbook();
 				item.setTextbookName(bookObj.get("bookName"));
 				item.setAuthor(bookObj.get("author"));
@@ -412,8 +429,9 @@ public class CourseRemote extends BaseRemote {
 				item.setTextbookType("01");
 				textbookServiceImpl.save(item);
 			}
-			if(StringUtil.isNotEmpty(books)){
-				List<Map<String,String>> bookList = (List<Map<String,String>>) JSONUtils.parse(books);
+			if (StringUtil.isNotEmpty(books)) {
+				List<Map<String, String>> bookList = (List<Map<String, String>>) JSONUtils
+						.parse(books);
 				for (int i = 0; i < bookList.size(); i++) {
 					Textbook item = new Textbook();
 					item.setTextbookName(bookList.get(i).get("bookName"));
@@ -426,7 +444,9 @@ public class CourseRemote extends BaseRemote {
 					textbookServiceImpl.save(item);
 				}
 			}
-			return new ReturnBody("添加成功!");
+			Map<String,String> map = new HashMap();
+			map.put("courseId", course.getCourseId());
+			return new ReturnBody(map);
 		} else {
 			return ReturnBody.getParamError();
 		}
@@ -474,6 +494,39 @@ public class CourseRemote extends BaseRemote {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
 					ReturnBody.ERROR_MSG);
+		}
+	}
+
+	/**
+	 * 1.2.15 为课程添加重复周期和起止时间
+	 * 
+	 * @author lifei
+	 */
+	@RequestMapping(value = "teacher/course/addDate", method = RequestMethod.POST)
+	public ReturnBody addDate(HttpServletRequest request) {
+		String courseId = request.getParameter("courseId");
+		String repeatType = request.getParameter("repeatType");
+		String repeatNumber = request.getParameter("repeatNumber").trim();
+		String start = request.getParameter("start").trim();
+		String end = request.getParameter("end").trim();
+		if (StringUtil.checkParams(courseId, repeatNumber, repeatType, start,end)) {
+			CourseItem item = new CourseItem();
+			item.setCourseId(courseId);
+			item.setRepeatType(repeatType);
+			item.setRepeatNumber(Integer.parseInt(repeatNumber));
+			if (repeatType.equals("01")) {
+				item.setStartDay(start);
+				item.setEndDay(end);
+			}else{
+				item.setStartWeek(Integer.parseInt(start));
+				item.setEndWeek(Integer.parseInt(end));
+			}
+			courseItemService.save(item);
+			Map<String, String> map = new HashMap<>();
+			map.put("courseItemId", item.getCiId());
+			return new ReturnBody(map);
+		} else {
+			return ReturnBody.getParamError();
 		}
 	}
 
@@ -550,6 +603,7 @@ public class CourseRemote extends BaseRemote {
 
 	/**
 	 * 查看当前时间正在进行的课程
+	 * 
 	 * @author macong
 	 * @param request
 	 * @param textbookId
@@ -562,11 +616,13 @@ public class CourseRemote extends BaseRemote {
 			String userId = getCurrentUserId(request);
 			String time = request.getParameter("time");
 			Map school = getCurrentSchool(request);
-			if(StringUtil.checkParams(userId,time)){
-				Map currentCourse = courseServiceImpl.getCurrentCourse(userId,time, school);
+			if (StringUtil.checkParams(userId, time)) {
+				Map currentCourse = courseServiceImpl.getCurrentCourse(userId,
+						time, school);
 				if (currentCourse != null) {
 					System.out.println("currentCourse:" + currentCourse);
-					return new ReturnBody(ReturnBody.RESULT_SUCCESS, currentCourse);
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS,
+							currentCourse);
 				} else {
 					System.out.println("没课");
 					return new ReturnBody(ReturnBody.RESULT_SUCCESS, null);
@@ -579,12 +635,14 @@ public class CourseRemote extends BaseRemote {
 					ReturnBody.ERROR_MSG);
 		}
 	}
+
 	/**
 	 * 获取本堂课程学生的签到情况
+	 * 
 	 * @author macong
 	 * @param request
 	 * @return
-	 */ 
+	 */
 	@RequestMapping(value = "course/registSituation", method = RequestMethod.POST)
 	public ReturnBody getRegistSituation(HttpServletRequest request) {
 		try {
@@ -592,12 +650,14 @@ public class CourseRemote extends BaseRemote {
 			String currentWeek = request.getParameter("currentWeek");
 			String lessonNum = request.getParameter("lessonNum");
 			String status = request.getParameter("status");
-			
+
 			List<Map> student = null;
-			if(StringUtil.checkParams(courseId,currentWeek,lessonNum,status)){
-				student = courseServiceImpl.getRegistSituation(courseId,currentWeek,lessonNum,Integer.parseInt(status));
+			if (StringUtil
+					.checkParams(courseId, currentWeek, lessonNum, status)) {
+				student = courseServiceImpl.getRegistSituation(courseId,
+						currentWeek, lessonNum, Integer.parseInt(status));
 			}
-			if(null != student && student.size()>0){
+			if (null != student && student.size() > 0) {
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
 			}
 			return null;
@@ -606,5 +666,29 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
 					ReturnBody.ERROR_MSG);
 		}
+	}
+	/**
+	 *1.2.2	为特定课程添加授课时间
+	 * @author lifei
+	 */
+	@RequestMapping(value = "teacher/course/addTeachTime", method = RequestMethod.POST)
+	public ReturnBody addTeachTime(HttpServletRequest request) {
+			String data = request.getParameter("data"); 
+			if(StringUtil.checkParams(data)){
+				List<Map<String, String>> jsonList = (List<Map<String, String>>) JSONUtils
+						.parse(data);
+				for (int i = 0; i < jsonList.size(); i++) {
+					CourseCell cell = new CourseCell();
+					cell.setCiId(jsonList.get(i).get("courseCellId"));
+					cell.setWeekDay(jsonList.get(i).get("weekday"));
+					cell.setLessonNumber(jsonList.get(i).get("lessonNumber"));
+					cell.setLocation(jsonList.get(i).get("location"));
+					cell.setClassRoom(jsonList.get(i).get("classroom"));
+					courseCellService.save(cell);
+				}
+				return new ReturnBody("保存成功！");
+			}else{
+				return ReturnBody.getParamError();
+			}
 	}
 }

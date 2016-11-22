@@ -3,7 +3,6 @@ package com.turing.eteacher.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +85,13 @@ public class SchoolServiceImpl extends BaseService<School> implements ISchoolSer
 			school = schoolDAO.findMap(hql2, userId).get(0);
 		}
 		return school;
+	}
+
+	@Override
+	public List<Map> getClassroomBySchooId(String schoolId) {
+		String sql = "SELECT t.SCHOOL_ID AS buildingId, t.VALUE AS buildingName FROM t_school t WHERE t.TYPE = '4' AND t.PARENT_CODE = (SELECT t1.CODE FROM t_school t1 WHERE t1.SCHOOL_ID = ?)";
+		List<Map> list = schoolDAO.findBySql(sql, schoolId);
+		return list;
 	}
 
 }
