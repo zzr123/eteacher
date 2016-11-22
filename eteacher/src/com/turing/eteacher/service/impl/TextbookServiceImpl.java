@@ -1,6 +1,7 @@
 package com.turing.eteacher.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,20 @@ public class TextbookServiceImpl extends BaseService<Textbook> implements ITextb
 		String sql = "DELETE FROM t_textbook t WHERE t.COURSE_ID = ? and t.TEXTBOOK_TYPE = ?";
 		textbookDAO.executeBySql(sql, courseId,type);
 		return true;
+	}
+
+	@Override
+	public List<Map> getTextbook(String courseId, String type) {
+		String hql = "select t.textbookId as textbookId,t.textbookName as textbookName," +
+				"t.author as author,t.publisher as publisher ,t.edition as edition,t.isbn as isbn " +
+				"from Textbook t where t.courseId=? and ";
+		if ("1".equals(type)) {
+			hql += "t.textbookType=01";
+		} else {
+			hql += "t.textbookType=02";
+		}
+		List<Map> list = textbookDAO.findMap(hql, courseId); 
+		return list;
 	}
 
 }

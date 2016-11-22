@@ -667,7 +667,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			// 获取基本信息
 			hql = "select c.courseId as courseId,c.courseName as courseName," +
 					"c.introduction as introduction,c.classHours as classHours," +
-					"m.majorName as majorId,c.formula as formula,c.remindTime as remindTime " +
+					"m.majorName as majorId,c.remindTime as remindTime " +
 					"from Course c ,Major m " +
 					"where c.majorId = m.majorId and c.courseId=?";
 			list = courseDAO.findMap(hql, courseId);
@@ -757,15 +757,20 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 //			} else {
 //				list.get(0).put("customFile", list2);
 //			}
-//			// 获取上课信息
-//			hql1 = "select ct.ctId as ctId,ct.weekDay as weekDay,ct.lessonNumber as lessonNumber,ct.location as location,ct.classRoom as classRoom,c.courseName "
-//					+ "from Course c,CourseItem ci,CourseCell ct where c.courseId=? and c.courseId=ci.courseId and ci.ciId=ct.ciId";
-//			list2 = courseDAO.findMap(hql1, courseId);
-//			if (list2 == null || list2.size() == 0) {
-//				list.get(0).put("courseTable", null);
-//			} else {
-//				list.get(0).put("courseTable", list2);
-//			}
+			// 获取上课信息
+			hql1 = "select cc.ctId as ctId,cc.weekDay as weekDay,cc.lessonNumber as lessonNumber," +
+					"cc.location as location,cc.classRoom as classRoom "
+					+ "from Course c,CourseItem ci,CourseCell cc " +
+					"where c.courseId=ci.courseId and ci.ciId=cc.ciId and c.courseId=?";
+			list2 = courseDAO.findMap(hql1, courseId);
+			if (list2 == null || list2.size() == 0) {
+				list.get(0).put("courseTable", null);
+			} else {
+			String courseTable=(String) list2.get(0).get("lessonNumber")+"节   周"+
+					list2.get(0).get("weekDay")+"  "+list2.get(0).get("location")+"#"+list2.get(0).get("classRoom");
+//				System.out.println((String) list2.get(0).get("lessonNumber")+"节   周"+list2.get(0).get("weekDay")+"  "+list2.get(0).get("location")+"#"+list2.get(0).get("classRoom"));
+			list.get(0).put("courseTable", courseTable);
+			}
 			return list;
 		}
 		if ("1".equals(status)) {
@@ -797,6 +802,12 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				hql += "ci.startWeek as startTime,ci.endWeek as endTime ";
 			}
 			hql += "from CourseCell ct,CourseItem ci where ct.ctId=? and ct.ciId=ci.ciId";
+		}
+		if ("6".equals(status)){//获取工作量公式
+			hql = "select c.formula as formula from Course c where c.courseId =?";
+		}
+		if ("7".equals(status)){//获取课程简介
+			hql = "select c.introduction as introduction from Course c where c.courseId =?";
 		}
 		list = courseDAO.findMap(hql, courseId);
 		return list;

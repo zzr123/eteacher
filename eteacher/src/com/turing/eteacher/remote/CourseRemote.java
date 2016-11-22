@@ -327,10 +327,21 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String courseId = request.getParameter("courseId");
 			String status = request.getParameter("status");
+			Object data=null;
 			System.out.println("courseId:"+courseId+"   status:"+status);
-			List list = courseServiceImpl.getCourseDetail(courseId, status);
-			System.out.println("结果："+list.get(0).toString());
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
+			List<Map> list = courseServiceImpl.getCourseDetail(courseId, status);
+//			System.out.println("结果："+list.get(0).toString());
+			if ("1".equals(status)) {
+				for(int i = 0;i< list.size();i++){
+					System.out.println("map"+i+":"+list.get(i).toString());
+					data=list.get(i);
+//					return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(i));
+				}
+			}else{
+				data= list.get(0);
+				System.out.println("结果："+list.get(0).toString());
+			}	
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
@@ -668,6 +679,26 @@ public class CourseRemote extends BaseRemote {
 		}
 	}
 	/**
+	 * 获取教材或教辅详情
+	 * @author zjx
+	 * @param courseId
+	 * @param type 01教材 02教辅
+	 * @return
+	 */ 
+	@RequestMapping(value = "teacher/course/getTextbook", method = RequestMethod.POST)
+	public ReturnBody getTextbook(HttpServletRequest request) {
+		try {
+			String courseId = request.getParameter("courseId");
+			String type = request.getParameter("type");
+			System.out.println("courseId:"+courseId+"  type:"+type);
+			List<Map> list = textbookServiceImpl.getTextbook(courseId, type);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+		}
+	}
+	/**
 	 *1.2.2	为特定课程添加授课时间
 	 * @author lifei
 	 */
@@ -691,4 +722,4 @@ public class CourseRemote extends BaseRemote {
 				return ReturnBody.getParamError();
 			}
 	}
-}
+

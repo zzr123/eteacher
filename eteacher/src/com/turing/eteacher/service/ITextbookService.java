@@ -1,6 +1,7 @@
 package com.turing.eteacher.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.Textbook;
@@ -26,4 +27,12 @@ public interface ITextbookService extends IService<Textbook> {
 	 * @param type 01教材 02教辅
 	 */
 	public boolean delTextbook(String courseId,String type);
+	
+	/**
+	 * 根据课程ID查询教材或教辅
+	 * @param courseId
+	 * @param type 01教材 02教辅
+	 * @return
+	 */
+	public List<Map> getTextbook(String courseId,String type);
 }
