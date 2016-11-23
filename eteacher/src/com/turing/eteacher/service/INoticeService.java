@@ -29,4 +29,28 @@ public interface INoticeService extends IService<Notice> {
 	 * @return
 	 */
 	public List<Map> getNoticeReadList(String noticeId,int type, int page);
+	/**
+	 * 学生端接口：获取通知列表（已读通知和未读通知）
+	 * @author macong
+	 * @param userId
+	 * @param status
+	 * @param parseInt
+	 * @param termId
+	 * @return
+	 */
+	public List<Map> getNoticeList_student(String userId, String status, int page);
+	/**
+	 * 学生端接口：查看通知详情
+	 * @author macong
+	 * @param noticeId
+	 * @return
+	 */
+	public Map getNoticeDetail_student(String noticeId,int flag);
+	/**
+	 * 学生端接口：将未读通知置为已读状态
+	 * @author macong
+	 * @param noticeId
+	 * @param userId
+	 */
+	public void addReadFlag(String noticeId, String userId);
 }

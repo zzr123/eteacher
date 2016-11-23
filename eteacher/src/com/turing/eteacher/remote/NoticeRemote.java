@@ -242,4 +242,80 @@ public class NoticeRemote extends BaseRemote {
 					ReturnBody.ERROR_MSG);
 		}
 	}
+	
+	/**
+	 * ------------------------------------------------------------------------------------
+	 * 以下内容为学生端通知模块的相关接口
+	 */
+	/**
+	 * 获取通知列表（未读通知列表和已读通知列表）
+	 * @author macong
+	 * @param status   "01":未读通知         "02":已读通知
+	 */
+//	{
+//	    "result": 200,
+//	    "data": [
+//	        {
+//	            "noticeId": "ziYBK3ka",
+//	            "title": "放假通知",
+//	            "content": "关于2016年寒假放假通知",
+//	            "author": "于铁忠",
+//	            "publishTime": "2016-12-28"
+//	        }
+//	    ]
+//	}
+	@RequestMapping(value = "student/getNoticeList", method = RequestMethod.POST)
+	public ReturnBody getNoticeList_student(HttpServletRequest request) {
+		String userId = getCurrentUserId(request);
+		String status = request.getParameter("status");
+		String page = request.getParameter("page");
+		if(StringUtil.checkParams(userId,page,status)){
+			try {
+				List<Map> list = noticeServiceImpl.getNoticeList_student(userId,status,Integer.parseInt(page));
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+		}else{
+			return ReturnBody.getParamError();
+		}
+	
+	}
+	/**
+	 * 学生端接口：查看通知详情,并将首次查看的通知（flag=0）置为已读通知
+	 * @author macong
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "student/getNoticeDetail", method = RequestMethod.POST)
+	public ReturnBody getNoticeDetail_student(HttpServletRequest request) {
+		String noticeId = request.getParameter("noticeId");
+		String flag = request.getParameter("flag");
+		String userId = getCurrentUserId(request);
+		if(StringUtil.checkParams(noticeId,flag,userId)){
+			try {
+				//将未读通知置为已读状态
+				if(Integer.parseInt(flag) == 1){
+					noticeServiceImpl.addReadFlag(noticeId,userId);
+				}
+				//查看通知详情
+				Map notice = noticeServiceImpl.getNoticeDetail_student(noticeId,Integer.parseInt(flag));
+				if(null != notice){
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, notice);
+				}else{
+					return new ReturnBody(ReturnBody.ERROR_MSG);
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+		}else{
+			return ReturnBody.getParamError();
+		}
+	
+	}
 }

@@ -94,33 +94,43 @@ public class CourseRemote extends BaseRemote {
 	}
 
 	/**
-	 * 学生端功能：查看今天要上的课程
-	 * 
+	 * 学生端功能：获取用户特定日期的课程列表
+	 * @author macong
 	 * @param request
 	 * @return
 	 */
-	// {
-	// result : 'success',//成功success，失败failure
-	// data :
-	// '[{courseId:"课程ID",courseName:"课程名称",courseTime:"课程时间",location:"上课地点"}]',//课程列表数据
-	// msg : '提示信息XXX'
-	// }
-	@RequestMapping(value = "student/courses/today", method = RequestMethod.GET)
-	public ReturnBody getStudentCourseOfTaday(HttpServletRequest request) {
-		try {
-			List<Map> data = courseServiceImpl
-					.getCourseDatasOfToday(getCurrentUser(request));
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
-		} catch (Exception e) {
-			log.error(this, e);
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+
+//	{
+//		  "result": "200",
+//		  "data": [
+//		   {
+//		    "courseId": "zkje12IJMD",
+//		    "courseName": "大学英语",
+//		    "lessonNum": "3,4",
+//		    "location": "尚德楼",
+//		    "classroom": "301"
+//		   }
+//		]
+//	}
+
+	@RequestMapping(value = "student/getCourseByDate", method = RequestMethod.POST)
+	public ReturnBody getCourseByDate(HttpServletRequest request) {
+		String date = request.getParameter("date");
+		String userId = getCurrentUserId(request);
+		if(StringUtil.checkParams(userId,date)){
+			try {
+				List<Map> data = courseServiceImpl.getCourseByDate(userId,date);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+			} catch (Exception e) {
+				log.error(this, e);
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+			}
 		}
+		return new ReturnBody(ReturnBody.RESULT_FAILURE,null);
 	}
 
 	/**
-	 * 学生端功能：查看课程课表
-	 * 
+	 * 学生端功能：查看某门课程的课程详情
 	 * @param request
 	 * @param courseId
 	 * @return
@@ -173,7 +183,7 @@ public class CourseRemote extends BaseRemote {
 
 	/**
 	 * 学生端功能：获取用户某学期下的课程列表
-	 * 
+	 * ！！！Abandon
 	 * @param request
 	 * @return
 	 */
@@ -289,7 +299,9 @@ public class CourseRemote extends BaseRemote {
 		}
 	}
 
-	// 教师端操作
+	/*----------------------------------------------------------------------
+	 * 分割符。以下内容为教师端相关接口
+	*/
 	/**
 	 * 获取课程列表（1.根据学期 2.根据指定日期）
 	 * 
@@ -706,8 +718,7 @@ public class CourseRemote extends BaseRemote {
 	public ReturnBody addTeachTime(HttpServletRequest request) {
 			String data = request.getParameter("data"); 
 			if(StringUtil.checkParams(data)){
-				List<Map<String, String>> jsonList = (List<Map<String, String>>) JSONUtils
-						.parse(data);
+				List<Map<String, String>> jsonList = (List<Map<String, String>>) JSONUtils.parse(data);
 				for (int i = 0; i < jsonList.size(); i++) {
 					CourseCell cell = new CourseCell();
 					cell.setCiId(jsonList.get(i).get("courseCellId"));
@@ -722,4 +733,5 @@ public class CourseRemote extends BaseRemote {
 				return ReturnBody.getParamError();
 			}
 	}
+}
 

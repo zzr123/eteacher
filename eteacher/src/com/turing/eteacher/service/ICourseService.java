@@ -40,15 +40,16 @@ public interface ICourseService extends IService<Course> {
 	public Map getCourseRecordNow(User user, String courseId);
 	
 	/**
-	 * 获取今日课程列表信息
-	 * @param currentTerm
+	 * 学生端功能：获取用户特定日期的课程列表
+	 * @author macong
 	 * @param userId
+	 * @param date
 	 * @return
 	 */
-	public List<Map> getCourseDatasOfToday(User user);
+	public List<Map> getCourseByDate(String userId,String date);
 	
 	/**
-	 * 获取单个今日课程 上课时间信息
+	 * 获取特定课程的 上课时间信息
 	 * @param currentTerm
 	 * @param courseId
 	 * @return
@@ -126,4 +127,5 @@ public interface ICourseService extends IService<Course> {
 	 * @param tpId
 	 */
 	public List<Map> getTermCourseTable(String userId,String tpId,int page);
+	
 }

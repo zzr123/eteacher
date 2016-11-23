@@ -2,6 +2,7 @@ package com.turing.eteacher.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.NoticeDAO;
+import com.turing.eteacher.model.Log;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.service.INoticeService;
 import com.turing.eteacher.service.IStatisticService;
@@ -166,6 +168,89 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 		}
 		List<Map> list=noticeDAO.findBySqlAndPage(sql, page*20, 20, params);
 		return list;
+	}
+	/**
+	 * 学生端接口：获取通知列表（已读通知和未读通知）
+	 * @author macong
+	 * @param userId
+	 * @param status
+	 * @param parseInt
+	 * @param termId
+	 * @return
+	 */
+	@Override
+	public List<Map> getNoticeList_student(String userId, String status, int page) {
+		//1. 查出该学生所属的班级信息，根据班级信息，查询出该学生本学期的课程ID
+		//2. 根据课程ID，查询出对应的通知ID。
+		//3. 筛选出最近15天的通知
+		//获取当前时间及十五天前的时间（String类型）
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date d = new Date();
+        String currentDay = sdf.format(d);
+        //获取之前15天的日期
+        Calendar c = Calendar.getInstance();  
+        c.add(Calendar.DATE, - 15);  
+        Date monday = c.getTime();
+        String preDays = sdf.format(monday);
+		String hql = "select distinct n.noticeId as noticeId, n.title as title, "
+				+ "substring(n.content,1,30) as content, n.publishTime as publishTime, te.name as author "
+				+ "from Notice n, CourseClasses cc, WorkCourse wc, "
+				+ "Student s, Teacher te ";
+		List<Map> list = null;
+		if(status.equals("01")){//未读通知
+			String hql1 = hql + "where s.classId = cc.classId and cc.courseId = wc.courseId "
+					+ "and n.noticeId = wc.workId and n.userId = te.teacherId "
+					+ "and s.stuId = ? and n.publishTime > ? and n.publishTime < ? and n.status=1 "
+					+" and n.noticeId NOT IN(select log.noticeId from Log log "
+					+ "where log.stuId = ? and log.type = 1 )";
+			System.out.println("hql1:"+hql1);
+			list = noticeDAO.findMapByPage(hql1, page*10, 10,userId,preDays,currentDay,userId); 
+			
+		}else if(status.equals("02")){//已读通知
+			String hql2 = hql + ", Log l where s.classId = cc.classId and cc.courseId = wc.courseId "
+					+ "and n.noticeId = wc.workId and n.userId = te.teacherId "
+					+ "and s.stuId = ? and n.publishTime > ? and n.publishTime < ? and n.status=1 "
+					+ "and l.noticeId = n.noticeId and l.stuId = ? and l.type=1 ";
+			System.out.println("hql2:"+hql2);
+			list = noticeDAO.findMapByPage(hql2, page*10, 10,userId,preDays,currentDay,userId);
+		}
+		if(null != list && list.size() > 0){
+			return list;
+		}
+		return null;
+	}
+	/**
+	 * 学生端接口：查看通知详情
+	 * @author macong
+	 * @param noticeId
+	 * @return
+	 */
+	@Override
+	public Map getNoticeDetail_student(String noticeId,int flag) {
+		// TODO Auto-generated method stub
+		String hql = "select n.noticeId as noticeId, n.title as title, "
+				+ "n.content as content,n.publishTime as publishTime, t.name as author "
+				+ "from Notice n,Teacher t where n.userId = t.teacherId and n.noticeId = ? ";
+		Map m = noticeDAO.findMap(hql, noticeId).get(0);
+		if(null != m){
+			return m;
+		}
+		return null;
+	}
+	/**
+	 * 学生端接口：将未读通知置为已读状态
+	 * @author macong
+	 * @param noticeId
+	 * @param userId
+	 */
+	@Override
+	public void addReadFlag(String noticeId, String userId) {
+		// TODO Auto-generated method stub
+		Log l = new Log();
+		l.setNoticeId(noticeId);
+		l.setStuId(userId);
+		l.setType(1);
+		noticeDAO.save(l);
 	}
 
 }
