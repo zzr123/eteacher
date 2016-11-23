@@ -339,21 +339,10 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String courseId = request.getParameter("courseId");
 			String status = request.getParameter("status");
-			Object data=null;
 			System.out.println("courseId:"+courseId+"   status:"+status);
 			List<Map> list = courseServiceImpl.getCourseDetail(courseId, status);
-//			System.out.println("结果："+list.get(0).toString());
-			if ("1".equals(status)) {
-				for(int i = 0;i< list.size();i++){
-					System.out.println("map"+i+":"+list.get(i).toString());
-					data=list.get(i);
-//					return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(i));
-				}
-			}else{
-				data= list.get(0);
-				System.out.println("结果："+list.get(0).toString());
-			}	
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+			System.out.println("结果："+list.get(0).toString());	
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
@@ -704,6 +693,9 @@ public class CourseRemote extends BaseRemote {
 			String type = request.getParameter("type");
 			System.out.println("courseId:"+courseId+"  type:"+type);
 			List<Map> list = textbookServiceImpl.getTextbook(courseId, type);
+			if("1".equals(type)){
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
+			}
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -733,5 +725,3 @@ public class CourseRemote extends BaseRemote {
 				return ReturnBody.getParamError();
 			}
 	}
-}
-
