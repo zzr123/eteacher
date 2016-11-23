@@ -39,11 +39,11 @@ public class CourseScorePrivateServiceImpl extends  BaseService<CourseScorePriva
 			return list;
 		}else {
 			String sql2 = "SELECT "+
-						  "t_course_score_pubic.SCORE_NAME AS scoreName, "+
-				          "t_course_score_pubic.SCORE_PERCENT AS scorePercent, "+
-						  "t_course_score_pubic.SCORE_POINT_ID AS scorePointId, "+
-						  "t_course_score_pubic.STATUS AS status "+
-						  "FROM t_course_score_pubic";
+						  "t_course_score_public.SCORE_NAME AS scoreName, "+
+				          "t_course_score_public.SCORE_PERCENT AS scorePercent, "+
+						  "t_course_score_public.SCORE_POINT_ID AS scorePointId, "+
+						  "t_course_score_public.STATUS AS status "+
+						  "FROM t_course_score_public";
 			List<Map> list2 = courseScorePrivateDAO.findBySql(sql2);
 			return list2;
 		}
