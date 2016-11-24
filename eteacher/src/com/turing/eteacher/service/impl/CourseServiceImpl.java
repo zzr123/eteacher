@@ -651,10 +651,10 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		// 返回用户需要的数据：课程名称，上课时间，上课地点
 		if (cIdList.size() > 0 && cIdList != null) {
 			List<Map> courses = new ArrayList<>();
-			String hql2 = "select c.courseId as courseId, c.courseName as courseName, cc.location as location, "
+			String hql2 = "select c.courseId as courseId, c.courseName as courseName, s.value as location, "
 					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber "
-					+ "from Course c, CourseCell cc, CourseItem ci "
-					+ "where c.courseId = ci.courseId and cc.ciId = ci.ciId and c.courseId = ? "
+					+ "from Course c, CourseCell cc, CourseItem ci,School s "
+					+ "where c.courseId = ci.courseId and cc.ciId = ci.ciId and cc.location=s.code and c.courseId = ? "
 					+ "order by cc.lessonNumber asc ";
 			for (int i = 0; i < cIdList.size(); i++) {	
 				System.out.println("....." + cIdList.get(i));
@@ -697,7 +697,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			// 获取基本信息
      		hql = "select c.courseId as courseId,c.courseName as courseName," +
 					"c.introduction as introduction,c.classHours as classHours," +
-					"m.majorName as majorId,c.formula as formula,c.remindTime as remindTime " +
+					"m.majorName as major,m.majorId as majorId ,c.formula as formula," +
+					"c.teachingMethodId as teachingMethodId ,c.courseTypeId as courseTypeId ," +
+					"c.examinationModeId as examinationModeId,c.remindTime as remindTime " +
 					"from Course c ,Major m " +
 					"where c.majorId = m.majorId and c.courseId=?";
          	list = courseDAO.findMap(hql, courseId);
@@ -711,43 +713,43 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				list.get(0).put("className", list1);
 			}
 			// 获取授课方式
-			String hql2 = "select pu.value as teachingMethodId " + "from Course c,Dictionary2Public pu "
+			String hql2 = "select pu.value as teachingMethod " + "from Course c,Dictionary2Public pu "
 					+ "where c.teachingMethodId=pu.dictionaryId and c.courseId=?";
-			String hql3 = "select pr.value as teachingMethodId " + "from Course c,Dictionary2Private pr "
+			String hql3 = "select pr.value as teachingMethod " + "from Course c,Dictionary2Private pr "
 					+ "where c.teachingMethodId=pr.dpId and c.courseId=?";
 			List<Object> list3 = courseDAO.find(hql2, courseId);
 			List<Object> list4 = courseDAO.find(hql3, courseId);
 			List<Map> list5;
 			if (list3 == null || list3.size() == 0) {
-				list.get(0).put("teachingMethodId", list4);
+				list.get(0).put("teachingMethod", list4);
 			} else {
-				list.get(0).put("teachingMethodId", list3);
-			}
+				list.get(0).put("teachingMethod", list3);
+			} 
 			// 获取课程类型
-			String hql4 = "select pu.value as courseTypeId " + "from Course c,Dictionary2Public pu "
+			String hql4 = "select pu.value as courseType " + "from Course c,Dictionary2Public pu "
 					+ "where c.courseTypeId=pu.dictionaryId and c.courseId=?";
-			String hql5 = "select pr.value as courseTypeId " + "from Course c,Dictionary2Private pr "
+			String hql5 = "select pr.value as courseType " + "from Course c,Dictionary2Private pr "
 					+ "where c.courseTypeId =pr.dpId and c.courseId=?";
 			List<Object> list6 = courseDAO.find(hql4, courseId);
 			List<Object> list7 = courseDAO.find(hql5, courseId);
 			List<Map> list8;
 			if (list6 == null || list6.size() == 0) {
-				list.get(0).put("courseTypeId", list7);
+				list.get(0).put("courseType", list7);
 			} else {
-				list.get(0).put("courseTypeId", list6);
+				list.get(0).put("courseType", list6);
 			}
 			// 获取考核类型
-			String hql6 = "select pu.value as examinationModeId " + "from Course c,Dictionary2Public pu "
+			String hql6 = "select pu.value as examinationMode " + "from Course c,Dictionary2Public pu "
 					+ "where c.examinationModeId=pu.dictionaryId and c.courseId=?";
-			String hql7 = "select pr.value as examinationModeId " + "from Course c,Dictionary2Private pr "
+			String hql7 = "select pr.value as examinationMode " + "from Course c,Dictionary2Private pr "
 					+ "where c.examinationModeId =pr.dpId and c.courseId=?";
 			List<Object> list9 = courseDAO.find(hql6, courseId);
 			List<Object> list10 = courseDAO.find(hql7, courseId);
 			List<Map> list11;
 			if (list9 == null || list9.size() == 0) {
-				list.get(0).put("examinationModeId", list10);
+				list.get(0).put("examinationMode", list10);
 			} else {
-				list.get(0).put("examinationModeId", list9);
+				list.get(0).put("examinationMode", list9);
 			}
 			// 获取成绩组成信息
 			hql1 = "select csp.scoreName as scoreName,csp.scorePercent as scorePercent " +
@@ -790,9 +792,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 //			}
 			// 获取上课信息
 			hql1 = "select cc.ctId as ctId,cc.weekDay as weekDay,cc.lessonNumber as lessonNumber,"
-					+ "cc.location as location,cc.classRoom as classRoom "
-					+ "from Course c,CourseItem ci,CourseCell cc "
-					+ "where c.courseId=ci.courseId and ci.ciId=cc.ciId and c.courseId=?";
+					+ "s.value as location,cc.classRoom as classRoom "
+					+ "from Course c,CourseItem ci,CourseCell cc,School s "
+					+ "where c.courseId=ci.courseId and ci.ciId=cc.ciId and cc.location=s.code and c.courseId=?";
 			list2 = courseDAO.findMap(hql1, courseId);
 			if (list2 == null || list2.size() == 0) {
 				list.get(0).put("courseTable", null);
@@ -868,10 +870,11 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		// TODO Auto-generated method stub
 		String sql = "SELECT c.COURSE_NAME as courseName, "
 				+ "ce.WEEKDAY as weekDay, ce.LESSON_NUMBER as lessonNumber, "
-				+ "ce.LOCATION as location, ce.CLASSROOM as classroom " + "FROM t_course_cell ce "
+				+ "s.VALUE as location, ce.CLASSROOM as classroom " + "FROM t_course_cell ce "
 				+ "INNER JOIN t_course_item ci ON ce.CI_ID=ci.CI_ID "
 				+ "INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "
-				+ "INNER JOIN t_course_class cl ON c.COURSE_ID =cl.COURSE_ID "
+				+ "INNER JOIN t_course_class cl ON c.COURSE_ID =cl.COURSE_ID " 
+				+ "INNER JOIN t_school s ON ce.LOCATION = s.CODE "
 				+ "WHERE cl.CLASS_ID = ? and c.TERM_ID = ?";
 		List<Map> list = courseDAO.findBySqlAndPage(sql, page * 20, 20, classId, tpId);
 		for (int i = 0; i < list.size(); i++) {
@@ -965,11 +968,12 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	public List<Map> getCourseTableList(String courseId, int page) {
 		String sql = "SELECT distinct c.COURSE_ID AS courseId,c.COURSE_NAME as courseName,"
 				+ "ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber,"
-				+ "ce.LOCATION as location, ce.CLASSROOM as classroom " + "FROM t_course_cell ce "
+				+ "s.VALUE as location, ce.CLASSROOM as classroom " + "FROM t_course_cell ce "
 				+ "INNER JOIN t_course_item ci ON ce.CI_ID = ci.CI_ID "
 				+ "INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "
 				+ "INNER JOIN t_course_class cc ON c.COURSE_ID = cc.COURSE_ID "
-				+ "INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " + "WHERE c.COURSE_ID = ?";
+				+ "INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " 
+				+ "INNER JOIN t_school s ON ce.LOCATION = s.CODE "+ "WHERE c.COURSE_ID = ?";
 		List<Map> list = courseDAO.findBySqlAndPage(sql, page * 20, 20, courseId);
 		if (null != list && list.size() > 0) {
 			for (int i = 0; i < list.size(); i++) {
@@ -1009,11 +1013,12 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	@Override
 	public List<Map> getTermCourseTable(String userId, String tpId, int page) {
 		String sql = "SELECT distinct c.COURSE_ID AS courseId,c.COURSE_NAME as courseName,ce.WEEKDAY as weekDay,"
-				+ "ce.LESSON_NUMBER as lessonNumber,ce.LOCATION as location," + " ce.CLASSROOM as classroom "
+				+ "ce.LESSON_NUMBER as lessonNumber,s.VALUE as location," + " ce.CLASSROOM as classroom "
 				+ "FROM t_course_cell ce " + "INNER JOIN t_course_item ci ON ce.CI_ID = ci.CI_ID "
 				+ "INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID "
 				+ "INNER JOIN t_course_class cc ON c.COURSE_ID = cc.COURSE_ID "
-				+ "INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " + "WHERE c.USER_ID = ? and c.TERM_ID = ? ";
+				+ "INNER JOIN t_class cl ON cc.CLASS_ID = cl.CLASS_ID " 
+				+ "INNER JOIN t_school s ON ce.LOCATION = s.CODE "+ "WHERE c.USER_ID = ? and c.TERM_ID = ? ";
 		List<Map> list = courseDAO.findBySqlAndPage(sql, page * 20, 20, userId, tpId);
 		if (null != list && list.size() > 0) {
 			for (int i = 0; i < list.size(); i++) {
@@ -1036,7 +1041,33 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return list;
 	}
-	
+	//根据重复类型查特定课程的上课时间地点
+	@Override
+	public List<Map> getClassroomTime(String courseId, String type) {
+		String sql = "";
+		if("1".equals(type)){
+			 sql="SELECT ci.REPEAT_NUMBER as repeatNumber,ci.START_DAY as startDay," +
+			 	"ci.END_DAY as endDay,ce.LESSON_NUMBER as lessonNumber," +
+			 	"ce.CLASSROOM as classroom,s.VALUE as location" +
+				"FROM t_course_item ci " +
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+				"INNER JOIN t_course_cell ce ON ci.CI_ID = ce.CI_ID " +
+				"INNER JOIN t_school s ON ce.LOCATION = s.CODE " +
+				"WHERE c.COURSE_ID = ? and ci.REPEAT_TYPE = 1";
+		}
+		if("2".equals(type)){
+			 sql="SELECT ci.REPEAT_NUMBERas repeatNumber,ci.START_WEEK as startWeek," +
+			 	"ci.END_WEEK as endWeek,ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
+			 	"ce.CLASSROOM as classroom,s.VALUE as location " +
+		 		"FROM t_course_item ci " +
+		 		"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+		 		"INNER JOIN t_course_cell ce ON ci.CI_ID = ce.CI_ID " +
+		 		"INNER JOIN t_school s ON ce.LOCATION = s.CODE " +
+		 		"WHERE c.COURSE_ID = ? and ci.REPEAT_TYPE = 2";
+		}
+		List<Map> list = courseDAO.findBySql(sql, courseId);
+		return list;
+	}
 
 	@Override
 	public List<Map> getCourseByTermId(String userId, String tpId) {

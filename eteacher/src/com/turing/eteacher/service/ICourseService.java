@@ -126,7 +126,14 @@ public interface ICourseService extends IService<Course> {
 	 * @param userId
 	 * @param tpId
 	 */
-	public List<Map> getTermCourseTable(String userId,String tpId,int page);	
+	public List<Map> getTermCourseTable(String userId,String tpId,int page);
+	/**
+	 * 根据重复类型查特定课程的上课时间地点
+	 * @author zjx
+	 * @param courseId
+	 * @param type
+	 */
+	public List<Map> getClassroomTime(String courseId,String type);	
 	/**
 	 * 获取学期内课程的信息（重复类型、重复周期）
 	 * @author lifei
