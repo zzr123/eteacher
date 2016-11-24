@@ -1036,5 +1036,24 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return list;
 	}
+	
+
+	@Override
+	public List<Map> getCourseByTermId(String userId, String tpId) {
+		String hql = "select c.courseId as courseId, " +
+				"ci.ciId as ciId, " +
+				"ci.repeatType as repeatType, " +
+				"ci.repeatNumber as repeatNumber, " +
+				"ci.startWeek as startWeek, " +
+				"ci.endWeek as endWeek, " +
+				"ci.startDay as startDay, " +
+				"ci.endDay as endDay " +
+				"from Course c ,CourseItem ci " +
+				"where c.courseId = ci.courseId " +
+				"and c.termId = ? " +
+				"and c.userId = ?";
+		List<Map> list = courseDAO.findMap(hql, tpId,userId);
+		return list;
+	}
 
 }

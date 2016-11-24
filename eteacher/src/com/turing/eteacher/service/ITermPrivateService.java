@@ -18,5 +18,12 @@ public interface ITermPrivateService  extends IService<TermPrivate>{
 	public Map getListTerm(String tpId);
 	
 	public void updateTermPrivate(TermPrivate termPrivate);
-
+	
+	/**
+	 * 获取用户创建的学期
+	 * @author lifei
+	 * @param userId
+	 * @return
+	 */
+	public List<TermPrivate> getListByUserId(String userId);
 }

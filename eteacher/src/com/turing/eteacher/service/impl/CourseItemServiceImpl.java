@@ -25,5 +25,16 @@ public class CourseItemServiceImpl extends BaseService<CourseItem> implements IC
 		return courseItemDAO;
 	}
 
+	@Override
+	public CourseItem getItemByCourseId(String courseId) {
+		String hql = "from CourseItem ci where ci.courseId = ?";
+		List list = courseItemDAO.find(hql, courseId);
+		if (null != list && list.size() > 0) {
+			return (CourseItem) list.get(0);
+		}
+		return null;
+	}
+	
+	
 
 }

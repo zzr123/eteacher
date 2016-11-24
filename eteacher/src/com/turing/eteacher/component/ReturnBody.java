@@ -71,6 +71,15 @@ public class ReturnBody {
 		}
 		return paramErrorBody;
 	}
+	
+	/**
+	 * 返回一个带有错误信息的
+	 * @param msg
+	 * @return
+	 */
+	public static ReturnBody getErrorBody(String msg){
+		return new ReturnBody(RESULT_FAILURE, msg);
+	}
 
 	/**
 	 * 获取一个系统错误的返回值

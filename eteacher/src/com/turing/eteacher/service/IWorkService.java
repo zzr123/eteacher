@@ -25,4 +25,10 @@ public interface IWorkService extends IService<Work> {
 	public void updateWorkStatus(String workId,String status);
 	//删除作业
 	public void deleteWork(String workId);
+	/**
+	 * 获取指定月份内作业截止的结束时间
+	 * @author lifei
+	 * @return
+	 */
+	public List<Map> getWorkEndDateByMonth(String month,String userId);
 }

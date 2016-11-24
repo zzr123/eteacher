@@ -1,5 +1,7 @@
 package com.turing.eteacher.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,13 @@ public class CourseCellServiceImpl extends BaseService<CourseCell> implements IC
 	@Override
 	public BaseDAO<CourseCell> getDAO() {
 		return courseCellDAO;
+	}
+
+	@Override
+	public List<CourseCell> getCells(String ciId) {
+		String hql = "from CourseCell cc where cc.ciId = ?";
+		List list = courseCellDAO.find(hql, ciId);
+		return list;
 	}
 
 

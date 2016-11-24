@@ -82,5 +82,12 @@ public class TermPrivate extends CreateTimeModel implements Serializable{
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+	@Override
+	public String toString() {
+		return "TermPrivate [tpId=" + tpId + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", weekCount=" + weekCount
+				+ ", userId=" + userId + ", termId=" + termId + ", status="
+				+ status + "]";
+	}
 
 }

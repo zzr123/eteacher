@@ -1,26 +1,16 @@
 package com.turing.eteacher.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.constants.EteacherConstants;
-import com.turing.eteacher.dao.WorkCourseDAO;
 import com.turing.eteacher.dao.WorkDAO;
 import com.turing.eteacher.model.Work;
-import com.turing.eteacher.model.WorkCourse;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.DateUtil;
@@ -335,6 +325,18 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	@Override
 	public void deleteWork(String workId) {
 		workDAO.deleteById(workId);
+	}
+	@Override
+	public List<Map> getWorkEndDateByMonth(String ym, String userId) {
+		String cLastDay = DateUtil.getLastDayOfMonth(ym);
+		cLastDay = DateUtil.addDays(cLastDay, 1);
+		String cFirstDay = ym + "-01";
+		String sql = "SELECT SUBSTRING(tw.END_TIME,1,10) AS date FROM t_work tw WHERE tw.WORK_ID IN ( "+
+					 "SELECT twc.WORK_ID FROM t_work_course twc WHERE twc.COURSE_ID IN ( "+
+					 "SELECT tc.COURSE_ID FROM t_course tc WHERE tc.USER_ID = ?)) "+ 
+					 "AND  tw.END_TIME BETWEEN  ? AND ?";
+		List list = workDAO.findBySql(sql, userId, cFirstDay, cLastDay);
+		return list;
 	}
 	
 }

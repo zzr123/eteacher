@@ -74,4 +74,10 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		// TODO Auto-generated method stub
 		termPrivateDAO.update(termPrivate);
 	}
+	@Override
+	public List<TermPrivate> getListByUserId(String userId) {
+		String hql = "from TermPrivate tp where tp.userId = ?";
+		List list = termPrivateDAO.find(hql, userId);
+		return list;
+	}
 }

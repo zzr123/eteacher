@@ -1,5 +1,6 @@
 package com.turing.eteacher.remote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +21,7 @@ import com.turing.eteacher.model.WorkStatus;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.CustomIdGenerator;
+import com.turing.eteacher.util.DateUtil;
 import com.turing.eteacher.util.StringUtil;
 
 /**
@@ -304,6 +305,22 @@ public class WorkRemote extends BaseRemote {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+	}
+	
+	/**
+	 * 1.2.16 获取指定月份有课程的日期
+	 * 
+	 * @author lifei
+	 */
+	@RequestMapping(value = "teacher/Course/getHomeworkday", method = RequestMethod.POST)
+	public ReturnBody getHomeworkday(HttpServletRequest request) {
+		String ym = request.getParameter("month");
+		if (StringUtil.checkParams(ym)) {
+			List list = workServiceImpl.getWorkEndDateByMonth(ym, getCurrentUserId(request));
+			return new ReturnBody(list);
+		}else{
+			return ReturnBody.getParamError();
 		}
 	}
 	// @RequestMapping(value="teacher/work/updateWorkStatus",
