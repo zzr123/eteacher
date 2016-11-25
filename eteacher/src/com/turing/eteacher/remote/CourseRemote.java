@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.dao.CourseItemDAO;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseCell;
 import com.turing.eteacher.model.CourseClasses;
@@ -35,7 +34,6 @@ import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
-import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.ICourseCellService;
 import com.turing.eteacher.service.ICourseClassService;
 import com.turing.eteacher.service.ICourseItemService;
@@ -43,7 +41,6 @@ import com.turing.eteacher.service.ICourseScoreService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IMajorService;
 import com.turing.eteacher.service.ITeacherService;
-import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.ITextbookService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -57,31 +54,26 @@ public class CourseRemote extends BaseRemote {
 	private ICourseService courseServiceImpl;
 
 	@Autowired
-	private ITermService termServiceImpl;
-
-	@Autowired
 	private ITextbookService textbookServiceImpl;
 
 	@Autowired
 	private ITeacherService teacherServiceImpl;
 
 	@Autowired
-	private IClassService classServiceImple;
-	
-	@Autowired
 	private IMajorService majorServiceImpl;
-	
+
 	@Autowired
 	private ICourseClassService courseClassServiceImpl;
 
 	@Autowired
 	private ICourseScoreService courseScoreServiceImpl;
-	
+
 	@Autowired
 	private ICourseItemService courseItemService;
-	
+
 	@Autowired
 	private ICourseCellService courseCellService;
+
 	@RequestMapping(value = "teacher/course/getscoreList", method = RequestMethod.POST)
 	public ReturnBody getscoreList(HttpServletRequest request) {
 		String courseId = request.getParameter("courseId");
@@ -95,42 +87,79 @@ public class CourseRemote extends BaseRemote {
 
 	/**
 	 * 学生端功能：获取用户特定日期的课程列表
+	 * 
 	 * @author macong
 	 * @param request
 	 * @return
 	 */
 
-//	{
-//		  "result": "200",
-//		  "data": [
-//		   {
-//		    "courseId": "zkje12IJMD",
-//		    "courseName": "大学英语",
-//		    "lessonNum": "3,4",
-//		    "location": "尚德楼",
-//		    "classroom": "301"
-//		   }
-//		]
-//	}
-
+	// {
+	// "result": "200",
+	// "data": [
+	// {
+	// "courseId": "zkje12IJMD",
+	// "courseName": "大学英语",
+	// "lessonNum": "3,4",
+	// "location": "尚德楼",
+	// "classroom": "301"
+	// }
+	// ]
+	// }
 	@RequestMapping(value = "student/getCourseByDate", method = RequestMethod.POST)
 	public ReturnBody getCourseByDate(HttpServletRequest request) {
 		String date = request.getParameter("date");
 		String userId = getCurrentUserId(request);
-		if(StringUtil.checkParams(userId,date)){
+		if (StringUtil.checkParams(userId, date)) {
 			try {
-				List<Map> data = courseServiceImpl.getCourseByDate(userId,date);
+				List<Map> data = courseServiceImpl.getCourseByDate(userId, date);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 			} catch (Exception e) {
 				log.error(this, e);
-				return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 			}
 		}
-		return new ReturnBody(ReturnBody.RESULT_FAILURE,null);
+		return new ReturnBody(ReturnBody.RESULT_FAILURE, null);
+	}
+
+	/**
+	 * 学生端功能：判断当前时间是否为签到时间（获取当前处于签到时间的课程信息）
+	 * @author macong
+	 * @param request
+	 */
+//	{
+//	    "result": 200,
+//	    "data": [
+//	        {
+//	            "courseId": "znjewHK",
+//	            "courseName": "软件工程",
+//	            "startTime": "7:50",
+//	            "endTime": "8:00",
+//	            "teacherName": "teacherName"
+//	        }
+//	    ]
+//	}
+	@RequestMapping(value = "student/getSignCourse", method = RequestMethod.POST)
+	public ReturnBody getSignCourse(HttpServletRequest request) {
+		String userId = getCurrentUserId(request);
+		String schoolId = (String) getCurrentSchool(request).get("schoolId");
+		if (StringUtil.checkParams(userId,schoolId)) {
+			try {
+				Map course = courseServiceImpl.getSignCourse(userId,schoolId);
+				if(null != course){
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, course);
+				}
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, null);
+			} catch (Exception e) {
+				log.error(this, e);
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+			}
+		}
+		return new ReturnBody(ReturnBody.RESULT_FAILURE, null);
 	}
 
 	/**
 	 * 学生端功能：查看某门课程的课程详情
+	 * 
 	 * @param request
 	 * @param courseId
 	 * @return
@@ -151,39 +180,34 @@ public class CourseRemote extends BaseRemote {
 	// msg : '提示信息XXX'
 	// }
 	@RequestMapping(value = "student/courses/{courseId}", method = RequestMethod.GET)
-	public ReturnBody getCourseData(HttpServletRequest request,
-			@PathVariable String courseId) {
+	public ReturnBody getCourseData(HttpServletRequest request, @PathVariable String courseId) {
 		try {
 			Map data = new HashMap();
 			Map courseTime = courseServiceImpl.getCourseTimeData(courseId);
 			Course course = courseServiceImpl.get(courseId);
 			Teacher teacher = teacherServiceImpl.get(course.getUserId());
 			Textbook textbook = textbookServiceImpl.getMainTextbook(courseId);
-			List<Textbook> textbookOthers = textbookServiceImpl
-					.getTextbookList(courseId);
+			List<Textbook> textbookOthers = textbookServiceImpl.getTextbookList(courseId);
 			// 课程名称，考核方式，授课教师，起止周，授课时间，课程简介，教材教辅
 			data.put("courseId", courseId);
 			data.put("courseName", course.getCourseName());
 			data.put("examinationMode", course.getExaminationModeId());
 			data.put("teacherName", teacher.getName());
-			data.put("courseWeek", courseTime.get("startWeek") + "-"
-					+ courseTime.get("endWeek"));
-			data.put("courseTime", courseTime.get("startTime") + "-"
-					+ courseTime.get("endTime"));
+			data.put("courseWeek", courseTime.get("startWeek") + "-" + courseTime.get("endWeek"));
+			data.put("courseTime", courseTime.get("startTime") + "-" + courseTime.get("endTime"));
 			data.put("introduction", course.getIntroduction());
 			data.put("textbook", textbook == null ? new HashMap() : textbook);
 			data.put("textbookOthers", textbookOthers);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 		} catch (Exception e) {
 			log.error(this, e);
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
 	/**
-	 * 学生端功能：获取用户某学期下的课程列表
-	 * ！！！Abandon
+	 * 学生端功能：获取用户某学期下的课程列表 ！！！Abandon
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -198,17 +222,14 @@ public class CourseRemote extends BaseRemote {
 	// msg : '提示信息XXX'
 	// }
 	@RequestMapping(value = "student/{year}/{term}/courses", method = RequestMethod.GET)
-	public ReturnBody studentCourses(HttpServletRequest request,
-			@PathVariable String year, @PathVariable String term) {
+	public ReturnBody studentCourses(HttpServletRequest request, @PathVariable String year, @PathVariable String term) {
 		try {
 			User currentUser = getCurrentUser(request);
-			List<Course> list = courseServiceImpl.getListByTermAndStuId(year,
-					term, currentUser.getUserId());
+			List<Course> list = courseServiceImpl.getListByTermAndStuId(year, term, currentUser.getUserId());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			log.error(this, e);
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -232,16 +253,13 @@ public class CourseRemote extends BaseRemote {
 	// msg : '提示信息XXX'
 	// }
 	@RequestMapping(value = "course/{courseId}/files", method = RequestMethod.GET)
-	public ReturnBody courseFiles(HttpServletRequest request,
-			@PathVariable String courseId) {
+	public ReturnBody courseFiles(HttpServletRequest request, @PathVariable String courseId) {
 		try {
-			List<CustomFile> courseFiles = courseServiceImpl
-					.getPublicCourseFilesByCourseId(courseId);
+			List<CustomFile> courseFiles = courseServiceImpl.getPublicCourseFilesByCourseId(courseId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, courseFiles);
 		} catch (Exception e) {
 			log.error(this, e);
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -254,22 +272,18 @@ public class CourseRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "course-files/{cfId}", method = RequestMethod.GET)
-	public ReturnBody downloadFile(HttpServletRequest request,
-			HttpServletResponse response, @PathVariable String cfId) {
+	public ReturnBody downloadFile(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable String cfId) {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			CustomFile courseFile = (CustomFile) courseServiceImpl.get(
-					CustomFile.class, cfId);
-			String pathRoot = request.getSession().getServletContext()
-					.getRealPath("");
+			CustomFile courseFile = (CustomFile) courseServiceImpl.get(CustomFile.class, cfId);
+			String pathRoot = request.getSession().getServletContext().getRealPath("");
 			System.out.println("----" + pathRoot);
-			File file = new File(pathRoot + "/upload/"
-					+ courseFile.getServerName());
+			File file = new File(pathRoot + "/upload/" + courseFile.getServerName());
 			response.reset();
-			response.addHeader("Content-Disposition", "attachment;filename="
-					+ new String(courseFile.getFileName().getBytes(),
-							"ISO8859-1"));
+			response.addHeader("Content-Disposition",
+					"attachment;filename=" + new String(courseFile.getFileName().getBytes(), "ISO8859-1"));
 			response.addHeader("Content-Length", "" + file.length());
 			response.setContentType("application/octet-stream");
 
@@ -283,8 +297,7 @@ public class CourseRemote extends BaseRemote {
 			return null;
 		} catch (Exception e) {
 			log.error(this, e);
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		} finally {
 			try {
 				if (is != null) {
@@ -316,13 +329,11 @@ public class CourseRemote extends BaseRemote {
 			String userId = getCurrentUserId(request);
 			String termId = request.getParameter("termId");// 获取前端参数：termId
 			String data = request.getParameter("date");
-			List<Map> list = courseServiceImpl.getCourseList(termId, data,
-					userId);
+			List<Map> list = courseServiceImpl.getCourseList(termId, data, userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -339,14 +350,13 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String courseId = request.getParameter("courseId");
 			String status = request.getParameter("status");
-			System.out.println("courseId:"+courseId+"   status:"+status);
+			System.out.println("courseId:" + courseId + "   status:" + status);
 			List<Map> list = courseServiceImpl.getCourseDetail(courseId, status);
-			System.out.println("结果："+list.get(0).toString());	
+			System.out.println("结果：" + list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -374,8 +384,8 @@ public class CourseRemote extends BaseRemote {
 		String scores = request.getParameter("scores");// *
 		String book = request.getParameter("book");
 		String books = request.getParameter("books");
-		if (StringUtil.checkParams(courseName, courseHours, teachMethodId,
-				courseTypeId, examTypeId, majorId, remindTime, classes, scores)) {
+		if (StringUtil.checkParams(courseName, courseHours, teachMethodId, courseTypeId, examTypeId, majorId,
+				remindTime, classes, scores)) {
 			Course course = null;
 			if (StringUtil.isNotEmpty(courseId)) {
 				course = courseServiceImpl.get(courseId);
@@ -405,8 +415,7 @@ public class CourseRemote extends BaseRemote {
 			}
 			courseId = course.getCourseId();
 			if (StringUtil.isNotEmpty(classes)) {
-				List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils
-						.parse(classes);
+				List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils.parse(classes);
 				for (int i = 0; i < classesList.size(); i++) {
 					CourseClasses item = new CourseClasses();
 					item.setCourseId(courseId);
@@ -415,22 +424,18 @@ public class CourseRemote extends BaseRemote {
 				}
 			}
 			// 增加新数据
-			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils
-					.parse(scores);
+			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils.parse(scores);
 			for (int i = 0; i < scoresList.size(); i++) {
 				CourseScorePrivate item = new CourseScorePrivate();
 				item.setCourseId(courseId);
 				item.setScoreName(scoresList.get(i).get("scoreName"));
-				item.setScorePercent(new BigDecimal(scoresList.get(i).get(
-						"scorePercent")));
+				item.setScorePercent(new BigDecimal(scoresList.get(i).get("scorePercent")));
 				item.setScorePointId(scoresList.get(i).get("scorePointId"));
-				item.setStatus(Integer
-						.parseInt(scoresList.get(i).get("status")));
+				item.setStatus(Integer.parseInt(scoresList.get(i).get("status")));
 				courseScoreServiceImpl.add(item);
 			}
 			if (StringUtil.isNotEmpty(book)) {
-				Map<String, String> bookObj = (Map<String, String>) JSONUtils
-						.parse(book);
+				Map<String, String> bookObj = (Map<String, String>) JSONUtils.parse(book);
 				Textbook item = new Textbook();
 				item.setTextbookName(bookObj.get("bookName"));
 				item.setAuthor(bookObj.get("author"));
@@ -442,8 +447,7 @@ public class CourseRemote extends BaseRemote {
 				textbookServiceImpl.save(item);
 			}
 			if (StringUtil.isNotEmpty(books)) {
-				List<Map<String, String>> bookList = (List<Map<String, String>>) JSONUtils
-						.parse(books);
+				List<Map<String, String>> bookList = (List<Map<String, String>>) JSONUtils.parse(books);
 				for (int i = 0; i < bookList.size(); i++) {
 					Textbook item = new Textbook();
 					item.setTextbookName(bookList.get(i).get("bookName"));
@@ -456,7 +460,7 @@ public class CourseRemote extends BaseRemote {
 					textbookServiceImpl.save(item);
 				}
 			}
-			Map<String,String> map = new HashMap();
+			Map<String, String> map = new HashMap();
 			map.put("courseId", course.getCourseId());
 			return new ReturnBody(map);
 		} else {
@@ -472,8 +476,7 @@ public class CourseRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/course/addOrUpdateType", method = RequestMethod.GET)
-	public ReturnBody addOrUpdateType(HttpServletRequest request,
-			CourseScorePrivate cs) {
+	public ReturnBody addOrUpdateType(HttpServletRequest request, CourseScorePrivate cs) {
 		try {
 			String status = request.getParameter("status");
 			if ("0".equals(status)) {// 增加课程组成项信息
@@ -484,8 +487,7 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -497,15 +499,13 @@ public class CourseRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/course/delType/{course_scoreid}", method = RequestMethod.GET)
-	public ReturnBody deleteType(HttpServletRequest request,
-			@PathVariable String course_scoreid) {
+	public ReturnBody deleteType(HttpServletRequest request, @PathVariable String course_scoreid) {
 		try {
 			courseServiceImpl.deleteById(course_scoreid);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -521,7 +521,7 @@ public class CourseRemote extends BaseRemote {
 		String repeatNumber = request.getParameter("repeatNumber").trim();
 		String start = request.getParameter("start").trim();
 		String end = request.getParameter("end").trim();
-		if (StringUtil.checkParams(courseId, repeatNumber, repeatType, start,end)) {
+		if (StringUtil.checkParams(courseId, repeatNumber, repeatType, start, end)) {
 			CourseItem item = new CourseItem();
 			item.setCourseId(courseId);
 			item.setRepeatType(repeatType);
@@ -529,7 +529,7 @@ public class CourseRemote extends BaseRemote {
 			if (repeatType.equals("01")) {
 				item.setStartDay(start);
 				item.setEndDay(end);
-			}else{
+			} else {
 				item.setStartWeek(Integer.parseInt(start));
 				item.setEndWeek(Integer.parseInt(end));
 			}
@@ -550,8 +550,7 @@ public class CourseRemote extends BaseRemote {
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/course/addOrUpdateTextbook", method = RequestMethod.GET)
-	public ReturnBody addOrUpdateTextbook(HttpServletRequest request,
-			Textbook book) {
+	public ReturnBody addOrUpdateTextbook(HttpServletRequest request, Textbook book) {
 		try {
 			String status = request.getParameter("status");
 			String type = request.getParameter("type");// 1代表教材 2代表教辅
@@ -569,8 +568,7 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -589,8 +587,7 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -608,8 +605,7 @@ public class CourseRemote extends BaseRemote {
 			return new ReturnBody(list);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -629,12 +625,10 @@ public class CourseRemote extends BaseRemote {
 			String time = request.getParameter("time");
 			Map school = getCurrentSchool(request);
 			if (StringUtil.checkParams(userId, time)) {
-				Map currentCourse = courseServiceImpl.getCurrentCourse(userId,
-						time, school);
+				Map currentCourse = courseServiceImpl.getCurrentCourse(userId, time, school);
 				if (currentCourse != null) {
 					System.out.println("currentCourse:" + currentCourse);
-					return new ReturnBody(ReturnBody.RESULT_SUCCESS,
-							currentCourse);
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, currentCourse);
 				} else {
 					System.out.println("没课");
 					return new ReturnBody(ReturnBody.RESULT_SUCCESS, null);
@@ -643,8 +637,7 @@ public class CourseRemote extends BaseRemote {
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
 
@@ -664,10 +657,9 @@ public class CourseRemote extends BaseRemote {
 			String status = request.getParameter("status");
 
 			List<Map> student = null;
-			if (StringUtil
-					.checkParams(courseId, currentWeek, lessonNum, status)) {
-				student = courseServiceImpl.getRegistSituation(courseId,
-						currentWeek, lessonNum, Integer.parseInt(status));
+			if (StringUtil.checkParams(courseId, currentWeek, lessonNum, status)) {
+				student = courseServiceImpl.getRegistSituation(courseId, currentWeek, lessonNum,
+						Integer.parseInt(status));
 			}
 			if (null != student && student.size() > 0) {
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
@@ -675,55 +667,59 @@ public class CourseRemote extends BaseRemote {
 			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,
-					ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
+
 	/**
 	 * 获取教材或教辅详情
+	 * 
 	 * @author zjx
 	 * @param courseId
-	 * @param type 01教材 02教辅
+	 * @param type
+	 *            01教材 02教辅
 	 * @return
-	 */ 
+	 */
 	@RequestMapping(value = "teacher/course/getTextbook", method = RequestMethod.POST)
 	public ReturnBody getTextbook(HttpServletRequest request) {
 		try {
 			String courseId = request.getParameter("courseId");
 			String type = request.getParameter("type");
-			System.out.println("courseId:"+courseId+"  type:"+type);
+			System.out.println("courseId:" + courseId + "  type:" + type);
 			List<Map> list = textbookServiceImpl.getTextbook(courseId, type);
-			if("1".equals(type)){
+			if ("1".equals(type)) {
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
 			}
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
+
 	/**
-	 *1.2.2	为特定课程添加授课时间
+	 * 1.2.2 为特定课程添加授课时间
+	 * 
 	 * @author lifei
 	 */
 	@RequestMapping(value = "teacher/course/addTeachTime", method = RequestMethod.POST)
 	public ReturnBody addTeachTime(HttpServletRequest request) {
-			String data = request.getParameter("data"); 
-			if(StringUtil.checkParams(data)){
-				List<Map<String, String>> jsonList = (List<Map<String, String>>) JSONUtils.parse(data);
-				for (int i = 0; i < jsonList.size(); i++) {
-					CourseCell cell = new CourseCell();
-					cell.setCiId(jsonList.get(i).get("courseCellId"));
-					cell.setWeekDay(jsonList.get(i).get("weekday"));
-					cell.setLessonNumber(jsonList.get(i).get("lessonNumber"));
-					cell.setLocation(jsonList.get(i).get("location"));
-					cell.setClassRoom(jsonList.get(i).get("classroom"));
-					courseCellService.save(cell);
-				}
-				return new ReturnBody("保存成功！");
-			}else{
-				return ReturnBody.getParamError();
+		String data = request.getParameter("data");
+		if (StringUtil.checkParams(data)) {
+			List<Map<String, String>> jsonList = (List<Map<String, String>>) JSONUtils.parse(data);
+			for (int i = 0; i < jsonList.size(); i++) {
+				CourseCell cell = new CourseCell();
+				cell.setCiId(jsonList.get(i).get("courseCellId"));
+				cell.setWeekDay(jsonList.get(i).get("weekday"));
+				cell.setLessonNumber(jsonList.get(i).get("lessonNumber"));
+				cell.setLocation(jsonList.get(i).get("location"));
+				cell.setClassRoom(jsonList.get(i).get("classroom"));
+				courseCellService.save(cell);
 			}
+			return new ReturnBody("保存成功！");
+		} else {
+			return ReturnBody.getParamError();
+		}
 	}
 	/**
 	 * 保存课程信息
