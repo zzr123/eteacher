@@ -25,7 +25,7 @@ public class CourseClassServiceImpl extends BaseService<CourseClasses> implement
 
 	@Override
 	public boolean delByCourseId(String courseId) {
-		String sql = "DELETE FROM t_course_class t WHERE t.COURSE_ID = ?";
+		String sql = "DELETE FROM t_course_class WHERE t_course_class.COURSE_ID = ?";
 		courseClassesDao.executeBySql(sql, courseId);
 		return true;
 	}

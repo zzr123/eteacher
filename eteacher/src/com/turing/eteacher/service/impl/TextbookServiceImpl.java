@@ -44,7 +44,7 @@ public class TextbookServiceImpl extends BaseService<Textbook> implements ITextb
 
 	@Override
 	public boolean delTextbook(String courseId,String type) {
-		String sql = "DELETE FROM t_textbook t WHERE t.COURSE_ID = ? and t.TEXTBOOK_TYPE = ?";
+		String sql = "DELETE FROM t_textbook WHERE t_textbook.COURSE_ID = ? and t_textbook.TEXTBOOK_TYPE = ?";
 		textbookDAO.executeBySql(sql, courseId,type);
 		return true;
 	}

@@ -423,7 +423,7 @@ public class CourseRemote extends BaseRemote {
 				item.setScoreName(scoresList.get(i).get("scoreName"));
 				item.setScorePercent(new BigDecimal(scoresList.get(i).get(
 						"scorePercent")));
-				item.setScorePointId(scoresList.get(i).get("scorePoint"));
+				item.setScorePointId(scoresList.get(i).get("scorePointId"));
 				item.setStatus(Integer
 						.parseInt(scoresList.get(i).get("status")));
 				courseScoreServiceImpl.add(item);
@@ -743,18 +743,15 @@ public class CourseRemote extends BaseRemote {
 		String majorId = request.getParameter("majorId");// *
 		String introduction = request.getParameter("introduction");
 		String formula = request.getParameter("formula");
-		String classes = request.getParameter("classes");// *
-		String scores = request.getParameter("scores");// *
-		String book = request.getParameter("book");
-		String books = request.getParameter("books");
+//		String classes = request.getParameter("classes");// *
+//		String scores = request.getParameter("scores");// *
+//		String book = request.getParameter("book");
+//		String books = request.getParameter("books");
 		if (StringUtil.checkParams(courseName, courseHours, teachMethodId,
-				courseTypeId, examTypeId, majorId, classes, scores)) {
+				courseTypeId, examTypeId, majorId)) {
 			Course course = null;
-			if (StringUtil.isNotEmpty(courseId)) {
-				course = courseServiceImpl.get(courseId);
-			} else {
-				course = new Course();
-			}
+			course = courseServiceImpl.get(courseId);
+			
 			course.setCourseName(courseName);
 			course.setIntroduction(introduction);
 			course.setMajorId(majorId);
@@ -764,69 +761,8 @@ public class CourseRemote extends BaseRemote {
 			course.setExaminationModeId(examTypeId);
 			course.setFormula(formula);
 			course.setUserId(getCurrentUserId(request));
-			if (StringUtil.isNotEmpty(courseId)) {
-				courseServiceImpl.update(course);
-				// 删除原有成绩组成数据
-				courseClassServiceImpl.delByCourseId(courseId);
-				courseScoreServiceImpl.delScoresByCourseId(courseId);
-				textbookServiceImpl.delTextbook(courseId, "01");
-				textbookServiceImpl.delTextbook(courseId, "02");
-			} else {
-				courseServiceImpl.add(course);
-			}
-			courseId = course.getCourseId();
-			if (StringUtil.isNotEmpty(classes)) {
-				List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils
-						.parse(classes);
-				for (int i = 0; i < classesList.size(); i++) {
-					CourseClasses item = new CourseClasses();
-					item.setCourseId(courseId);
-					item.setClassId(classesList.get(i).get("classId"));
-					courseClassServiceImpl.save(item);
-				}
-			}
-			// 增加新数据
-			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils
-					.parse(scores);
-			for (int i = 0; i < scoresList.size(); i++) {
-				CourseScorePrivate item = new CourseScorePrivate();
-				item.setCourseId(courseId);
-				item.setScoreName(scoresList.get(i).get("scoreName"));
-				item.setScorePercent(new BigDecimal(scoresList.get(i).get(
-						"scorePercent")));
-				item.setScorePointId(scoresList.get(i).get("scorePoint"));
-				item.setStatus(Integer
-						.parseInt(scoresList.get(i).get("status")));
-				courseScoreServiceImpl.add(item);
-			}
-			if (StringUtil.isNotEmpty(book)) {
-				Map<String, String> bookObj = (Map<String, String>) JSONUtils
-						.parse(book);
-				Textbook item = new Textbook();
-				item.setTextbookName(bookObj.get("bookName"));
-				item.setAuthor(bookObj.get("author"));
-				item.setCourseId(courseId);
-				item.setPublisher(bookObj.get("publisher"));
-				item.setEdition(bookObj.get("edition"));
-				item.setIsbn(bookObj.get("isbn"));
-				item.setTextbookType("01");
-				textbookServiceImpl.save(item);
-			}
-			if (StringUtil.isNotEmpty(books)) {
-				List<Map<String, String>> bookList = (List<Map<String, String>>) JSONUtils
-						.parse(books);
-				for (int i = 0; i < bookList.size(); i++) {
-					Textbook item = new Textbook();
-					item.setTextbookName(bookList.get(i).get("bookName"));
-					item.setAuthor(bookList.get(i).get("author"));
-					item.setCourseId(courseId);
-					item.setPublisher(bookList.get(i).get("publisher"));
-					item.setEdition(bookList.get(i).get("edition"));
-					item.setIsbn(bookList.get(i).get("isbn"));
-					item.setTextbookType("02");
-					textbookServiceImpl.save(item);
-				}
-			}
+			courseServiceImpl.update(course);
+
 			Map<String,String> map = new HashMap();
 			map.put("courseId", course.getCourseId());
 			return new ReturnBody(map);
@@ -851,4 +787,108 @@ public class CourseRemote extends BaseRemote {
 						ReturnBody.ERROR_MSG);
 			}
 	}
+	/**
+	 *修改授课班级
+	 * 
+	 */
+	@RequestMapping(value = "teacher/course/updateTeachClass", method = RequestMethod.POST)
+	public ReturnBody updateTeachClass(HttpServletRequest request) {
+		try{
+			String courseId = request.getParameter("courseId");
+			String classes = request.getParameter("classes");
+			System.out.println("courseId :"+courseId + "    classes: " +classes);
+			courseClassServiceImpl.delByCourseId(courseId);
+			List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils
+					.parse(classes);
+			for (int i = 0; i < classesList.size(); i++) {
+				CourseClasses item = new CourseClasses();
+				item.setCourseId(courseId);
+				item.setClassId((String)classesList.get(i).get("classId"));
+				courseClassServiceImpl.save(item);
+			}
+			return new ReturnBody("保存成功！");
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+	}
+	/**
+	 *修改成绩组成
+	 * 
+	 */
+	@RequestMapping(value = "teacher/course/updateScoreZc", method = RequestMethod.POST)
+	public ReturnBody updateScoreZc(HttpServletRequest request) {
+		try{
+			String courseId = request.getParameter("courseId");
+			String scores = request.getParameter("scores");
+			System.out.println("courseId :"+courseId + "    scores: " +scores);
+			courseScoreServiceImpl.delScoresByCourseId(courseId);
+			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils
+					.parse(scores);
+			for (int i = 0; i < scoresList.size(); i++) {
+				System.out.println("000000000"+scoresList.size());
+				CourseScorePrivate item = new CourseScorePrivate();
+				item.setCourseId(courseId);
+				item.setScoreName(scoresList.get(i).get("scoreName"));
+				item.setScorePercent(new BigDecimal(scoresList.get(i).get("scorePercent")));
+				item.setScorePointId(scoresList.get(i).get("scorePointId"));
+				item.setStatus(Integer.parseInt(scoresList.get(i).get("status")));
+				courseScoreServiceImpl.save(item);
+			}
+			return new ReturnBody("保存成功！");
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+	}
+	/**
+	 *修改教材教辅信息
+	 * 
+	 */
+	@RequestMapping(value = "teacher/course/updateTextbook", method = RequestMethod.POST)
+	public ReturnBody updateTextbook(HttpServletRequest request) {
+		try{
+			String courseId = request.getParameter("courseId");
+			String type = request.getParameter("type");
+			System.out.println("courseId :"+courseId + "    type: " +type);
+			if ("1".equals(type)) {
+				String textbook = request.getParameter("textbook");
+				textbookServiceImpl.delTextbook(courseId, "01");
+				List<Map<String, String>> bookList = (List<Map<String, String>>) JSONUtils.parse(textbook);
+				for (int i = 0; i < bookList.size(); i++) {
+					Textbook item = new Textbook();
+					item.setTextbookName(bookList.get(i).get("textbookName"));
+					item.setAuthor(bookList.get(i).get("author"));
+					item.setCourseId(courseId);
+					item.setPublisher(bookList.get(i).get("publisher"));
+					item.setEdition(bookList.get(i).get("edition"));
+					item.setIsbn(bookList.get(i).get("isbn"));
+					item.setTextbookType("01");
+					textbookServiceImpl.save(item);
+				}
+			}
+			if ("2".equals(type)) {
+				String textbooks = request.getParameter("textbooks");
+				textbookServiceImpl.delTextbook(courseId, "02");
+				List<Map<String, String>> bookLists = (List<Map<String, String>>) JSONUtils.parse(textbooks);
+				for (int i = 0; i < bookLists.size(); i++) {
+					Textbook item = new Textbook();
+					item.setTextbookName(bookLists.get(i).get("textbookName"));
+					item.setAuthor(bookLists.get(i).get("author"));
+					item.setCourseId(courseId);
+					item.setPublisher(bookLists.get(i).get("publisher"));
+					item.setEdition(bookLists.get(i).get("edition"));
+					item.setIsbn(bookLists.get(i).get("isbn"));
+					item.setTextbookType("02");
+					textbookServiceImpl.save(item);
+				}
+			}
+			   return new ReturnBody("保存成功！");
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+			}
+		}
 }	
