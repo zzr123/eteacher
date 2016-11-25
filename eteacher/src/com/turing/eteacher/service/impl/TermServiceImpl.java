@@ -106,9 +106,6 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	 */
 	@Override
 	public List<Map> getListTerms(String userId) {
-		//TODO 需要过滤已经创建的学期
-		/*String hql=" from Term";*/
-/*		String sql="select t_term.TERM_ID, t_term.TERM_NAME FROM t_term WHERE t_term.TERM_ID NOT IN (select t_term_private.TREM_ID FROM t_term_private WHERE t_term_private.USER_ID = "P3ZxThTHo3")";*/
 		String sql="select t_term.TERM_ID as termId," +
 				" t_term.TERM_NAME as termName , " +
 				"t_term.START_DATE as startDate , " +
@@ -218,6 +215,18 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 			System.out.println("mapp"+i+":"+list.get(i).toString());
 		}
 		return list;
+	}
+
+	@Override
+	public List<Map> getTermsList(String userId) {
+		String sql = "SELECT tt.TERM_ID AS termId , "+
+					 "tt.TERM_NAME AS termName, "+
+					 "tt.START_DATE AS startDate, "+
+					 "tt.END_DATE AS endDate FROM " +
+					 "t_term tt JOIN t_student ts " +
+					 "ON tt.SCHOOL_ID = ts.SCHOOL_ID " +
+					 "WHERE ts.STU_ID = ?";
+		return termDAO.findBySql(sql, userId);
 	}
 
 	

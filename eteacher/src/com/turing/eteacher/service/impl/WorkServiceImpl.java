@@ -338,5 +338,18 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		List list = workDAO.findBySql(sql, userId, cFirstDay, cLastDay);
 		return list;
 	}
+	@Override
+	public List<Map> stugetWorkEndDateByMonth(String ym, String userId) {
+		String cLastDay = DateUtil.getLastDayOfMonth(ym);
+		cLastDay = DateUtil.addDays(cLastDay, 1);
+		String cFirstDay = ym + "-01";
+		String sql = "SELECT DISTINCT SUBSTRING(tw.END_TIME,1,10) AS date FROM t_work tw WHERE tw.WORK_ID IN ( "+
+					 "SELECT twc.WORK_ID FROM t_work_course twc WHERE twc.COURSE_ID IN ( "+
+					 "SELECT tcc.COURSE_ID FROM t_course_class tcc WHERE tcc.CLASS_ID = ( "+
+					 "SELECT st.CLASS_ID FROM t_student st WHERE st.STU_ID = ?) "+
+					 ")) AND  tw.END_TIME BETWEEN ? AND ?";
+		List list = workDAO.findBySql(sql, userId, cFirstDay, cLastDay);
+		return list;
+	}
 	
 }

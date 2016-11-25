@@ -1087,4 +1087,28 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		return list;
 	}
 
+	@Override
+	public List<Map> getCourseTimebyStuId(String stuId, String termId) {
+		String sql = "SELECT c.COURSE_ID AS courseId, "+
+				"ci.CI_ID AS ciId, "+
+				"ci.REPEAT_TYPE AS repeatType, "+
+				"ci.REPEAT_NUMBER AS repeatNumber, "+
+				"ci.START_WEEK AS startWeek, "+
+				"ci.END_WEEK AS endWeek, "+
+				"ci.START_DAY AS startDay, "+
+				"ci.END_DAY AS endDay, "+
+				"ttp.TP_ID AS tpId, "+
+				"ttp.START_DATE AS termStartDay, "+
+				"ttp.END_DATE AS termEndDay "+ 
+				"FROM t_course c ,t_course_item ci ,t_term_private ttp "+
+				"WHERE c.COURSE_ID = ci.COURSE_ID AND c.TERM_ID = ttp.TP_ID "+
+				"AND ttp.TREM_ID = ? "+
+				"AND c.COURSE_ID IN ( "+
+				"SELECT tcc.COURSE_ID " +
+				"FROM t_course_class tcc ,t_student ts " +
+				"WHERE tcc.CLASS_ID = ts.CLASS_ID " +
+				"AND ts.STU_ID = ? )"; 
+		return courseDAO.findBySql(sql, termId, stuId);
+	}
+
 }

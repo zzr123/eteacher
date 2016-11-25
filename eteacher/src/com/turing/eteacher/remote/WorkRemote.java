@@ -323,6 +323,21 @@ public class WorkRemote extends BaseRemote {
 			return ReturnBody.getParamError();
 		}
 	}
+	/**
+	 * 1.2.16 学生端获取指定月份有课程的日期
+	 * 
+	 * @author lifei
+	 */
+	@RequestMapping(value = "student/Course/getHomeworkday", method = RequestMethod.POST)
+	public ReturnBody stugetHomeworkday(HttpServletRequest request) {
+		String ym = request.getParameter("month");
+		if (StringUtil.checkParams(ym)) {
+			List list = workServiceImpl.stugetWorkEndDateByMonth(ym, getCurrentUserId(request));
+			return new ReturnBody(list);
+		}else{
+			return ReturnBody.getParamError();
+		}
+	}
 	// @RequestMapping(value="teacher/work/updateWorkStatus",
 	// method=RequestMethod.POST)
 	// public ReturnBody updateWorkStatus(HttpServletRequest request,Work
@@ -357,5 +372,4 @@ public class WorkRemote extends BaseRemote {
 	// return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 	// }
 	// }
-
 }

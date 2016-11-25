@@ -142,4 +142,13 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public List<Map> getCourseByTermId(String userId,String tpId);
+	
+	/**
+	 * 通过学生的Id和学期Id获取本学期内所有的课程时间信息（课程所对应的学期开始结束日期，课程的重复规则）
+	 * @author lifei
+	 * @param stuId
+	 * @param termId
+	 * @return
+	 */
+	public List<Map> getCourseTimebyStuId(String stuId,String termId);
 }
