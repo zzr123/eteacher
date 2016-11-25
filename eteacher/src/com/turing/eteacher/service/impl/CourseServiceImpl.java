@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.constants.ConfigContants;
@@ -35,7 +33,6 @@ import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Major;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
-import com.turing.eteacher.service.ICourseClassService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.BeanUtils;
@@ -50,6 +47,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 
 	@Autowired
 	private CourseItemDAO courseItemDAO;
+	
+	private DateUtil dateUtil;
 
 	@Autowired
 	private TextbookDAO textbookDAO;
@@ -65,9 +64,6 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 
 	@Autowired
 	private ITermService termServiceImpl;
-
-	@Autowired
-	private ICourseClassService courseClassServiceImpl;
 
 	@Override
 	public BaseDAO<Course> getDAO() {
@@ -451,9 +447,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		try {
 			String hql = "select distinct s.stuId as stuId, ci.courseId as courseId, ci.repeatType as repeatType, "
 					+ "cc.weekDay as weekDay, ci.startWeek as startWeek, ci.endWeek as endWeek, "
-					+ "ci.startDay as startDay, ccl.classId, ci.endDay as endDay, c.courseId, "
+					+ "ci.startDay as startDay, ccl.classId, ci.endDay as endDay , "
 					+ "tp.startDate as startDate, ci.repeatNumber as repeatNumber, cc.lessonNumber as lessonNumber "
-					+ "from CourseCell cc, CourseItem ci, CourseClasses ccl, Student s, " + "Course c, TermPrivate tp "
+					+ "from CourseCell cc, CourseItem ci, CourseClasses ccl, Student s, Course c, TermPrivate tp "
 					+ "where ci.courseId = ccl.courseId and cc.ciId = ci.ciId and "
 					+ "ccl.classId = s.classId and s.stuId = ? and  "
 					+ "c.termId = tp.termId and tp.userId = c.userId and tp.startDate < ? " + "and tp.endDate > ? ";
@@ -483,7 +479,120 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return null;
 	}
-
+	/**
+	 * 学生端功能：判断当前时间是否为签到时间（获取当前正在进行的课程信息）
+	 * @author macong
+	 * @param userId
+	 * 
+	 */
+	public Map getSignCourse(String userId,String schoolId) {
+		// 1.时间数据的处理 {times："2016-11-13 10:21"-->date:2016-11-13,time:10:21}
+		Date d = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String times = sdf.format(d);
+		String[] t = times.split(" ");
+		String date = t[0];
+		String time = t[1];
+		//查询出给学生的今日课表。根据今日课表，及课程的教师信息。根据教师信息，查询出该教师设定的课程的签到时间。对当前时间进行处理，
+		//获取签到时间。签到时间与上课时间进行对比，得出是否为签到时间。
+		List<Map> courseList = getCourseByDate(userId,date);
+		//根据课程集合，查询出教师信息(teacherId)，及该教师设定的签到时间信息
+		String hql = "select r.before as before, r.after as after, r.distance as distance "
+				+ "from RegistConfig r where r.userId = ? and r.status = 1";
+		String hql2 = "select r.before as before, r.after as after, r.distance as distance "
+				+ "from RegistConfig r where r.status = 0 ";
+		String courseStartTime = null;
+		//查询学校的每节课程对应的上课时间
+		String ql = "select tt.startTime as startTime, tt.lessonNumber as lessonNumber "
+				+ "from TimeTable tt where tt.schoolId = ? ";
+		List<Map> timeTable = courseDAO.findMap(ql, schoolId);
+		//
+		if(null != courseList && courseList.size()>0){
+			
+			for(int i = 0;i < courseList.size(); i++){
+				String teacherId = (String) courseList.get(i).get("teacherId");
+				//查询用户的签到设置
+				List<Map> c = null;
+				c = courseDAO.findMap(hql, teacherId);
+				if(c == null || c.size() == 0){
+					c = courseDAO.findMap(hql2);
+				}
+				System.out.println("+++++++++++++" + c.get(0).toString());
+				//时间处理： （当前时间-after）< 课程开始时间  < （当前时间+before）,符合签到条件
+				@SuppressWarnings("unused")
+				String time1 = timeSubtraction(time, "-", (Integer)c.get(0).get("before"));
+				String time2 = timeSubtraction(time, "+", (Integer)c.get(0).get("after"));
+				//查询lesson对应的开始时间
+				String lessons = (String) courseList.get(i).get("lessonNumber");
+				String [] ls = lessons.split(",");
+				String  ln = null;
+				for (int k = 0; k < timeTable.size(); k++) {
+					ln = timeTable.get(k).get("lessonNumber").toString();
+					for (int j = 0; j < ls.length; j++) {
+						if(ln.contains(ls[j])){
+							String st = (String) timeTable.get(k).get("startTime");
+							if (time1.compareTo(st) <= 0 && time2.compareTo(st) >= 0) {
+								return timeTable.get(k);
+							}
+						}
+					}
+				}	
+			}
+		}
+		return null;
+	}
+	/**
+	 * 辅助方法：HH:mm 加/减  分钟数   后的时间
+	 * @author macong
+	 * @param time   被减数（HH:mm）
+	 * @param minute  减数 （分钟）
+	 */
+	public String timeSubtraction(String time,String operator, Integer minute) {
+		String result = null;
+		try {
+			/**
+			 * 将字符串数据转化为毫秒数
+			 */
+	   	    Calendar c = Calendar.getInstance();
+			c.setTime(new SimpleDateFormat("HH:mm").parse(time));
+			long bjs = c.getTimeInMillis();
+			
+			long js = minute*60*1000;
+			/**
+			 * 加/减法运算
+			 */
+			long newTime = -1;
+			switch (operator) {
+			case "+":
+				newTime = bjs + js ;
+				break;
+			case "-":
+				newTime = bjs - js ;
+				break;
+			default:
+				break;
+			}
+			
+			/**
+			* 将毫秒数转化为时间
+			*/
+			if(newTime != -1){
+				Date date = new Date(newTime);
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+				result = sdf.format(date);
+			} 
+		}catch (java.text.ParseException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	/**
+	 * 
+	 * @param year
+	 * @param term
+	 * @param stuId
+	 * @return
+	 */
 	@Override
 	public List getListByTermAndStuId(String year, String term, String stuId) {
 		String hql = "select c from Course c,Term t where c.termId = t.termId and t.year = ? and t.term = ? "
@@ -560,15 +669,17 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	private Map dateConvert(String date, String startDate) {
 		Map m = new HashMap<>();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			/*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			// 计算指定日期与开始日期相隔天数
 			Date beginDate = sdf.parse(startDate);
 			Date endDate = sdf.parse(date);
 			long dateNum = (endDate.getTime() - beginDate.getTime()) / (1000 * 60 * 60 * 24) + 1;
-			System.out.println("相隔天数：------------" + dateNum);
+			*/
+			int dateNum = dateUtil.getDayBetween(startDate, date);
+//			System.out.println("相隔天数：------------" + dateNum);
 			m.put("dateNum", dateNum);
 			// 计算指定日期是星期几
-			Calendar endWeek = Calendar.getInstance();
+			/*Calendar endWeek = Calendar.getInstance();
 			endWeek.setTime(sdf.parse(date));
 			int endDay = 0;
 			if (endWeek.get(Calendar.DAY_OF_WEEK) == 1) {
@@ -576,10 +687,11 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			} else {
 				endDay = endWeek.get(Calendar.DAY_OF_WEEK) - 1;
 			}
-			System.out.println("星期几：--------------" + endDay);
+			System.out.println("星期几：--------------" + endDay);*/
+			int endDay = dateUtil.getWeekNum(date);
 			m.put("endDay", endDay);
 			// 计算指定日期属于第几周
-			int weekNum = 0;
+			/*int weekNum = 0;
 			if (dateNum % 7 == 0) {
 				if (endDay != 1) {
 					weekNum = (int) ((dateNum / 7) + 1);
@@ -593,7 +705,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 					weekNum = (int) ((dateNum / 7) + 1);
 				}
 			}
-			System.out.println("第几周：--------------" + weekNum);
+			System.out.println("第几周：--------------" + weekNum);*/
+			int weekNum = dateUtil.getWeekCount(startDate, date);
 			m.put("weekNum", weekNum);
 			return m;
 		} catch (Exception e) {
@@ -652,7 +765,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		if (cIdList.size() > 0 && cIdList != null) {
 			List<Map> courses = new ArrayList<>();
 			String hql2 = "select c.courseId as courseId, c.courseName as courseName, s.value as location, "
-					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber "
+					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber, c.userId as teacherId "
 					+ "from Course c, CourseCell cc, CourseItem ci,School s "
 					+ "where c.courseId = ci.courseId and cc.ciId = ci.ciId and cc.location=s.code and c.courseId = ? "
 					+ "order by cc.lessonNumber asc ";
@@ -859,7 +972,6 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 
 	@Override
 	public int getStudentCountById(String CourseId) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -867,7 +979,6 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	// zjx
 	@Override
 	public List<Map> getClassCourseTable(String classId, String tpId, int page) {
-		// TODO Auto-generated method stub
 		String sql = "SELECT c.COURSE_NAME as courseName, "
 				+ "ce.WEEKDAY as weekDay, ce.LESSON_NUMBER as lessonNumber, "
 				+ "s.VALUE as location, ce.CLASSROOM as classroom " + "FROM t_course_cell ce "
@@ -932,7 +1043,6 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	 */
 	@Override
 	public List<Map> getRegistSituation(String courseId, String currentWeek, String lessonNum, int status) {
-		// TODO Auto-generated method stub
 		// 1.获取当前正在进行的课程信息(course_Id)，并查询出该课程对应的班级列表（t_course_class）。
 		// 2.在t_student表中，根据class_Id,查询出学生列表。
 		// 3.t_sign_in表中，根据本次课程信息（courseId,第几周，第几节课），查询出状态为“1”的学生列表

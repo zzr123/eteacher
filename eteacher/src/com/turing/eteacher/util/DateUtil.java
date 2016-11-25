@@ -39,6 +39,29 @@ public class DateUtil {
 		}
 		return dayOfWeek;
 	}
+	/**
+	 * 获取指定日期时星期几
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	public static int getWeekNum(String date){
+		int endDay = -1;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar endWeek = Calendar.getInstance();
+			endWeek.setTime(sdf.parse(date));
+			if (endWeek.get(Calendar.DAY_OF_WEEK) == 1) {
+				endDay = 7;
+			} else {
+				endDay = endWeek.get(Calendar.DAY_OF_WEEK) - 1;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return endDay;
+	}
 
 	/**
 	 * 获取两个日期相差几天
@@ -379,5 +402,6 @@ public class DateUtil {
 		}
 		return 0;
 	}
+	
 
 }
