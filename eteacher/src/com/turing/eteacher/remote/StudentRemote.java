@@ -202,7 +202,7 @@ public class StudentRemote extends BaseRemote {
 	}
 	
 	/**
-	 * 获取用户的信息
+	 * 获取学生用户的个人信息
 	 * @param request
 	 * @param stuId
 	 * @return
@@ -223,10 +223,12 @@ public class StudentRemote extends BaseRemote {
 //	},
 //	msg : '提示信息XXX'
 //}	
-	@RequestMapping(value = "students/{stuId}", method = RequestMethod.GET)
-	public ReturnBody getStudent(HttpServletRequest request, @PathVariable String stuId){
+	@RequestMapping(value = "student/personInfo", method = RequestMethod.POST)
+	public ReturnBody getStudent(HttpServletRequest request){
 		try {
-			Student student = studentServiceImpl.get(stuId);//TODO 缺数据
+			String userId = request.getParameter("userId");
+			Map student = studentServiceImpl.getUserInfo(userId);
+			System.out.println("~~~~~~student:"+student);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
 		} catch (Exception e) {
 			e.printStackTrace();

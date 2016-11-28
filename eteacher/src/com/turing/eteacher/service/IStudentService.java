@@ -15,4 +15,11 @@ public interface IStudentService extends IService<Student> {
 	public Map getStudentSchoolInfo(String stuId);
 	
 	public Student getById(String id);
+	/**
+	 * @author zjx
+	 * 获取学生用户的个人信息
+	 * @param
+	 * @return
+	 * */
+	public Map getUserInfo(String userId);
 }
