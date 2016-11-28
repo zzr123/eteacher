@@ -74,9 +74,29 @@ public class BaseRemote {
 	}
 	
 	public Map getCurrentTerm(HttpServletRequest request){
-//		TermPrivate tpId = (TermPrivate)request.getSession().getAttribute(EteacherConstants.CURRENT_TERM);
 		Map term = termServiceImpl.getCurrentTerm(getCurrentUserId(request));
 		return term;
+	}
+	
+	/**
+	 * 获取当前学期信息（共有学期）
+	 * @param request
+	 * @return
+	 */
+	public Map getThisTerm(HttpServletRequest request){
+		User user = getCurrentUser(request);
+		if (user.getUserType().equals("01")) {
+			Teacher teacher = getCurrentTeacher(request);
+			if (null != teacher) {
+				return termServiceImpl.getThisTerm(teacher.getSchoolId());
+			}
+		}else if(user.getUserType().equals("02")){
+			Student student = getCurrentStudent(request);
+			if (null != student) {
+				return termServiceImpl.getThisTerm(student.getSchoolId());
+			}
+		}
+		return null;
 	}
 	
 	public Student getCurrentStudent(HttpServletRequest request){

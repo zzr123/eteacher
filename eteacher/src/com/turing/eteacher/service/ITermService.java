@@ -36,4 +36,6 @@ public interface ITermService extends IService<Term> {
 
 	public List<Map> getListTerm(String termId);
 	
+	public Map getThisTerm(String schoolId);
+	
 }

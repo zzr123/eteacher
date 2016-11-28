@@ -229,5 +229,21 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		return termDAO.findBySql(sql, userId);
 	}
 
+	@Override
+	public Map getThisTerm(String schoolId) {
+		String sql = "SELECT t.TERM_ID AS termId, "+
+					 "t.TERM_NAME AS termName, "+
+					 "t.START_DATE AS startDate, "+
+					 "t.END_DATE AS endDate, "+
+					 "t.WEEK_COUNT AS weekCount "+
+					 "FROM t_term t WHERE t.START_DATE < NOW() "+
+					 "AND t.SCHOOL_ID = ? ORDER BY t.START_DATE DESC " ;
+		List<Map> list = termDAO.findBySql(sql, schoolId);
+		if (null != list && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
 	
 }

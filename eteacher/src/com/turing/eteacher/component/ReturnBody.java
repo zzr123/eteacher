@@ -21,6 +21,8 @@ public class ReturnBody {
 	public static final String RESULT_FAILURE = 		"400";
 	//token过期
 	public static final String RESULT_TOKEN_TIMEOUT = 	"201";
+	//身份信息待完善
+	public static final String RESULT_IMPERFECT_INFORMATION = 	"402";
 
 	public static final String ERROR_MSG = "系统出现异常，请稍后再试。";
 
@@ -105,6 +107,13 @@ public class ReturnBody {
 			noLoginErrorBody = new ReturnBody(RESULT_FAILURE, NO_LOGIN);
 		}
 		return noLoginErrorBody;
+	}
+	/**
+	 * 返回一个用户信息不完善的错误
+	 * @return
+	 */
+	public static ReturnBody getUserInfoError(){
+		return new ReturnBody(RESULT_IMPERFECT_INFORMATION, "请您先完善个人信息！");
 	}
 
 	private String result;

@@ -135,7 +135,7 @@ public interface ICourseService extends IService<Course> {
 	 */
 	public List<Map> getClassroomTime(String courseId,String type);	
 	/**
-	 * 获取学期内课程的信息（重复类型、重复周期）
+	 *教师端  获取学期内课程的信息（重复类型、重复周期）
 	 * @author lifei
 	 * @param userId
 	 * @param tpId
@@ -156,4 +156,9 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public List<Map> getCourseTimebyStuId(String stuId,String termId);
+	/**
+	 * 学生端获取本学期的课程名字和Id
+	 * @return
+	 */
+	public List<Map> getCourseNameBbyTerm(String userId,String termId);
 }

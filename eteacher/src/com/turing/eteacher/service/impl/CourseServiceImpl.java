@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.util.TempFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1219,6 +1220,21 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				"WHERE tcc.CLASS_ID = ts.CLASS_ID " +
 				"AND ts.STU_ID = ? )"; 
 		return courseDAO.findBySql(sql, termId, stuId);
+	}
+
+	@Override
+	public List<Map> getCourseNameBbyTerm(String userId, String termId) {
+		String sql = "SELECT tc.COURSE_ID AS courseId "+
+					",tc.COURSE_NAME AS courseName "+
+					"FROM t_course tc ,t_term_private tp "+
+					"WHERE tp.TP_ID = tc.TERM_ID "+
+					"AND tp.TREM_ID = ? "+
+					"AND tc.COURSE_ID IN ( "+
+					"SELECT tcc.`COURSE_ID` "+
+					"FROM t_course_class tcc ,t_student ts "+
+					"WHERE tcc.`CLASS_ID` = ts.`CLASS_ID` "+
+					"AND ts.`STU_ID` = ? )"; 
+		return courseDAO.findBySql(sql, termId,userId);
 	}
 
 }

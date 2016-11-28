@@ -1,5 +1,7 @@
 package com.turing.eteacher.remote;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,18 +9,19 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.CourseCell;
 import com.turing.eteacher.model.Student;
-import com.turing.eteacher.model.Term;
-import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.service.ICourseCellService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IStudentService;
@@ -26,6 +29,7 @@ import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.DateUtil;
+import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
 @RestController
@@ -152,6 +156,21 @@ public class StudentRemote extends BaseRemote {
 	}
 	
 	/**
+	 * 获取当前学期的课程列表
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="student/Course/getCurrentTermList",method = RequestMethod.POST)
+	public ReturnBody getCurrentTermList(HttpServletRequest request){
+		Map map = getThisTerm(request);
+		if (null == map) {
+			return ReturnBody.getUserInfoError();
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * 完善学生用户的基本信息
 	 * @param request
 	 * @return
@@ -273,4 +292,31 @@ public class StudentRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
+	
+	@RequestMapping(value = "lifei/lifeitest", method = RequestMethod.POST)
+	public ReturnBody lifeitest(HttpServletRequest request){
+	    //得到上传文件的保存目录，将上传的文件存放于WEB-INF目录下，不允许外界直接访问，保证上传文件的安全
+        String savePath = request.getServletContext().getRealPath("/WEB-INF/upload");
+        File filesavePath = new File(savePath);
+        if (!filesavePath.exists()) {
+            //创建临时目录
+        	filesavePath.mkdir();
+        }
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
+        String name = request.getParameter("name");
+        System.out.println("参数name："+name);
+        MultipartFile myfile = mRequest.getFile("nameFile");
+        System.out.println("文件长度: " + myfile.getSize());  
+        System.out.println("文件类型: " + myfile.getContentType());  
+        System.out.println("文件名称: " + myfile.getName());  
+        System.out.println("文件原名: " + myfile.getOriginalFilename());  
+        try {
+			FileUtils.copyInputStreamToFile(myfile.getInputStream(), new File(filesavePath,FileUtil.makeFileName(myfile.getOriginalFilename())));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+        return null;
+	}
+	
 }
