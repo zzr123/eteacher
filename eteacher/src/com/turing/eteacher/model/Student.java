@@ -25,9 +25,6 @@ public class Student extends BaseModel implements Serializable {
 	private String sex;
 	private String schoolId;
 	private String faculty;
-	private String phoneId;
-	private String imId;
-	private String emailId;
 	private String picture;
 	
 	@Id
@@ -81,27 +78,6 @@ public class Student extends BaseModel implements Serializable {
 	}
 	public void setFaculty(String faculty) {
 		this.faculty = faculty;
-	}
-	@Column(name = "PHONE_ID")
-	public String getPhoneId() {
-		return phoneId;
-	}
-	public void setPhoneId(String phoneId) {
-		this.phoneId = phoneId;
-	}
-	@Column(name = "IM_ID")
-	public String getImId() {
-		return imId;
-	}
-	public void setImId(String imId) {
-		this.imId = imId;
-	}
-	@Column(name = "EMAIL_ID")
-	public String getEmailId() {
-		return emailId;
-	}
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
 	}
 	@Column(name = "PICTURE")
 	public String getPicture() {
