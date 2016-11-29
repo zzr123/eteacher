@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseCell;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseCellService;
@@ -320,5 +321,40 @@ public class StudentRemote extends BaseRemote {
 		}  
         return null;
 	}
-	
+	/**
+	 * 保存学生用户个人信息
+	 * 
+	 * @param request
+	 * @param c
+	 * @return
+	 */
+	@RequestMapping(value = "student/saveInfo", method = RequestMethod.POST)
+	public ReturnBody saveCourse(HttpServletRequest request) {
+		String userId = request.getParameter("userId");
+		String stuName = request.getParameter("stuName");
+		String stuNo = request.getParameter("stuNo");
+		String sex = request.getParameter("sex");
+		String schoolId = request.getParameter("schoolId");
+		String faculty = request.getParameter("faculty");
+		String classId = request.getParameter("classId");
+
+		if (StringUtil.checkParams(stuName,stuNo,sex,schoolId,faculty,classId)) {
+			Student student = null;
+			student = studentServiceImpl.get(userId);
+			
+			student.setStuName(stuName);
+			student.setStuNo(stuNo);
+			student.setSex(sex);
+			student.setSchoolId(schoolId);
+			student.setFaculty(faculty);
+			student.setClassId(classId);
+			studentServiceImpl.update(student);
+
+			Map<String,String> map = new HashMap();
+			map.put("stuId", student.getStuId());
+			return new ReturnBody(map);
+		} else {
+			return ReturnBody.getParamError();
+		}
+	}
 }

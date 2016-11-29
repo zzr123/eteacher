@@ -74,7 +74,6 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 	 * 查看用户个人信息   stuName : '姓名', stuNO : '学号', sex : '性别', 
 	 * schoolId : '学校Id', schoolName : '学校名称' faculty : '院系',
 	 *  classId : '班级Id' , className : '班级名称',
-	 *  email : '电子邮箱', phone : '联系电话' IM : 'IM',
 	 */
 	@Override
 	public Map getUserInfo(String userId) {
@@ -84,18 +83,7 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 				"from Student s , Classes c ,School sch " +
 				"where s.classId = c.classId and s.schoolId = sch.schoolId and s.stuId = ?";
 		Map<String,Map> map = studentDAO.findMap(hql, userId).get(0);
-		//邮箱
-		String el="select uc.value as email from UserCommunication uc where uc.userId =? and uc.type =2 ";
-		List<Map> list1=studentDAO.findMap(el, userId);
-		//联系电话
-		String pl="select uc.value as phone from UserCommunication uc where uc.userId =? and uc.type =1 ";
-		List<Map> list2=studentDAO.findMap(pl, userId);
-		//IM
-		String il="select uc.value as IM from UserCommunication uc where uc.userId =? and uc.type =3 ";
-		List<Map> list3=studentDAO.findMap(il, userId);
-		map.put("email", list1.get(0));
-		map.put("phone", list2.get(0));
-		map.put("IM", list3.get(0));
+
 		return map;
 	}
 

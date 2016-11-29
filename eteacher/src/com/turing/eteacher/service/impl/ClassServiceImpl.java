@@ -120,6 +120,16 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	return list;
 	}
 
+	@Override
+	public List<Map> search(String search, int date) {
+		String sql = "SELECT t_class.CLASS_ID AS classId, "+
+				 "t_class.CLASS_NAME AS className "+
+				 "FROM t_class WHERE t_class.END_TIME >= ? " +
+				 "and t_class.CLASS_NAME like '%?%' ";
+	List<Map> list = classDAO.findBySql(sql,search,date);
+	return list;
+	}
+
 
 
 }

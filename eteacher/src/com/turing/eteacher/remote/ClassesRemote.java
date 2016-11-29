@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.ITermService;
@@ -68,4 +69,45 @@ public class ClassesRemote extends BaseRemote {
 					return ReturnBody.getParamError();
 				}
 		}
+	/**
+	 * 学生端根据专业获取班级名称
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="student/classes/getClassNameByMajor",method=RequestMethod.POST)
+		public ReturnBody getClassNameByMajor(HttpServletRequest request){
+				String majorId = request.getParameter("major");
+				String page = request.getParameter("page");
+				Student student = getCurrentStudent(request);
+				if (null != student && StringUtil.checkParams(page, student.getSchoolId())) {
+					int endTime = Calendar.getInstance().get(Calendar.YEAR);
+					List list = classServiceImpl.getClassListByUser(
+							student.getSchoolId(), endTime, majorId,
+							Integer.parseInt(page));
+					System.out.println(list.toString());
+					return new ReturnBody(list);
+				} else {
+					return ReturnBody.getParamError();
+				}
+		}
+	/**
+	 * 根据关键字查询班级
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="student/classes/search",method=RequestMethod.POST)
+	public ReturnBody search(HttpServletRequest request){
+		try{
+			String search = request.getParameter("search");
+			int endTime = Calendar.getInstance().get(Calendar.YEAR);
+	 	    System.out.println("0000  " +search);
+			List list=classServiceImpl.search(search,endTime);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS,list);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+	}
 }

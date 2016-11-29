@@ -44,4 +44,11 @@ public interface IClassService extends IService<Classes> {
 	 * @return
 	 */
 	public List<Map> getClassList(String userId,String tpId,int page);
+	/**
+	 * 根据关键字查询班级
+	 * @author zjx
+	 * @param search 关键字
+	 * @return
+	 */
+	public List<Map> search(String search,int date);
 }
