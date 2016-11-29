@@ -103,7 +103,7 @@ public class BaseRemote {
 		Student student = null;
 		User user = getCurrentUser(request);
 		if (null != user && user.getUserType().equals("02")) {
-			student = studentServiceImpl.getById(user.getUserId());
+			student = studentServiceImpl.get(user.getUserId());
 		}
 		return student;
 	}
