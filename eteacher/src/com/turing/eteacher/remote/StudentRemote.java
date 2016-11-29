@@ -166,8 +166,8 @@ public class StudentRemote extends BaseRemote {
 		if (null == map) {
 			return ReturnBody.getUserInfoError();
 		}
-		
-		return null;
+		List list = courseServiceImpl.getCourseNameBbyTerm(getCurrentUserId(request),(String)map.get("termId"));
+		return new ReturnBody(list);
 	}
 	
 	/**

@@ -1,6 +1,7 @@
 package com.turing.eteacher.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,18 +11,22 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.turing.eteacher.base.BaseModel;
 import com.turing.eteacher.base.CreateTimeModel;
 
 @Entity
 @Table(name = "T_NOTE")
-public class Note extends CreateTimeModel implements Serializable {
+public class Note extends BaseModel implements Serializable {
 
 	private static final long serialVersionUID = -8783475413921215965L;
 	
 	private String noteId;
 	private String courseId;
+	private String title;
+	private String isKey;
 	private String content;
 	private String userId;
+	private String createTime;
 	
 	@Id
 	@GeneratedValue(generator = "customId")
@@ -54,6 +59,28 @@ public class Note extends CreateTimeModel implements Serializable {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-
+	@Column(name = "TITLE")
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	@Column(name = "IS_KEY")
+	public String getIsKey() {
+		return isKey;
+	}
+	public void setIsKey(String isKey) {
+		this.isKey = isKey;
+	}
+	@Column(name = "CREATE_TIME")
+	public String getCreateTime() {
+		// TODO Auto-generated method stub
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		// TODO Auto-generated method stub
+		this.createTime = createTime;
+	}
 	
 }

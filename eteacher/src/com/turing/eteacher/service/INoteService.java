@@ -10,7 +10,7 @@ import com.turing.eteacher.model.Note;
 
 public interface INoteService extends IService<Note> {
 
-	public void saveNote(Note note, List<MultipartFile> files) throws Exception;
+	public void saveNote(Note note, List<MultipartFile> files,String savePath) throws Exception;
 	
 	public List getNoteDateList(String userId, String courseId);
 	

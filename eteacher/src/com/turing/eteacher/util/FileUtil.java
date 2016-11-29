@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.turing.eteacher.model.CustomFile;
@@ -40,7 +42,16 @@ public class FileUtil {
 		}
 		return customFile;
 	}
-	
+	public static String getUploadPath(HttpServletRequest request){
+	    //得到上传文件的保存目录，将上传的文件存放于WEB-INF目录下，不允许外界直接访问，保证上传文件的安全
+        String savePath = request.getServletContext().getRealPath("/WEB-INF/upload");
+        File filesavePath = new File(savePath);
+        if (!filesavePath.exists()) {
+            //创建临时目录
+        	filesavePath.mkdir();
+        }
+        return savePath;
+	}
     
     /**
     * @Method: makeFileName
@@ -51,7 +62,7 @@ public class FileUtil {
     */ 
     public static String makeFileName(String filename){  //2.jpg
         //为防止文件覆盖的现象发生，要为上传文件产生一个唯一的文件名
-        return UUID.randomUUID().toString() + "_" + filename;
+        return CustomIdGenerator.generateShortUuid() + "_" + filename;
     }
     
     /**

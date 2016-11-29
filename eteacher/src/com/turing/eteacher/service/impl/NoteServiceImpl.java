@@ -1,11 +1,11 @@
 package com.turing.eteacher.service.impl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,20 +35,24 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 	}
 
 	@Override
-	public void saveNote(Note note, List<MultipartFile> files) throws Exception {
+	public void saveNote(Note note, List<MultipartFile> files,String savePath) throws Exception {
 		noteDAO.save(note);
-		String pathRoot = FileUtil.getRootPath();
 		if(files!=null){
 			for(MultipartFile file : files){
 				if(!file.isEmpty()){
-					String serverName = CustomIdGenerator.generateShortUuid() + FileUtil.getSuffixes(file.getOriginalFilename());
-	    	        String path="/upload/"+serverName;
-	    	        file.transferTo(new File(pathRoot+path));
+					String serverName = FileUtil.makeFileName(file.getOriginalFilename());
+	    	        try {
+	    				FileUtils.copyInputStreamToFile(file.getInputStream(), new File(savePath,serverName));
+	    			} catch (IOException e) {
+	    				e.printStackTrace();
+	    			}  
 	    	        CustomFile customFile = new CustomFile();
 	    	        customFile.setDataId(note.getNoteId());
 	    	        customFile.setFileName(file.getOriginalFilename());
 	    	        customFile.setServerName(serverName);
-	    	        noteDAO.save(customFile);
+	    	        customFile.setIsCourseFile(2);
+	    	        customFile.setFileAuth("02");
+	    	        fileServiceImpl.save(customFile);
 				}
 			}
 		}

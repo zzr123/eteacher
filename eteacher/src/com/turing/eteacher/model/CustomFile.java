@@ -10,11 +10,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.turing.eteacher.base.CreateTimeModel;
+import com.turing.eteacher.base.BaseModel;
 
 @Entity
 @Table(name = "T_FILE")
-public class CustomFile extends CreateTimeModel implements Serializable {
+public class CustomFile extends BaseModel implements Serializable {
 
 	private static final long serialVersionUID = -4092654237049068658L;
 	
