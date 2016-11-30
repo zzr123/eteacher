@@ -22,10 +22,12 @@ public class SignIn extends CreateTimeModel implements Serializable{
 	private String currentLessons;
 	private String studentId;
 	private int status;
+	private String lon;//签到地点的经度坐标
+	private String lat;//签到地点的纬度坐标
 	
 	@Id
-	@GeneratedValue(generator="customId")
-	@GenericGenerator(name="customId", strategy="com.turing.eteacher.util.CustomIdGenerator")
+	@GeneratedValue(generator = "customId")
+	@GenericGenerator(name = "customId", strategy = "com.turing.eteacher.util.CustomIdGenerator")
 	@Column(name="SIGN_ID")
 	public String getSignId() {
 		return signId;
@@ -68,5 +70,20 @@ public class SignIn extends CreateTimeModel implements Serializable{
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	@Column(name = "LON")
+	public String getLon() {
+		return lon;
+	}
+	public void setLon(String lon) {
+		this.lon = lon;
+	}
+	@Column(name = "LAT")
+	public String getLat() {
+		return lat;
+	}
+	public void setLat(String lat) {
+		this.lat = lat;
+	}
+	
 	
 }

@@ -122,7 +122,7 @@ public class CourseRemote extends BaseRemote {
 	}
 
 	/**
-	 * 学生端功能：判断当前时间是否为签到时间（获取当前处于签到时间的课程信息）
+	 * 学生端功能：判断当前时间是否为签到时间（获取当前处于签到时间的课程信息）/ 获取某课程的签到信息（学校，教学楼，签到有效范围）
 	 * @author macong
 	 * @param request
 	 */
@@ -134,7 +134,9 @@ public class CourseRemote extends BaseRemote {
 //	            "courseName": "软件工程",
 //	            "startTime": "7:50",
 //	            "endTime": "8:00",
-//	            "teacherName": "teacherName"
+//				"distance"："200"
+//	            "teacherName": "teacherName",
+//				"teacherId"："znueBJ2k"	
 //	        }
 //	    ]
 //	}
@@ -147,8 +149,9 @@ public class CourseRemote extends BaseRemote {
 				Map course = courseServiceImpl.getSignCourse(userId,schoolId);
 				if(null != course){
 					return new ReturnBody(ReturnBody.RESULT_SUCCESS, course);
+				}else{
+					return new ReturnBody(null);
 				}
-				return new ReturnBody(ReturnBody.RESULT_FAILURE, null);
 			} catch (Exception e) {
 				log.error(this, e);
 				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);

@@ -76,7 +76,7 @@ public class SchoolServiceImpl extends BaseService<School> implements ISchoolSer
 		String hql = "select u.userType from User u where u.userId = ?";
 		String type = (String) schoolDAO.find(hql, userId).get(0);
 		Map school = null;
-		System.out.println("EteacherConstants.USER_TYPE_TEACHER:"+EteacherConstants.USER_TYPE_TEACHER);
+		System.out.println("EteacherConstants.USER_TYPE_TEACHER:"+type);
 		if(EteacherConstants.USER_TYPE_TEACHER.equals(type)||EteacherConstants.USER_TYPE_ADMIN.equals(type)){//教师用户
 			String hql2 = "select s.schoolId as schoolId, s.value as schoolName from School s, Teacher t where t.schoolId=s.schoolId and t.teacherId= ?";
 			school = schoolDAO.findMap(hql2, userId).get(0);

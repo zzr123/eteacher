@@ -80,8 +80,7 @@ public class DateUtil {
 	}
 
 	public static int getDayBetween(String from, String to) {
-		SimpleDateFormat format = new SimpleDateFormat(YYYYMMDD);
-		int i = 0;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Date _from = format.parse(from);
 			Date _to = format.parse(to);
@@ -89,12 +88,12 @@ public class DateUtil {
 				return 0;
 			}
 			long l = _to.getTime() - _from.getTime();
-			i = (int) l / (1000 * 60 * 60 * 24);
+			int i = (int) (l / (1000 * 60 * 60 * 24));
+			return i;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return i;
+		return -1;
 	}
 
 	/**
@@ -402,6 +401,49 @@ public class DateUtil {
 		}
 		return 0;
 	}
-	
-
+	/**
+	 * 辅助方法：计算 HH:mm 加/减  分钟数   后的时间
+	 * @author macong
+	 * @param time   被减数（HH:mm）
+	 * @param minute  减数 （分钟）
+	 */
+	public static String timeSubtraction(String time,String operator, Integer minute) {
+		String result = null;
+		try {
+			/**
+			 * 将字符串数据转化为毫秒数
+			 */
+	   	    Calendar c = Calendar.getInstance();
+			c.setTime(new SimpleDateFormat("HH:mm").parse(time));
+			long bjs = c.getTimeInMillis();
+			
+			long js = minute*60*1000;
+			/**
+			 * 加/减法运算
+			 */
+			long newTime = -1;
+			switch (operator) {
+			case "+":
+				newTime = bjs + js ;
+				break;
+			case "-":
+				newTime = bjs - js ;
+				break;
+			default:
+				break;
+			}
+			
+			/**
+			* 将毫秒数转化为时间
+			*/
+			if(newTime != -1){
+				Date date = new Date(newTime);
+				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+				result = sdf.format(date);
+			} 
+		}catch (java.text.ParseException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

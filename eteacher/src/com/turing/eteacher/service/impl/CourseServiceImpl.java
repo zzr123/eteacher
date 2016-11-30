@@ -438,6 +438,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	 * @param date
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<Map> getCourseByDate(String userId, String date) {
 		/*
@@ -453,7 +454,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 					+ "from CourseCell cc, CourseItem ci, CourseClasses ccl, Student s, Course c, TermPrivate tp "
 					+ "where ci.courseId = ccl.courseId and cc.ciId = ci.ciId and "
 					+ "ccl.classId = s.classId and s.stuId = ? and  "
-					+ "c.termId = tp.termId and tp.userId = c.userId and tp.startDate < ? " + "and tp.endDate > ? ";
+					+ "c.termId = tp.tpId and tp.userId = c.userId and tp.startDate < ? and tp.endDate > ? ";
 			List<Map> list = courseDAO.findMap(hql, userId, date, date);
 			List<Map> cList = new ArrayList<>();
 			
@@ -475,13 +476,12 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				return cList;
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
 	/**
-	 * 学生端功能：判断当前时间是否为签到时间（获取当前正在进行的课程信息）
+	 * 学生端功能：判断当前时间是否为签到时间（获取当前正在进行的课程信息）/ 获取某课程的签到信息（学校，教学楼，签到有效范围）
 	 * @author macong
 	 * @param userId
 	 * 
@@ -507,7 +507,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		String ql = "select tt.startTime as startTime, tt.lessonNumber as lessonNumber "
 				+ "from TimeTable tt where tt.schoolId = ? ";
 		List<Map> timeTable = courseDAO.findMap(ql, schoolId);
-		//
+
 		if(null != courseList && courseList.size()>0){
 			
 			for(int i = 0;i < courseList.size(); i++){
@@ -518,22 +518,34 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				if(c == null || c.size() == 0){
 					c = courseDAO.findMap(hql2);
 				}
-				System.out.println("+++++++++++++" + c.get(0).toString());
 				//时间处理： （当前时间-after）< 课程开始时间  < （当前时间+before）,符合签到条件
 				@SuppressWarnings("unused")
-				String time1 = timeSubtraction(time, "-", (Integer)c.get(0).get("before"));
-				String time2 = timeSubtraction(time, "+", (Integer)c.get(0).get("after"));
+				String time1 = DateUtil.timeSubtraction(time, "-", (Integer)c.get(0).get("before"));
+				String time2 = DateUtil.timeSubtraction(time, "+", (Integer)c.get(0).get("after"));
+				
 				//查询lesson对应的开始时间
 				String lessons = (String) courseList.get(i).get("lessonNumber");
 				String [] ls = lessons.split(",");
-				String  ln = null;
+//				String  ln = null;
 				for (int k = 0; k < timeTable.size(); k++) {
-					ln = timeTable.get(k).get("lessonNumber").toString();
+//					ln = timeTable.get(k).get("lessonNumber").toString();
 					for (int j = 0; j < ls.length; j++) {
-						if(ln.contains(ls[j])){
+						if(lessons.contains(ls[j])){
 							String st = (String) timeTable.get(k).get("startTime");
 							if (time1.compareTo(st) <= 0 && time2.compareTo(st) >= 0) {
-								return timeTable.get(k);
+								//签到开始时间和签到结束时间
+								String startTime = DateUtil.timeSubtraction((String)timeTable.get(k).get("startTime"),"-",(Integer)c.get(0).get("before"));
+								String endTime = DateUtil.timeSubtraction((String)timeTable.get(k).get("startTime"),"+",(Integer)c.get(0).get("after"));
+								
+								Map re = new HashMap<>();
+								re.put("courseId", courseList.get(i).get("courseId"));
+								re.put("courseName", courseList.get(i).get("courseName"));
+								re.put("teacherId", teacherId);
+								re.put("teacherName", courseList.get(i).get("teacherName"));
+								re.put("beforeTime", startTime);
+								re.put("afterTime", endTime);
+								re.put("distance", c.get(0).get("distance"));
+								return re;
 							}
 						}
 					}
@@ -542,51 +554,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		}
 		return null;
 	}
-	/**
-	 * 辅助方法：HH:mm 加/减  分钟数   后的时间
-	 * @author macong
-	 * @param time   被减数（HH:mm）
-	 * @param minute  减数 （分钟）
-	 */
-	public String timeSubtraction(String time,String operator, Integer minute) {
-		String result = null;
-		try {
-			/**
-			 * 将字符串数据转化为毫秒数
-			 */
-	   	    Calendar c = Calendar.getInstance();
-			c.setTime(new SimpleDateFormat("HH:mm").parse(time));
-			long bjs = c.getTimeInMillis();
-			
-			long js = minute*60*1000;
-			/**
-			 * 加/减法运算
-			 */
-			long newTime = -1;
-			switch (operator) {
-			case "+":
-				newTime = bjs + js ;
-				break;
-			case "-":
-				newTime = bjs - js ;
-				break;
-			default:
-				break;
-			}
-			
-			/**
-			* 将毫秒数转化为时间
-			*/
-			if(newTime != -1){
-				Date date = new Date(newTime);
-				SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-				result = sdf.format(date);
-			} 
-		}catch (java.text.ParseException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+	
 	/**
 	 * 
 	 * @param year
@@ -635,7 +603,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 					+ "ci.startWeek as startWeek, ci.endWeek as endWeek, ci.startDay as startDay, "
 					+ "ci.endDay as endDay, ci.repeatNumber as repeatNumber, cc.lessonNumber as lessonNumber "
 					+ "from CourseCell cc, Course c, CourseItem ci where "
-					+ "cc.ciId=ci.ciId and ci.courseId=c.courseId " + "and c.userId = ? ";
+					+ "cc.ciId=ci.ciId and ci.courseId=c.courseId and c.userId = ? ";
+			@SuppressWarnings("rawtypes")
 			List<Map> courseList = courseItemDAO.findMap(cql, userId);
 			System.out.println("根据用户ID，筛选出符合当前条件的课程:" + courseList.size() + courseList.get(0).toString());
 			// 处理给定的日期
@@ -766,8 +735,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		if (cIdList.size() > 0 && cIdList != null) {
 			List<Map> courses = new ArrayList<>();
 			String hql2 = "select c.courseId as courseId, c.courseName as courseName, s.value as location, "
-					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber, c.userId as teacherId "
-					+ "from Course c, CourseCell cc, CourseItem ci,School s "
+					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber, "
+					+ "c.userId as teacherId, t.name as teacherName "
+					+ "from Course c, CourseCell cc, CourseItem ci,School s,Teacher t "
 					+ "where c.courseId = ci.courseId and cc.ciId = ci.ciId and cc.location=s.code and c.courseId = ? "
 					+ "order by cc.lessonNumber asc ";
 			for (int i = 0; i < cIdList.size(); i++) {	
@@ -1023,6 +993,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				for (int i = 0; i < courseList.size(); i++) {
 					todayCourse = (String) courseList.get(i).get("lessonNumber");
 					if (todayCourse.indexOf(nowLessonNumber) >= 0) {
+						courseList.get(i).put("lessonNumber", nowLessonNumber);
 						return courseList.get(i);
 					} else {
 						return null;// 不在上课时间内
