@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
@@ -39,9 +43,11 @@ import com.turing.eteacher.service.ICourseClassService;
 import com.turing.eteacher.service.ICourseItemService;
 import com.turing.eteacher.service.ICourseScoreService;
 import com.turing.eteacher.service.ICourseService;
+import com.turing.eteacher.service.ICustomFileService;
 import com.turing.eteacher.service.IMajorService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITextbookService;
+import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
 @RestController
@@ -73,6 +79,9 @@ public class CourseRemote extends BaseRemote {
 
 	@Autowired
 	private ICourseCellService courseCellService;
+	
+	@Autowired
+	private ICustomFileService customFileServiceImpl;
 
 	@RequestMapping(value = "teacher/course/getscoreList", method = RequestMethod.POST)
 	public ReturnBody getscoreList(HttpServletRequest request) {
@@ -407,6 +416,7 @@ public class CourseRemote extends BaseRemote {
 		String scores = request.getParameter("scores");// *
 		String book = request.getParameter("book");
 		String books = request.getParameter("books");
+		String myFiles = request.getParameter("myFiles");
 		if (StringUtil.checkParams(courseName, courseHours, teachMethodId, courseTypeId, examTypeId, majorId,
 				remindTime, classes, scores)) {
 			Course course = null;
@@ -481,6 +491,34 @@ public class CourseRemote extends BaseRemote {
 					item.setIsbn(bookList.get(i).get("isbn"));
 					item.setTextbookType("02");
 					textbookServiceImpl.save(item);
+				}
+			}
+			if (StringUtil.isNotEmpty(myFiles)) {
+				if (request instanceof MultipartRequest) {
+					MultipartRequest muiltRequest = (MultipartRequest)request;
+					String savePath = FileUtil.getUploadPath(request);
+					List<Map<String, String>> fileList = (List<Map<String, String>>) JSONUtils.parse(myFiles);
+					for (int i = 0; i < fileList.size(); i++) {
+						MultipartFile mFile = muiltRequest.getFile(fileList.get(i).get("fileName"));
+						if(!mFile.isEmpty()){
+							String serverName = FileUtil.makeFileName(mFile.getOriginalFilename());
+							try {
+								FileUtils.copyInputStreamToFile(mFile.getInputStream(), new File(savePath,serverName));
+								CustomFile file = new CustomFile();
+								file.setDataId(courseId);
+								file.setFileAuth(fileList.get(i).get("fileAuth"));
+								file.setFileName(fileList.get(i).get("fileName"));
+								file.setIsCourseFile(1);
+								file.setVocabularyId(fileList.get(i).get("typeId"));
+								file.setServerName(serverName);
+								customFileServiceImpl.save(file);
+							} catch (IOException e) {
+								e.printStackTrace();
+							} 
+						}
+					}
+				}else{
+					System.out.println("fslfjlsdjfisdfjosdjfodsf");
 				}
 			}
 			Map<String, String> map = new HashMap();
