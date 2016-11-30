@@ -1208,4 +1208,20 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		return courseDAO.findBySql(sql, termId,userId);
 	}
 
+	@Override
+	public List<Map> getCourTime(String courseId) {
+		String sql="SELECT ci.START_WEEK as startWeek,ci.END_WEEK as endWeek," +
+				"ci.REPEAT_NUMBER as repeatNumber,ci.REPEAT_TYPE as repeatType," +
+				"ci.START_DAY as startDay,ci.END_DAY as endDay," +
+				"ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
+			 	"ce.CLASSROOM as classroom,s.VALUE as location" +
+				"FROM t_course_item ci " +
+				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
+				"INNER JOIN t_course_cell ce ON ci.CI_ID = ce.CI_ID " +
+				"INNER JOIN t_school s ON ce.LOCATION = s.CODE " +
+				"WHERE c.COURSE_ID = ? and ci.REPEAT_TYPE = 1";
+		List<Map> list = courseDAO.findBySql(sql, courseId);
+		return list;
+	}
+
 }

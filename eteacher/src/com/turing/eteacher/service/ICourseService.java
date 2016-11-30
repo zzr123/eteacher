@@ -161,4 +161,10 @@ public interface ICourseService extends IService<Course> {
 	 * @return
 	 */
 	public List<Map> getCourseNameBbyTerm(String userId,String termId);
+	/**
+	 * 学生端功能：查看课程的起止时间、重复类型、上课时间、上课地点
+	 * @author zjx
+	 * @param courseId
+	 */
+	public List<Map> getCourTime(String courseId);
 }

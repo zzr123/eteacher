@@ -112,6 +112,7 @@ public class CourseRemote extends BaseRemote {
 		if (StringUtil.checkParams(userId, date)) {
 			try {
 				List<Map> data = courseServiceImpl.getCourseByDate(userId, date);
+				System.out.println("~~~~~~~~~"+data);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 			} catch (Exception e) {
 				log.error(this, e);
@@ -159,7 +160,26 @@ public class CourseRemote extends BaseRemote {
 		}
 		return new ReturnBody(ReturnBody.RESULT_FAILURE, null);
 	}
+	
+	/**
+	 * 学生端功能：查看课程的起止时间、重复类型、上课时间、上课地点
+	 * 
+	 */
+	@RequestMapping(value = "student/course/courTime", method = RequestMethod.POST)
+	public ReturnBody courTime(HttpServletRequest request) {
+		try{
+			String courseId = request.getParameter("courseId");
 
+			List<Map> list = courseServiceImpl.getCourTime(courseId);
+			System.out.println("-------"+list.get(0));
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			}catch (Exception e) {
+				e.printStackTrace();
+				return new ReturnBody(ReturnBody.RESULT_FAILURE,
+						ReturnBody.ERROR_MSG);
+			}
+	}
+	
 	/**
 	 * 学生端功能：查看某门课程的课程详情
 	 * 

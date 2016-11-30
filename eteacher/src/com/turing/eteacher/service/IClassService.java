@@ -50,5 +50,5 @@ public interface IClassService extends IService<Classes> {
 	 * @param search 关键字
 	 * @return
 	 */
-	public List<Map> search(String search,int date);
+	public List<Map> search(String search,int endTime);
 }
