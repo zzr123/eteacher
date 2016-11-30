@@ -1,5 +1,6 @@
 package com.turing.eteacher.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.turing.eteacher.base.IService;
@@ -27,5 +28,19 @@ public interface ISignInService extends IService<SignIn> {
 	 * @return
 	 */
 	public void courseSignIn(String studentId, String courseId, String lon, String lat);
+	/**
+	 * 学生端功能：获取用户的签到情况
+	 * @author macong
+	 * @param studentId
+	 * @return
+	 */
+	public Map SignInCount(String studentId);
+	/**
+	 * 教师端功能：获取当前课程的出勤情况列表
+	 * @author macong
+	 * @param courseId
+	 * @return
+	 */
+	public List<Map> getRegistSituation(String courseId, String currentWeek, String lessonNum, int status);
 
 }

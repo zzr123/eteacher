@@ -97,14 +97,7 @@ public interface ICourseService extends IService<Course> {
 	 * @param time  "2016-11-13 10:21:51"
 	 */
 	public Map getCurrentCourse(String userId, String time,Map school);
-	/**
-	 * 获取当前课程的出勤情况列表
-	 * @author macong
-	 * @param courseId
-	 * @return
-	 */
-	public List<Map> getRegistSituation(String courseId,String currentWeek,String lessonNum,int status);
-
+	
 	/**
 	 * 获取课程课表
 	 * @author zjx

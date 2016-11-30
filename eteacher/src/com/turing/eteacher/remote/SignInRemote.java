@@ -48,12 +48,12 @@ public class SignInRemote extends BaseRemote{
 	}
 	
 	/**
-	 * 学生端接口：获取学生本学期内各课程的签到情况
+	 * 学生端接口：课程签到
 	 * @author macong
 	 * 时间：2016年11月30日09:12:02
 	 */
 	@RequestMapping(value="signIn/courseSignIn",method=RequestMethod.POST)
-	public ReturnBody getSignInfo(HttpServletRequest request){
+	public ReturnBody courseSignIn(HttpServletRequest request){
 		try{
 	 		String studentId = getCurrentUserId(request);
 	 		String courseId = request.getParameter("courseId");
@@ -63,6 +63,24 @@ public class SignInRemote extends BaseRemote{
 	 			signInServiceImpl.courseSignIn(studentId,courseId,lon,lat);
 	 			return new ReturnBody(ReturnBody.RESULT_SUCCESS);
 	 		}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+		return null;
+	}
+	
+	/**
+	 * 学生端接口：获取学生本学期内各课程的签到情况
+	 * @author macong
+	 * 时间：2016年11月30日16:57:27
+	 */
+	@RequestMapping(value="signIn/signInCount",method=RequestMethod.POST)
+	public ReturnBody signInCount(HttpServletRequest request){
+		try{
+			String studentId = getCurrentUserId(request);
+			Map m = signInServiceImpl.SignInCount(studentId);
 		}
 		catch(Exception e){
 			e.printStackTrace();

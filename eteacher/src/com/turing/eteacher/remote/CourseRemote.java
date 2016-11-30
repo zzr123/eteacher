@@ -45,6 +45,7 @@ import com.turing.eteacher.service.ICourseScoreService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ICustomFileService;
 import com.turing.eteacher.service.IMajorService;
+import com.turing.eteacher.service.ISignInService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITextbookService;
 import com.turing.eteacher.util.FileUtil;
@@ -79,6 +80,10 @@ public class CourseRemote extends BaseRemote {
 
 	@Autowired
 	private ICourseCellService courseCellService;
+	
+	@Autowired
+	private ISignInService singInServiceImpl;
+
 	
 	@Autowired
 	private ICustomFileService customFileServiceImpl;
@@ -719,7 +724,7 @@ public class CourseRemote extends BaseRemote {
 
 			List<Map> student = null;
 			if (StringUtil.checkParams(courseId, currentWeek, lessonNum, status)) {
-				student = courseServiceImpl.getRegistSituation(courseId, currentWeek, lessonNum,
+				student = singInServiceImpl.getRegistSituation(courseId, currentWeek, lessonNum,
 						Integer.parseInt(status));
 			}
 			if (null != student && student.size() > 0) {
