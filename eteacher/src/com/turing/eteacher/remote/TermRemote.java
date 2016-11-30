@@ -3,13 +3,16 @@ package com.turing.eteacher.remote;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.turing.eteacher.base.BaseRemote;import com.turing.eteacher.component.ReturnBody;
+
+import com.turing.eteacher.base.BaseRemote;
+import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.TermPrivate;
@@ -171,6 +174,19 @@ ReturnBody.ERROR_MSG);
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, 
 ReturnBody.ERROR_MSG);
 		}
+	}
+	/**
+	 * 获取学期列表（公共学期列表）
+	 * @author lifei
+	 * @param request
+	 * @param term
+	 * @return
+	 */
+	@RequestMapping(value="student/Term/getPublicTermList", method=RequestMethod.POST)
+	public ReturnBody getPublicTermList(HttpServletRequest request, TermPrivate tp){
+		Map map = getCurrentSchool(request);
+		List<Term> list = termServiceImpl.getTermArray((String)map.get("schoolId"));
+		return new ReturnBody(list);
 	}
 
 	

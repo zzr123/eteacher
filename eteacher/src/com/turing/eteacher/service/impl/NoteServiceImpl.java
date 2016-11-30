@@ -86,4 +86,22 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 		String hql = "delete from Note n where n.userId = ? and date_format(n.createTime,'%Y-%m-%d') = ?";
 		noteDAO.executeHql(hql, userId, date);
 	}
+
+	@Override
+	public List<Note> getNoteListByCourseId(String userId, String courseId,
+			int flag, int page) {
+		String hql = "from Note n where n.userId = ? and n.courseId = ? ";
+		switch (flag) {
+		case 0://时间
+			hql += "ORDER BY n.createTime DESC";
+			break;
+		case 1://重要程度
+			hql += "ORDER BY n.isKey DESC, n.createTime DESC";
+			break;
+		default:
+			break;
+		}
+		List list = noteDAO.findByPage(hql, page*20, 20, userId,courseId);
+		return list;
+	}
 }

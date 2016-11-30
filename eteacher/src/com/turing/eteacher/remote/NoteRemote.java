@@ -1,6 +1,5 @@
 package com.turing.eteacher.remote;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +54,8 @@ public class NoteRemote extends BaseRemote {
 					MultipartRequest multipartRequest = (MultipartRequest) request;
 					files = multipartRequest.getFiles("myFiles");
 				}
-				noteServiceImpl.saveNote(note, files,FileUtil.getUploadPath(request));
+				noteServiceImpl.saveNote(note, files,
+						FileUtil.getUploadPath(request));
 				return new ReturnBody("保存成功！");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -65,20 +65,6 @@ public class NoteRemote extends BaseRemote {
 		} else {
 			return ReturnBody.getParamError();
 		}
-		// try {
-		// List<MultipartFile> files = null;
-		// if(request instanceof MultipartRequest){
-		// MultipartRequest multipartRequest = (MultipartRequest)request;
-		// files = multipartRequest.getFiles("files");
-		// }
-		// note.setUserId(getCurrentUser(request).getUserId());
-		// noteServiceImpl.saveNote(note, files);
-		// return new ReturnBody(ReturnBody.RESULT_SUCCESS, note.getNoteId());
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// return new ReturnBody(ReturnBody.RESULT_FAILURE,
-		// ReturnBody.ERROR_MSG);
-		// }
 	}
 
 	/**
@@ -200,5 +186,19 @@ public class NoteRemote extends BaseRemote {
 			@PathVariable int type) {
 
 		return null;
+	}
+
+	@RequestMapping(value = "student/Note/getMynoteList", method = RequestMethod.POST)
+	public ReturnBody getMynoteList(HttpServletRequest request) {
+		String courseId = request.getParameter("courseId");
+		String page = request.getParameter("page");
+		String type = request.getParameter("type");
+		if (StringUtil.checkParams(courseId, page, type)) {
+			List list = noteServiceImpl.getNoteListByCourseId(getCurrentUserId(request),
+					courseId, Integer.parseInt(type), Integer.parseInt(page));
+			return new ReturnBody(list);
+		}else{
+			return ReturnBody.getParamError();
+		}
 	}
 }

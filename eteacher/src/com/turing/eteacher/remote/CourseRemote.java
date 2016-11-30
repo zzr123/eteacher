@@ -887,4 +887,18 @@ public class CourseRemote extends BaseRemote {
 				return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
 			}
 		}
+	/**
+	 *1.3.5	获取指定学期下的课程列表
+	 * 
+	 */
+	@RequestMapping(value = "student/Course/getCourseByTerm", method = RequestMethod.POST)
+	public ReturnBody getCourseByTerm(HttpServletRequest request) {
+		String termId = request.getParameter("termId") ;
+		if (StringUtil.checkParams(termId)) {
+			List list = courseServiceImpl.getCourseNameBbyTerm(getCurrentUserId(request),termId);
+			return new ReturnBody(list);
+		}else{
+			return ReturnBody.getParamError();
+		}
+	}
 }	

@@ -245,5 +245,12 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 		return null;
 	}
 
+	@Override
+	public List<Term> getTermArray(String schoolId) {
+		String hql = "from Term t where t.schoolId = ? order by t.startDate desc";
+		List list = termDAO.find(hql, schoolId);
+		return list;
+	}
+
 	
 }

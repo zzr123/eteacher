@@ -17,4 +17,12 @@ public interface INoteService extends IService<Note> {
 	public List<Map> getListByDate(String userId, String date);
 	
 	public void deleteByDate(String userId, String date);
+	/**
+	 * 获取指定课程的笔记列表
+	 * @param userId
+	 * @param courseId
+	 * @param page
+	 * @return
+	 */
+	public List<Note> getNoteListByCourseId(String userId,String courseId,int flag,int page);
 }
