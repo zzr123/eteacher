@@ -216,26 +216,45 @@ public class CourseRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "student/courses/{courseId}", method = RequestMethod.GET)
-	public ReturnBody getCourseData(HttpServletRequest request, @PathVariable String courseId) {
+//	@RequestMapping(value = "student/courses/{courseId}", method = RequestMethod.GET)
+//	public ReturnBody getCourseData(HttpServletRequest request, @PathVariable String courseId) {
+//		try {
+//			Map data = new HashMap();
+//			Map courseTime = courseServiceImpl.getCourseTimeData(courseId);
+//			Course course = courseServiceImpl.get(courseId);
+//			Teacher teacher = teacherServiceImpl.get(course.getUserId());
+//			Textbook textbook = textbookServiceImpl.getMainTextbook(courseId);
+//			List<Textbook> textbookOthers = textbookServiceImpl.getTextbookList(courseId);
+//			// 课程名称，考核方式，授课教师，起止周，授课时间，课程简介，教材教辅
+//			data.put("courseId", courseId);
+//			data.put("courseName", course.getCourseName());
+//			data.put("examinationMode", course.getExaminationModeId());
+//			data.put("teacherName", teacher.getName());
+//			data.put("courseWeek", courseTime.get("startWeek") + "-" + courseTime.get("endWeek"));
+//			data.put("courseTime", courseTime.get("startTime") + "-" + courseTime.get("endTime"));
+//			data.put("introduction", course.getIntroduction());
+//			data.put("textbook", textbook == null ? new HashMap() : textbook);
+//			data.put("textbookOthers", textbookOthers);
+//			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+//		} catch (Exception e) {
+//			log.error(this, e);
+//			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+//		}
+//	}
+	/**
+	 * 学生端功能：查看某门课程的课程详情
+	 * 
+	 * @param request
+	 * @param courseId
+	 * @return
+	 */
+	@RequestMapping(value = "student/course/getCourDetail", method = RequestMethod.POST)
+	public ReturnBody getCourDetail(HttpServletRequest request) {
 		try {
-			Map data = new HashMap();
-			Map courseTime = courseServiceImpl.getCourseTimeData(courseId);
-			Course course = courseServiceImpl.get(courseId);
-			Teacher teacher = teacherServiceImpl.get(course.getUserId());
-			Textbook textbook = textbookServiceImpl.getMainTextbook(courseId);
-			List<Textbook> textbookOthers = textbookServiceImpl.getTextbookList(courseId);
-			// 课程名称，考核方式，授课教师，起止周，授课时间，课程简介，教材教辅
-			data.put("courseId", courseId);
-			data.put("courseName", course.getCourseName());
-			data.put("examinationMode", course.getExaminationModeId());
-			data.put("teacherName", teacher.getName());
-			data.put("courseWeek", courseTime.get("startWeek") + "-" + courseTime.get("endWeek"));
-			data.put("courseTime", courseTime.get("startTime") + "-" + courseTime.get("endTime"));
-			data.put("introduction", course.getIntroduction());
-			data.put("textbook", textbook == null ? new HashMap() : textbook);
-			data.put("textbookOthers", textbookOthers);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+			String courseId=request.getParameter("courseId");
+			List<Map> list = courseServiceImpl.getCourDetail(courseId);
+			System.out.println("结果：" + list.get(0).toString());
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
 		} catch (Exception e) {
 			log.error(this, e);
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);

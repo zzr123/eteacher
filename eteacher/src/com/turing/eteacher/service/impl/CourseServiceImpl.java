@@ -893,26 +893,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			}
 			return list;
 		}	
-//		if ("4".equals(status)) {
-//			hql = "select f.fileId as fileId,fileName as fileName,f.vocabularyId as vocabularyId,f.fileAuth as fileAuth from CustomFile f "
-//					+ "where f.dataId=? and f.isCourseFile=1";
-//		}
-//		if ("5".equals(status)) {// 获取上课时间信息，其中courseId为ctId
-//			String hql2 = "select ci.repeatType as repeatType from CourseCell ct,CourseItem ci where ct.ctId=? and ct.ciId=ci.ciId";
-//			String type = (String) courseDAO.find(hql2, courseId).get(0);
-//			hql = "select ct.ctId as ctId,ct.weekDay as weekDay,ct.lessonNumber as lessonNumber,ct.location as location,ct.classRoom as classRoom,"
-//					+ "ci.repeatType as repeatType,ci.repeatNumber as repeatNumber,";
-//			if ("1".equals(type)) {
-//				hql += "ci.startDay as startTime,ci.endDay as endTime ";
-//			} else {
-//				hql += "ci.startWeek as startTime,ci.endWeek as endTime ";
-//			}
-//			hql += "from CourseCell ct,CourseItem ci where ct.ctId=? and ct.ciId=ci.ciId";
-//		}
-//		if ("6".equals(status)){//获取工作量公式
-//			hql = "select c.formula as formula from Course c where c.courseId =?";
-//		}
-    	if ("7".equals(status)) {// 获取课程简介
+    	if ("1".equals(status)) {// 获取课程简介
 			hql = "select c.introduction as introduction from Course c where c.courseId =?";
 		}
 		list = courseDAO.findMap(hql, courseId);
@@ -1177,13 +1158,60 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				"ci.REPEAT_NUMBER as repeatNumber,ci.REPEAT_TYPE as repeatType," +
 				"ci.START_DAY as startDay,ci.END_DAY as endDay," +
 				"ce.WEEKDAY as weekDay,ce.LESSON_NUMBER as lessonNumber," +
-			 	"ce.CLASSROOM as classroom,s.VALUE as location" +
+			 	"ce.CLASSROOM as classroom,s.VALUE as location " +
 				"FROM t_course_item ci " +
 				"INNER JOIN t_course c ON ci.COURSE_ID = c.COURSE_ID " +
 				"INNER JOIN t_course_cell ce ON ci.CI_ID = ce.CI_ID " +
 				"INNER JOIN t_school s ON ce.LOCATION = s.CODE " +
-				"WHERE c.COURSE_ID = ? and ci.REPEAT_TYPE = 1";
+				"WHERE c.COURSE_ID = ? ";
 		List<Map> list = courseDAO.findBySql(sql, courseId);
+		for (int i = 0; i < list.size(); i++) {
+			if("01".equals(list.get(i).get("repeatType"))){
+				list.get(i).put("repeatType", "日");
+			}
+			if("02".equals(list.get(i).get("repeatType"))){
+				list.get(i).put("repeatType", "周");
+			}
+		}
+		
+		return list;
+	}
+
+	@Override
+	public List<Map> getCourDetail(String courseId) {
+		List<Map> list = null;
+		String sql="SELECT c.COURSE_ID as courseId, c.COURSE_NAME as courseName," +
+				"c.USER_ID as teacherId,t.NAME as teacherName,c.CLASS_HOURS as classHours," +
+				"c.COURSE_TYPE_ID as courseTypeId,c.EXAMINATION_MODE_ID as examTypeId " +
+				"FROM t_course c INNER JOIN t_teacher t ON c.USER_ID=t.TEACHER_ID " +
+				"WHERE c.COURSE_ID = ?";
+		list = courseDAO.findBySql(sql, courseId);
+		// 获取课程类型
+		String hql1 = "select pu.value as courseType " + "from Course c,Dictionary2Public pu "
+				+ "where c.courseTypeId=pu.dictionaryId and c.courseId=?";
+		String hql2 = "select pr.value as courseType " + "from Course c,Dictionary2Private pr "
+				+ "where c.courseTypeId =pr.dpId and c.courseId=?";
+		List<Object> list1 = courseDAO.find(hql1, courseId);
+		List<Object> list2 = courseDAO.find(hql2, courseId);
+		List<Map> list3;
+		if (list1 == null || list1.size() == 0) {
+			list.get(0).put("courseType", list2);
+		} else {
+			list.get(0).put("courseType", list1);
+		}
+		// 获取考核类型
+		String hql3 = "select pu.value as examinationMode " + "from Course c,Dictionary2Public pu "
+				+ "where c.examinationModeId=pu.dictionaryId and c.courseId=?";
+		String hql4 = "select pr.value as examinationMode " + "from Course c,Dictionary2Private pr "
+				+ "where c.examinationModeId =pr.dpId and c.courseId=?";
+		List<Object> list4 = courseDAO.find(hql3, courseId);
+		List<Object> list5 = courseDAO.find(hql4, courseId);
+		List<Map> list6;
+		if (list4 == null || list4.size() == 0) {
+			list.get(0).put("examinationMode", list5);
+		} else {
+			list.get(0).put("examinationMode", list4);
+		}
 		return list;
 	}
 

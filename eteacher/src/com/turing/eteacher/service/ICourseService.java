@@ -160,4 +160,10 @@ public interface ICourseService extends IService<Course> {
 	 * @param courseId
 	 */
 	public List<Map> getCourTime(String courseId);
+	/**
+	 * 学生端功能：获取课程信息
+	 * @author zjx
+	 * @param courseId
+	 */
+	public List<Map> getCourDetail(String courseId);
 }

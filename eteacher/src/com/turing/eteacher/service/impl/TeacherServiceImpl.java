@@ -15,6 +15,7 @@ import com.turing.eteacher.dao.CourseDAO;
 import com.turing.eteacher.dao.Dictionary2PrivateDAO;
 import com.turing.eteacher.dao.SchoolDAO;
 import com.turing.eteacher.dao.TeacherDAO;
+import com.turing.eteacher.dao.UserCommunicationDAO;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.service.ITeacherService;
@@ -35,6 +36,9 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 
 	@Autowired
 	private SchoolDAO schoolDAO;
+	
+	@Autowired
+	private UserCommunicationDAO userCommunicationDAO;
 
 	@Override
 	public BaseDAO<Teacher> getDAO() {
@@ -206,6 +210,68 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		 * + "and t.teacherId = ?"; Map teacherInfo = teacherDAO.findMap(hql,
 		 * userId).get(0);
 		 */
+		return map;
+	}
+
+	@Override
+	public Map getTeacherInfo(String teacherId) {
+		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
+				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
+				+ "t.department as department, t.introduction as introduction ,t.picture as picture "
+				+ "from Teacher t where t.teacherId = ?";
+		Map<String, String> map = teacherDAO.findMap(hql, teacherId).get(0);
+		// 获取用户的职称、职务信息
+		String titlelId = (String) map.get("titleId");
+		// 职称
+		String titleHql = "select d.value as titleName from Dictionary2Private d where d.dpId = ?";
+		List<Map> title = null;
+		title = dictionary2PrivateDAO.findMap(titleHql, titlelId);
+		if (title.size() <= 0) {
+			String titleHql2 = "select d.value as titleName from Dictionary2Public d where d.dictionaryId = ?";
+			title = dictionary2PrivateDAO.findMap(titleHql2, titlelId);
+		}
+		if (title.size() > 0) {
+			map.putAll(title.get(0));
+		}
+		// 职务
+		String postId = (String) map.get("postId");
+		String postHql = "select d.value as postName from Dictionary2Private d where d.dpId = ?";
+		List<Map> post = null;
+		post = dictionary2PrivateDAO.findMap(postHql, postId);
+		if (post.size() <= 0) {
+			String postHql2 = "select d.value as postName from Dictionary2Public d where d.dictionaryId = ?";
+			post = dictionary2PrivateDAO.findMap(postHql2, postId);
+		}
+		if (post.size() > 0) {
+			map.putAll(post.get(0));
+		}
+		// Email
+		String cId = map.get("cId");
+		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
+		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
+		if (email.size() > 0) {
+			map.putAll(email.get(0));
+		}else{
+			map.put("email","无");
+		}
+//		// Email
+//		String cId = map.get("cId");
+//		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
+//		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
+//		if (email.size() > 0) {
+//			map.putAll(email.get(0));
+//		}else{
+//			map.putAll(null);
+//		}
+//		// Email
+//		String cId = map.get("cId");
+//		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
+//		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
+//		if (email.size() > 0) {
+//			map.putAll(email.get(0));
+//		}else{
+//			map.putAll(null);
+//		}
 		return map;
 	}
 
