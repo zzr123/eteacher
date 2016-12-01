@@ -34,7 +34,7 @@ public interface ISignInService extends IService<SignIn> {
 	 * @param studentId
 	 * @return
 	 */
-	public Map SignInCount(String studentId);
+	public Map SignInCount(String studentId,String termId);
 	/**
 	 * 教师端功能：获取当前课程的出勤情况列表
 	 * @author macong
