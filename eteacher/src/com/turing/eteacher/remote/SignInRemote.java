@@ -79,8 +79,11 @@ public class SignInRemote extends BaseRemote{
 	@RequestMapping(value="signIn/signInCount",method=RequestMethod.POST)
 	public ReturnBody signInCount(HttpServletRequest request){
 		try{
+			String termId = (String)getCurrentTerm(request).get("termId");
 			String studentId = getCurrentUserId(request);
-			Map m = signInServiceImpl.SignInCount(studentId);
+			if(StringUtil.checkParams(termId,studentId)){
+				Map m = signInServiceImpl.SignInCount(studentId,termId);				
+			}
 		}
 		catch(Exception e){
 			e.printStackTrace();
