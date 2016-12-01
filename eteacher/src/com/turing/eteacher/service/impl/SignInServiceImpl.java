@@ -1,6 +1,7 @@
 package com.turing.eteacher.service.impl;
 
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -170,9 +171,24 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 	 * @return
 	 */
 	@Override
-	public Map SignInCount(String studentId) {
+	public Map SignInCount(String studentId, String termId) {
 		//根据学生ID，查询该用户本学期的课程列表
-		//
+		String hql = "select c.courseId as courseId, "
+				+ "c.courseName as courseName, s.stuName, cc.ccId "
+				+ "from Course c, CourseClasses cc, Student s "
+				+ "where cc.courseId = c.courseId and cc.classId = s.classId "
+				+ "and c.termId = ? and s.stuId = ?";
+		List<Map> cl = signInDAO.findMap(hql, termId, studentId);
+		if(null != cl && cl.size()>0){
+			//根据courseID和studentID，获取课程的签到信息（已签到次数，课程进行次数）
+			String hql2 = "select count(si.courseId) as NUM from SignIn si "
+					+ "where si.courseId = ? and si.studentId = ? and si.status = 1";
+			for (int i = 0; i < cl.size(); i++) {
+				Map m = signInDAO.findMap(hql2, (String)cl.get(i).get("courseId"),studentId).get(0);
+				System.out.println("678000:" + m.get("NUM"));
+				cl.get(i).put("signInNum", m.get("NUM"));
+			}
+		}
 		return null;
 	}
 }
