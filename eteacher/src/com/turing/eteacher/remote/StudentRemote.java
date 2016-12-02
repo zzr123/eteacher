@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseCell;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseCellService;

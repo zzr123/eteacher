@@ -1,7 +1,4 @@
 package com.turing.eteacher.component;
-
-import freemarker.cache.StringTemplateLoader;
-
 /**
  * remote响应对象
  * 

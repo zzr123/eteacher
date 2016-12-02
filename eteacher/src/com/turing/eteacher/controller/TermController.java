@@ -18,7 +18,6 @@ import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.ITermService;
-import com.turing.eteacher.util.BeanUtils;
 
 @Controller
 @RequestMapping("term")

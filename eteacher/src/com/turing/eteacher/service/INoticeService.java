@@ -3,11 +3,7 @@ package com.turing.eteacher.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.turing.eteacher.base.IService;
-import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Notice;
 
 public interface INoticeService extends IService<Notice> {

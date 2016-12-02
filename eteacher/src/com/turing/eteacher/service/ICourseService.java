@@ -8,8 +8,6 @@ import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.CustomFile;
-import com.turing.eteacher.model.School;
-import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 

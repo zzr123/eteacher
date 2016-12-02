@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.service.ISignInService;
@@ -22,7 +21,7 @@ public class SignInRemote extends BaseRemote{
 	@Autowired
 	private ISignInService signInServiceImpl;
 	/**
-	 * 学生端功能：根据courseID，获取某课程的位置信息（所在市，学校，教学楼）
+	 * 学生端接口：根据courseID，获取某课程的位置信息（所在市，学校，教学楼）
 	 * @author macong
 	 * 时间：2016年11月29日11:40:16
 	 */
@@ -79,10 +78,30 @@ public class SignInRemote extends BaseRemote{
 	@RequestMapping(value="signIn/signInCount",method=RequestMethod.POST)
 	public ReturnBody signInCount(HttpServletRequest request){
 		try{
-			String termId = (String)getCurrentTerm(request).get("termId");
 			String studentId = getCurrentUserId(request);
-			if(StringUtil.checkParams(termId,studentId)){
-				Map m = signInServiceImpl.SignInCount(studentId,termId);				
+			if(StringUtil.checkParams(studentId)){
+				List<Map> m = signInServiceImpl.SignInCount(studentId);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, m);
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+		return null;
+	}
+	/**
+	 * 教师端接口：获取教师的签到设置
+	 * @author macong
+	 * 时间：2016年12月2日09:56:29
+	 */
+	@RequestMapping(value="signIn/getSignSetting",method=RequestMethod.POST)
+	public ReturnBody getSignSetting(HttpServletRequest request){
+		try{
+			String teacherId = getCurrentUserId(request);
+			if(StringUtil.checkParams(teacherId)){
+				Map m = signInServiceImpl.getSignSetting(teacherId);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, m);
 			}
 		}
 		catch(Exception e){

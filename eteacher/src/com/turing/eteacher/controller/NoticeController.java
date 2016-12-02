@@ -1,6 +1,5 @@
 package com.turing.eteacher.controller;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,16 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.User;
-import com.turing.eteacher.model.Work;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.INoticeService;
-import com.turing.eteacher.util.BeanUtils;
-import com.turing.eteacher.util.CustomIdGenerator;
-import com.turing.eteacher.util.StringUtil;
 
 @Controller
 @RequestMapping("notice")

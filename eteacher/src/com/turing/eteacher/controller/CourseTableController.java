@@ -1,6 +1,5 @@
 package com.turing.eteacher.controller;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,16 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.CourseTable;
-import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;
 import com.turing.eteacher.service.ICourseTableService;
 import com.turing.eteacher.service.ITermService;
-import com.turing.eteacher.util.StringUtil;
 
 @Controller
 @RequestMapping("courseTable")

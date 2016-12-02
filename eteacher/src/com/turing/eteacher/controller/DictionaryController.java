@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IDictionary2PrivateService;
-import com.turing.eteacher.service.IDictionary2PublicService;
-import com.turing.eteacher.service.impl.Dictionary2PrivateServiceImpl;
-import com.turing.eteacher.service.impl.Dictionary2PublicServiceImpl;
 
 @Controller
 @RequestMapping("dictionary")

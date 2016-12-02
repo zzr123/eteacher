@@ -1,6 +1,5 @@
 package com.turing.eteacher.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,11 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.dao.Dictionary2PrivateDAO;
 import com.turing.eteacher.dao.Dictionary2PublicDAO;
-import com.turing.eteacher.model.Dictionary2Private;
 import com.turing.eteacher.model.Dictionary2Public;
-import com.turing.eteacher.service.IDictionary2PrivateService;
 import com.turing.eteacher.service.IDictionary2PublicService;
 
 @Service

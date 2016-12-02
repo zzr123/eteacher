@@ -35,7 +35,6 @@ import com.turing.eteacher.model.CourseClasses;
 import com.turing.eteacher.model.CourseItem;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CustomFile;
-import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ICourseCellService;
@@ -46,7 +45,6 @@ import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ICustomFileService;
 import com.turing.eteacher.service.IMajorService;
 import com.turing.eteacher.service.ISignInService;
-import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITextbookService;
 import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
@@ -62,9 +60,6 @@ public class CourseRemote extends BaseRemote {
 
 	@Autowired
 	private ITextbookService textbookServiceImpl;
-
-	@Autowired
-	private ITeacherService teacherServiceImpl;
 
 	@Autowired
 	private IMajorService majorServiceImpl;
@@ -372,8 +367,7 @@ public class CourseRemote extends BaseRemote {
 	 * 分割符。以下内容为教师端相关接口
 	*/
 	/**
-	 * 获取课程列表（1.根据学期 2.根据指定日期）
-	 * 
+	 * 获取指定日期的课程列表
 	 * @param request
 	 * @param termId
 	 * @param data
@@ -696,7 +690,6 @@ public class CourseRemote extends BaseRemote {
 
 	/**
 	 * 查看当前时间正在进行的课程
-	 * 
 	 * @author macong
 	 * @param request
 	 * @param textbookId
@@ -705,7 +698,6 @@ public class CourseRemote extends BaseRemote {
 	@RequestMapping(value = "course/currentCourse", method = RequestMethod.POST)
 	public ReturnBody getCurrentCourse(HttpServletRequest request) {
 		try {
-			System.out.println(".....................................");
 			String userId = getCurrentUserId(request);
 			String time = request.getParameter("time");
 			Map school = getCurrentSchool(request);
@@ -877,7 +869,6 @@ public class CourseRemote extends BaseRemote {
 		try{
 			String courseId = request.getParameter("courseId");
 			String classes = request.getParameter("classes");
-			System.out.println("courseId :"+courseId + "    classes: " +classes);
 			courseClassServiceImpl.delByCourseId(courseId);
 			List<Map<String, String>> classesList = (List<Map<String, String>>) JSONUtils
 					.parse(classes);
@@ -908,7 +899,6 @@ public class CourseRemote extends BaseRemote {
 			List<Map<String, String>> scoresList = (List<Map<String, String>>) JSONUtils
 					.parse(scores);
 			for (int i = 0; i < scoresList.size(); i++) {
-				System.out.println("000000000"+scoresList.size());
 				CourseScorePrivate item = new CourseScorePrivate();
 				item.setCourseId(courseId);
 				item.setScoreName(scoresList.get(i).get("scoreName"));

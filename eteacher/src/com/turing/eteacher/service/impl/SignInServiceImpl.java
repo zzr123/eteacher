@@ -1,8 +1,6 @@
 package com.turing.eteacher.service.impl;
 
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,16 +169,20 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 	 * @return
 	 */
 	@Override
-	public Map SignInCount(String studentId, String termId) {
+	public List<Map> SignInCount(String studentId) {
+		List<Map> cl = null;
+		String now = DateUtil.getCurrentDateStr("yyyy-MM-dd");
 		//根据学生ID，查询该用户本学期的课程列表
-		String hql = "select c.courseId as courseId, "
-				+ "c.courseName as courseName, s.stuName, cc.ccId "
-				+ "from Course c, CourseClasses cc, Student s "
+		String hql = "select cc.courseId as courseId, "
+				+ "c.courseName as courseName, s.stuName as studentName , tp.tpId as termId "
+				+ "from Course c, CourseClasses cc, Student s, TermPrivate tp "
 				+ "where cc.courseId = c.courseId and cc.classId = s.classId "
-				+ "and c.termId = ? and s.stuId = ?";
-		List<Map> cl = signInDAO.findMap(hql, termId, studentId);
+				+ "and c.termId = tp.tpId and s.stuId = ? "
+				+ "and tp.startDate <= ? and tp.endDate >= ? ";
+		System.out.println(hql);
+		cl = signInDAO.findMap(hql, studentId, now, now);
 		if(null != cl && cl.size()>0){
-			//根据courseID和studentID，获取课程的签到信息（已签到次数，课程进行次数）
+			//根据courseID和studentID，获取课程的已签到次数
 			String hql2 = "select count(si.courseId) as NUM from SignIn si "
 					+ "where si.courseId = ? and si.studentId = ? and si.status = 1";
 			for (int i = 0; i < cl.size(); i++) {
@@ -188,6 +190,31 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 				System.out.println("678000:" + m.get("NUM"));
 				cl.get(i).put("signInNum", m.get("NUM"));
 			}
+			return cl;
+		}
+		return null;
+	}
+	
+	/**
+	 * 教师端接口：获取教师的签到设置
+	 * @author macong
+	 * 时间：2016年12月2日09:56:29
+	 */
+	@Override
+	public Map getSignSetting(String teacherId) {
+		List<Map> m = null;
+		String hql = "select rc.configId as configId, rc.before as before, "
+				+ "rc.after as after, rc.distance as distance "
+				+ "from RegistConfig rc where rc.userId = ? and rc.status = 1 ";
+		m = signInDAO.findMap(hql, teacherId);
+		if(null == m || m.size() < 0){
+			String hql2 = "select rc.configId as configId, rc.before as before, "
+					+ "rc.after as after, rc.distance as distance "
+					+ "from RegistConfig rc where rc.status = 0 and rc.userId = null ";
+			m = signInDAO.findMap(hql2);
+		}
+		if(null != m){
+			return m.get(0);
 		}
 		return null;
 	}

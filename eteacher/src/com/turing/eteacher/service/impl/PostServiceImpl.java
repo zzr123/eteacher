@@ -13,7 +13,6 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.PostDAO;
 import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Post;
-import com.turing.eteacher.model.PostReply;
 import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.IPostService;
 import com.turing.eteacher.util.FileUtil;

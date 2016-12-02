@@ -11,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-import com.turing.eteacher.constants.EteacherConstants;
-import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.model.Teacher;
-import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.ISchoolService;
 import com.turing.eteacher.service.IStudentService;

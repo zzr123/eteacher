@@ -1,7 +1,6 @@
 package com.turing.eteacher.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +11,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.turing.eteacher.base.BaseModel;
-import com.turing.eteacher.base.CreateTimeModel;
 
 @Entity
 @Table(name = "T_NOTE")

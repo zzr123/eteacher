@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.turing.eteacher.base.IService;
-import com.turing.eteacher.model.Major;
 import com.turing.eteacher.model.School;
 
 public interface ISchoolService extends IService<School>  {

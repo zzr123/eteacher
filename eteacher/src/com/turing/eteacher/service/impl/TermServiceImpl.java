@@ -4,25 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.CORBA.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.dao.TermDAO;
-import com.turing.eteacher.model.CourseClasses;
-import com.turing.eteacher.model.CourseScorePrivate;
-import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.Term;
-import com.turing.eteacher.model.TermPrivate;
-import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.util.DateUtil;
 

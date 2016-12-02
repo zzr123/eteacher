@@ -7,29 +7,19 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
-import com.turing.eteacher.model.Dictionary2Public;
-import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Teacher;
-import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IDictionary2PrivateService;
-import com.turing.eteacher.service.IDictionary2PublicService;
 import com.turing.eteacher.service.ISchoolService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.IUserCommunicationService;
 import com.turing.eteacher.service.IUserService;
-import com.turing.eteacher.service.impl.Dictionary2PublicServiceImpl;
-import com.turing.eteacher.service.impl.SchoolServiceImpl;
-import com.turing.eteacher.service.impl.UserCommunicationServiceImpl;
 import com.turing.eteacher.util.BeanUtils;
-import com.turing.eteacher.util.StringUtil;
 /**
  * 用户controller
  * @author caojian

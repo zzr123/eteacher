@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.util.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import com.turing.eteacher.dao.CourseTableDAO;
 import com.turing.eteacher.dao.UserDAO;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseTable;
-import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.service.ICourseTableService;
 import com.turing.eteacher.util.StringUtil;
 

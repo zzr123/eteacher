@@ -152,7 +152,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	 */
 	@Override
 	public List<Map> getListWork(String userId,String status,String date,int page) {
-		String hql = "select distinct w.workId as workId, c.courseId as courseId, c.courseName as courseName," ;
+		String hql = "select distinct w.workId as workId, c.courseId as courseId, c.courseName as courseName, ";
 		List<Map> list = null ;
 		if("0".equals(status)){//已过期作业
 			hql+="w.publishTime as publishTime," +
@@ -190,7 +190,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 			list=workDAO.findMapByPage(hql, page*20, 20, userId);
 		}
 		if("3".equals(status)){//获取指定截止日期的作业
-			hql+="w.content as content "+
+			hql+="w.content as content, wc.wcId "+
 			    "from Work w, Course c, WorkCourse wc " +
 			    "where w.workId = wc.workId and wc.courseId = c.courseId "+
 		        "and c.userId = ? and  w.endTime like CONCAT(?,'%') "+

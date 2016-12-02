@@ -2,7 +2,6 @@ package com.turing.eteacher.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 

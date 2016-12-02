@@ -1,8 +1,6 @@
 package com.turing.eteacher.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,11 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +24,6 @@ import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.Score;
-import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.IScoreService;
 import com.turing.eteacher.service.IStudentService;

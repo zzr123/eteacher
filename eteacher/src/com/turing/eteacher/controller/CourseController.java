@@ -24,7 +24,6 @@ import com.turing.eteacher.model.Course;
 import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.CourseWorkload;
 import com.turing.eteacher.model.CustomFile;
-import com.turing.eteacher.model.Term;
 import com.turing.eteacher.model.Textbook;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.service.IClassService;

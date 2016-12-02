@@ -164,7 +164,6 @@ public class WorkRemote extends BaseRemote {
 		
 		String userId = getCurrentUser(request).getUserId();
 		String date = request.getParameter("date");
-		System.out.println("status:" + status + "  page:" + page + "   userID:" + userId +"    date:"+date);
 		if (StringUtil.checkParams(status, userId)) {
 			try {
 				List list = workServiceImpl.getListWork(userId, status, date, Integer.parseInt(page));

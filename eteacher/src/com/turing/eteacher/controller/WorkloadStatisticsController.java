@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.turing.eteacher.base.BaseController;
-import com.turing.eteacher.model.Course;
-import com.turing.eteacher.model.CourseScorePrivate;
 import com.turing.eteacher.model.User;
-import com.turing.eteacher.service.ICourseService;
-import com.turing.eteacher.service.IScoreService;
 import com.turing.eteacher.service.ITeacherService;
 
 @Controller

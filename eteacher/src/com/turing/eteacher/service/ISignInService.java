@@ -34,7 +34,7 @@ public interface ISignInService extends IService<SignIn> {
 	 * @param studentId
 	 * @return
 	 */
-	public Map SignInCount(String studentId,String termId);
+	public List<Map> SignInCount(String studentId);
 	/**
 	 * 教师端功能：获取当前课程的出勤情况列表
 	 * @author macong
@@ -42,5 +42,12 @@ public interface ISignInService extends IService<SignIn> {
 	 * @return
 	 */
 	public List<Map> getRegistSituation(String courseId, String currentWeek, String lessonNum, int status);
+	/**
+	 * 教师端接口：获取教师的签到设置
+	 * @author macong
+	 * @param teacherId
+	 * 时间：2016年12月2日09:56:29
+	 */
+	public Map getSignSetting(String teacherId);
 
 }

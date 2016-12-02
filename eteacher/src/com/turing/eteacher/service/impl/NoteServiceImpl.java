@@ -17,7 +17,6 @@ import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Note;
 import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.INoteService;
-import com.turing.eteacher.util.CustomIdGenerator;
 import com.turing.eteacher.util.FileUtil;
 
 @Service

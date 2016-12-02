@@ -7,11 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
-import com.turing.eteacher.dao.AppDAO;
 import com.turing.eteacher.dao.CourseItemDAO;
-import com.turing.eteacher.model.App;
 import com.turing.eteacher.model.CourseItem;
-import com.turing.eteacher.service.IAppService;
 import com.turing.eteacher.service.ICourseItemService;
 
 @Service

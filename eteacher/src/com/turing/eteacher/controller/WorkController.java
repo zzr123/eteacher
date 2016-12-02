@@ -1,7 +1,6 @@
 package com.turing.eteacher.controller;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.turing.eteacher.base.BaseController;
 import com.turing.eteacher.constants.EteacherConstants;
 import com.turing.eteacher.model.Course;
@@ -26,10 +24,7 @@ import com.turing.eteacher.model.Work;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ITermService;
 import com.turing.eteacher.service.IWorkService;
-import com.turing.eteacher.util.BeanUtils;
 import com.turing.eteacher.util.CustomIdGenerator;
-import com.turing.eteacher.util.DateUtil;
-import com.turing.eteacher.util.StringUtil;
 
 @Controller
 @RequestMapping("work")
