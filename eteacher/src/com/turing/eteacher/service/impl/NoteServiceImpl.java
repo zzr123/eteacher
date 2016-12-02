@@ -25,34 +25,37 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 
 	@Autowired
 	private NoteDAO noteDAO;
-	
+
 	@Autowired
 	private IFileService fileServiceImpl;
-	
+
 	@Override
 	public BaseDAO<Note> getDAO() {
 		return noteDAO;
 	}
 
 	@Override
-	public void saveNote(Note note, List<MultipartFile> files,String savePath) throws Exception {
+	public void saveNote(Note note, List<MultipartFile> files, String savePath)
+			throws Exception {
 		noteDAO.save(note);
-		if(files!=null){
-			for(MultipartFile file : files){
-				if(!file.isEmpty()){
-					String serverName = FileUtil.makeFileName(file.getOriginalFilename());
-	    	        try {
-	    				FileUtils.copyInputStreamToFile(file.getInputStream(), new File(savePath,serverName));
-	    			} catch (IOException e) {
-	    				e.printStackTrace();
-	    			}  
-	    	        CustomFile customFile = new CustomFile();
-	    	        customFile.setDataId(note.getNoteId());
-	    	        customFile.setFileName(file.getOriginalFilename());
-	    	        customFile.setServerName(serverName);
-	    	        customFile.setIsCourseFile(2);
-	    	        customFile.setFileAuth("02");
-	    	        fileServiceImpl.save(customFile);
+		if (files != null) {
+			for (MultipartFile file : files) {
+				if (!file.isEmpty()) {
+					String serverName = FileUtil.makeFileName(file
+							.getOriginalFilename());
+					try {
+						FileUtils.copyInputStreamToFile(file.getInputStream(),
+								new File(savePath, serverName));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					CustomFile customFile = new CustomFile();
+					customFile.setDataId(note.getNoteId());
+					customFile.setFileName(file.getOriginalFilename());
+					customFile.setServerName(serverName);
+					customFile.setIsCourseFile(2);
+					customFile.setFileAuth("02");
+					fileServiceImpl.save(customFile);
 				}
 			}
 		}
@@ -69,14 +72,14 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 	public List<Map> getListByDate(String userId, String date) {
 		String hql = "select n.noteId as noteId, n.content as content from Note n where n.userId = ? and date_format(n.createTime,'%Y-%m-%d') = ?";
 		List<Map> list = noteDAO.find(hql, userId, date);
-		//附件
-		for(Map record : list){
+		// 附件
+		for (Map record : list) {
 			String noteId = (String) record.get("noteId");
 			List<CustomFile> files = fileServiceImpl.getListByDataId(noteId);
- 			for(CustomFile file : files){
- 				file.setServerName("/upload/" + file.getServerName());
+			for (CustomFile file : files) {
+				file.setServerName("/upload/" + file.getServerName());
 			}
- 			record.put("files", files);
+			record.put("files", files);
 		}
 		return list;
 	}
@@ -92,16 +95,47 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 			int flag, int page) {
 		String hql = "from Note n where n.userId = ? and n.courseId = ? ";
 		switch (flag) {
-		case 0://时间
+		case 0:// 时间
 			hql += "ORDER BY n.createTime DESC";
 			break;
-		case 1://重要程度
+		case 1:// 重要程度
 			hql += "ORDER BY n.isKey DESC, n.createTime DESC";
 			break;
 		default:
 			break;
 		}
-		List list = noteDAO.findByPage(hql, page*20, 20, userId,courseId);
+		List list = noteDAO.findByPage(hql, page * 20, 20, userId, courseId);
 		return list;
+	}
+
+	@Override
+	public Map getNoteDetail(String noteId, String path) {
+		String sql = "SELECT t.NOTE_ID AS noteId, " + "t.TITLE AS noteTitle, "
+				+ "t.CONTENT AS noteContent, "
+				+ "t.CREATE_TIME AS createTime, " + "t.IS_KEY AS isKey, "
+				+ "tc.COURSE_NAME AS courseName "
+				+ "FROM t_note t,t_course tc "
+				+ "WHERE t.COURSE_ID = tc.COURSE_ID " + "AND t.NOTE_ID = ? ";
+		List<Map> list = noteDAO.findBySql(sql, noteId);
+		if (null != list && list.size() > 0) {
+			Map map = list.get(0);
+			List<Map> list2 = fileServiceImpl.getNoteFileList(noteId);
+			if (null != list2 && list2.size() > 0) {
+				for (int i = 0; i < list2.size(); i++) {
+					list2.get(i).put("filePath",
+							path + "/" + list2.get(i).get("serverName"));
+				}
+			}
+			map.put("files", list2);
+			return map;
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteNote(String noteId, String path) {
+		fileServiceImpl.deletebyDataId(noteId, path);
+		String sql = "DELETE FROM t_note  WHERE t_note.NOTE_ID = ?";
+		noteDAO.executeBySql(sql, noteId);
 	}
 }

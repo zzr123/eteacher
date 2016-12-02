@@ -177,7 +177,7 @@ public class Dictionary2PrivateServiceImpl extends
 	public Map getValueById(String dId) {
 		String sql = "SELECT t_dictionary2_private.DP_ID AS id, t_dictionary2_private.VALUE AS value FROM t_dictionary2_private WHERE t_dictionary2_private.DP_ID = ? "+
 					 "UNION " +
-				 	 "SELECT t_dictionary2_public.DICTIONARY_ID AS id, t_dictionary2_public.VALUE FROM t_dictionary2_public WHERE t_dictionary2_public.DICTIONARY_ID = ?";
+				 	 "SELECT t_dictionary2_public.DICTIONARY_ID AS id, t_dictionary2_public.VALUE AS value FROM t_dictionary2_public WHERE t_dictionary2_public.DICTIONARY_ID = ?";
 		List<Map> list = dictionary2PrivateDAO.findBySql(sql, dId, dId);
 		if (null != list && list.size() > 0) {
 			return list.get(0);

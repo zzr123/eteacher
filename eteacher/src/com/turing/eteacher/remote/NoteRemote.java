@@ -2,6 +2,7 @@ package com.turing.eteacher.remote;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -194,10 +195,38 @@ public class NoteRemote extends BaseRemote {
 		String page = request.getParameter("page");
 		String type = request.getParameter("type");
 		if (StringUtil.checkParams(courseId, page, type)) {
-			List list = noteServiceImpl.getNoteListByCourseId(getCurrentUserId(request),
-					courseId, Integer.parseInt(type), Integer.parseInt(page));
+			List list = noteServiceImpl.getNoteListByCourseId(
+					getCurrentUserId(request), courseId,
+					Integer.parseInt(type), Integer.parseInt(page));
 			return new ReturnBody(list);
-		}else{
+		} else {
+			return ReturnBody.getParamError();
+		}
+	}
+
+	@RequestMapping(value = "student/Note/getNoteDetail", method = RequestMethod.POST)
+	public ReturnBody getNoteDetail(HttpServletRequest request) {
+		String noteId = request.getParameter("noteId");
+		if (StringUtil.checkParams(noteId)) {
+			Map map = noteServiceImpl.getNoteDetail(noteId,
+					FileUtil.getUploadPath(request));
+			if (null != map) {
+				return new ReturnBody(map);
+			} else {
+				return ReturnBody.getSystemError();
+			}
+		} else {
+			return ReturnBody.getParamError();
+		}
+	}
+
+	@RequestMapping(value = "student/note/delete", method = RequestMethod.POST)
+	public ReturnBody delete(HttpServletRequest request) {
+		String noteId = request.getParameter("noteId");
+		if (StringUtil.checkParams(noteId)) {
+			noteServiceImpl.deleteNote(noteId, FileUtil.getUploadPath(request));
+			return new ReturnBody("删除成功！");
+		} else {
 			return ReturnBody.getParamError();
 		}
 	}
