@@ -246,32 +246,31 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 			map.putAll(post.get(0));
 		}
 		// Email
-		String cId = map.get("cId");
-		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
-		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
+		String emailHql = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
+		List<Map> email = userCommunicationDAO.findMap(emailHql, teacherId);
 		if (email.size() > 0) {
 			map.putAll(email.get(0));
 		}else{
 			map.put("email","无");
 		}
-//		// Email
-//		String cId = map.get("cId");
-//		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
-//		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
-//		if (email.size() > 0) {
-//			map.putAll(email.get(0));
-//		}else{
-//			map.putAll(null);
-//		}
-//		// Email
-//		String cId = map.get("cId");
-//		String hql4 = "select uc.value as email from UserCommunication uc where uc.type=2 and uc.status =0 and uc.userId = ?";
-//		List<Map> email = userCommunicationDAO.findMap(hql4, teacherId);
-//		if (email.size() > 0) {
-//			map.putAll(email.get(0));
-//		}else{
-//			map.putAll(null);
-//		}
+		// 联系电话
+		String phoneHql = "select uc.value as phone ,uc.name as phoneName from UserCommunication uc where uc.type=1 and uc.status =0 and uc.userId = ?";
+		List<Map> phone = userCommunicationDAO.findMap(phoneHql, teacherId);
+		if (phone.size() > 0) {
+			String 	pho = phone.get(0).get("phoneName") + "  " + phone.get(0).get("phone");
+			map.put("phone",pho);
+		}else{
+			map.put("phone","无");
+		}
+		// IM
+		String IMHql = "select uc.value as IM ,uc.name as IMName from UserCommunication uc where uc.type=3 and uc.status =0 and uc.userId = ?";
+		List<Map> Im = userCommunicationDAO.findMap(IMHql, teacherId);
+		if (Im.size() > 0) {
+			String 	IM = Im.get(0).get("IMName") + "  " + Im.get(0).get("IM");
+			map.put("IM",IM);
+		}else{
+			map.put("IM","无");
+		}
 		return map;
 	}
 

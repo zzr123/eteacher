@@ -401,7 +401,7 @@ public class TeacherRemote extends BaseRemote {
 	/**
 	 * 学生端获取（教师）用户的个人信息
 	 * 
-	 * @author macong
+	 * @author zjx
 	 * @return
 	 */
 	// {
@@ -414,6 +414,9 @@ public class TeacherRemote extends BaseRemote {
 	// postName : '职务',
 	// schoolName : '学校名称',
 	// department : '院系',
+	// email : '邮箱',
+	// phone : '联系电话',
+	// IM : 'IM',
 	// introduction : '教师简介'
 	// },
 	// msg : '提示信息XXX'

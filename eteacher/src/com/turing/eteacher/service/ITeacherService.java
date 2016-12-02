@@ -24,9 +24,9 @@ public interface ITeacherService extends IService<Teacher> {
 	 */
 	public Map getUserInfo(String userId);
 	/**
-	 * @author macong
+	 * @author zjx
 	 * 学生端获取教师的个人信息
-	 * @param userId
+	 * @param teacherId
 	 * @return
 	 */
 	public Map getTeacherInfo(String teacherId);
