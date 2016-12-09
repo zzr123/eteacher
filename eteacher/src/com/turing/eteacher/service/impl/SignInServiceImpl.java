@@ -50,7 +50,6 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 			System.out.println("-----:" + hql);
 			List<Map> regist = signInDAO.findMap(hql, courseId, currentWeek, lessonNum, status);
 			if (null != regist && regist.size() > 0) {
-				System.out.println("*****:" + regist.get(0).toString());
 				return regist;
 			}
 		} else if (status == 0) {// 未签到人员列表

@@ -69,7 +69,7 @@ public class CourseRemote extends BaseRemote {
 
 	@Autowired
 	private ICourseScoreService courseScoreServiceImpl;
-
+	
 	@Autowired
 	private ICourseItemService courseItemService;
 
@@ -82,17 +82,6 @@ public class CourseRemote extends BaseRemote {
 	
 	@Autowired
 	private ICustomFileService customFileServiceImpl;
-
-	@RequestMapping(value = "teacher/course/getscoreList", method = RequestMethod.POST)
-	public ReturnBody getscoreList(HttpServletRequest request) {
-		String courseId = request.getParameter("courseId");
-		if (!StringUtil.isNotEmpty(courseId)) {
-			courseId = "";
-		}
-		List<Map> list = courseScoreServiceImpl.getScoresByCourseId(courseId);
-		System.out.println("list:" + list.toString());
-		return new ReturnBody(list);
-	}
 
 	/**
 	 * 学生端功能：获取用户特定日期的课程列表
@@ -180,7 +169,6 @@ public class CourseRemote extends BaseRemote {
 			String courseId = request.getParameter("courseId");
 
 			List<Map> list = courseServiceImpl.getCourTime(courseId);
-			System.out.println("-------"+list.get(0));
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -362,7 +350,47 @@ public class CourseRemote extends BaseRemote {
 			}
 		}
 	}
-
+	/**
+	 * 学生端接口：获取教材或教辅信息
+	 * 
+	 * @author zjx
+	 * @param courseId
+	 * @param type
+	 *            01教材 02教辅
+	 * @return
+	 * 
+	 * 废弃   该方法已存在  macong
+	 */
+	/*@RequestMapping(value = "student/courses/getTextbook", method = RequestMethod.POST)
+	public ReturnBody agetTextbook(HttpServletRequest request) {
+		try {
+			String courseId = request.getParameter("courseId");
+			String type = request.getParameter("type");
+			List<Map> list = textbookServiceImpl.getTextbook(courseId, type);
+			if ("1".equals(type)) {
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
+			}
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+	}*/
+	/**
+	 * 获取课程的成绩组成信息
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "teacher/course/getscoreList", method = RequestMethod.POST)
+	public ReturnBody getscoreList(HttpServletRequest request) {
+		String courseId = request.getParameter("courseId");
+		if (!StringUtil.isNotEmpty(courseId)) {
+			courseId = "";
+		}
+		List<Map> list = courseScoreServiceImpl.getScoresByCourseId(courseId);
+		System.out.println("list:" + list.toString());
+		return new ReturnBody(list);
+	}
 	/*----------------------------------------------------------------------
 	 * 分割符。以下内容为教师端相关接口
 	*/
@@ -370,7 +398,7 @@ public class CourseRemote extends BaseRemote {
 	 * 获取指定日期的课程列表
 	 * @param request
 	 * @param termId
-	 * @param data
+	 * @param date
 	 * @return
 	 */
 	@RequestMapping(value = "teacher/course/courseList", method = RequestMethod.POST)
@@ -378,8 +406,8 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String userId = getCurrentUserId(request);
 			String termId = request.getParameter("termId");// 获取前端参数：termId
-			String data = request.getParameter("date");
-			List<Map> list = courseServiceImpl.getCourseList(termId, data, userId);
+			String date = request.getParameter("date");
+			List<Map> list = courseServiceImpl.getCourseList(termId, date, userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -662,7 +690,8 @@ public class CourseRemote extends BaseRemote {
 	public ReturnBody deleteTextBook(HttpServletRequest request) {
 		try {
 			String textbookId=request.getParameter("textbookId");
-			courseServiceImpl.deleteById(textbookId);
+			System.out.println("***textbookId:"+textbookId);
+			textbookServiceImpl.deleteById(textbookId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -671,7 +700,7 @@ public class CourseRemote extends BaseRemote {
 	}
 
 	/**
-	 * 删除特定课程的教材或教辅
+	 * 
 	 * 
 	 * @param request
 	 * @param textbookId
@@ -762,12 +791,13 @@ public class CourseRemote extends BaseRemote {
 		try {
 			String courseId = request.getParameter("courseId");
 			String type = request.getParameter("type");
-			System.out.println("courseId:" + courseId + "  type:" + type);
 			List<Map> list = textbookServiceImpl.getTextbook(courseId, type);
-			if ("1".equals(type)) {
-				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list.get(0));
+			if ("1".equals(type) && list.size() > 0) {
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			}else if("2".equals(type) && list.size() > 0){
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 			}
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
+			return new ReturnBody(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);

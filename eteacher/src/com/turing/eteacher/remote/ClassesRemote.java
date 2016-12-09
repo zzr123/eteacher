@@ -38,7 +38,6 @@ public class ClassesRemote extends BaseRemote {
 		 		String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 		    	String tpId=getCurrentTerm(request)==null?null:(String)getCurrentTerm(request).get("termId");
 		    	String page=request.getParameter("page");
-			  	System.out.println("0000  " +tpId);
 				List list=classServiceImpl.getClassList(userId,tpId,Integer.parseInt(page));
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS,list);
 			}

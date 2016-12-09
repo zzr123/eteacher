@@ -77,14 +77,17 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 	 */
 	@Override
 	public Map getUserInfo(String userId) {
-		String hql="select s.stuName as stuName,s.stuNo as stuNo,s.sex as sex," +
-				"s.classId as classId,c.className as className,s.schoolId as schoolId," +
-				"sch.value as schoolName,s.faculty as faculty " +
+		String hql="select s.stuName as stuName ,s.stuNo as stuNo,s.sex as sex," +
+				"s.classId as classId , c.className as className ,s.schoolId as schoolId," +
+				"sch.value as schoolName ,s.faculty as faculty " +
 				"from Student s , Classes c ,School sch " +
 				"where s.classId = c.classId and s.schoolId = sch.schoolId and s.stuId = ?";
-		Map<String,Map> map = studentDAO.findMap(hql, userId).get(0);
-
-		return map;
+		List<Map> map = studentDAO.findMap(hql, userId);
+		if(null != map && map.size() > 0){
+			Map m = map.get(0);
+			return m;
+		}
+		return null;
 	}
 
 }

@@ -228,7 +228,6 @@ public class StudentRemote extends BaseRemote {
 		try {
 			String userId = request.getParameter("userId");
 			Map student = studentServiceImpl.getUserInfo(userId);
-			System.out.println("~~~~~~student:"+student);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
 		} catch (Exception e) {
 			e.printStackTrace();

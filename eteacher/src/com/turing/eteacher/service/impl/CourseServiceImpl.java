@@ -446,17 +446,16 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		 */
 		// 获取用户本学期的课程列表
 		try {
-			String hql = "select distinct s.stuId as stuId, ci.courseId as courseId, ci.repeatType as repeatType, "
+			String hql = "select s.stuId as stuId, ci.courseId as courseId, ci.repeatType as repeatType, "
 					+ "cc.weekDay as weekDay, ci.startWeek as startWeek, ci.endWeek as endWeek, "
 					+ "ci.startDay as startDay, ccl.classId, ci.endDay as endDay , "
 					+ "tp.startDate as startDate, ci.repeatNumber as repeatNumber, cc.lessonNumber as lessonNumber "
 					+ "from CourseCell cc, CourseItem ci, CourseClasses ccl, Student s, Course c, TermPrivate tp "
 					+ "where ci.courseId = ccl.courseId and cc.ciId = ci.ciId and "
-					+ "ccl.classId = s.classId and s.stuId = ? and  "
+					+ "ccl.classId = s.classId and s.stuId = ? and  ci.courseId = c.courseId and "
 					+ "c.termId = tp.tpId and tp.userId = c.userId and tp.startDate < ? and tp.endDate > ? ";
 			List<Map> list = courseDAO.findMap(hql, userId, date, date);
 			List<Map> cList = new ArrayList<>();
-			
 			for(int i = 0; i < list.size(); i++){
 				// 处理给定的日期
 				Map dc = dateConvert(date,(String)list.get(i).get("startDate"));
@@ -733,7 +732,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		// 返回用户需要的数据：课程名称，上课时间，上课地点
 		if (cIdList.size() > 0 && cIdList != null) {
 			List<Map> courses = new ArrayList<>();
-			String hql2 = "select c.courseId as courseId, c.courseName as courseName, s.value as location, "
+			String hql2 = "select distinct c.courseId as courseId, c.courseName as courseName, s.value as location, "
 					+ "cc.classRoom as classRoom, cc.lessonNumber as lessonNumber, "
 					+ "c.userId as teacherId, t.name as teacherName "
 					+ "from Course c, CourseCell cc, CourseItem ci,School s,Teacher t "
@@ -1166,7 +1165,7 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 		List<Map> list = courseDAO.findBySql(sql, courseId);
 		for (int i = 0; i < list.size(); i++) {
 			if("01".equals(list.get(i).get("repeatType"))){
-				list.get(i).put("repeatType", "日");
+				list.get(i).put("repeatType", "天");
 			}
 			if("02".equals(list.get(i).get("repeatType"))){
 				list.get(i).put("repeatType", "周");

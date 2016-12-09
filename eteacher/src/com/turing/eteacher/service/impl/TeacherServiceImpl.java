@@ -213,7 +213,7 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 		return map;
 	}
 
-	@Override
+/*	@Override
 	public Map getTeacherInfo(String teacherId) {
 		String hql = "select t.teacherNo as teacherNo, t.name as name, t.sex as sex, "
 				+ "t.titleId as titleId, t.postId as postId, t.schoolId as schoolId, "
@@ -272,6 +272,6 @@ public class TeacherServiceImpl extends BaseService<Teacher> implements
 			map.put("IM","无");
 		}
 		return map;
-	}
+	}*/
 
 }

@@ -29,6 +29,6 @@ public interface ITeacherService extends IService<Teacher> {
 	 * @param teacherId
 	 * @return
 	 */
-	public Map getTeacherInfo(String teacherId);
+//	public Map getTeacherInfo(String teacherId);
 
 }

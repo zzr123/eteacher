@@ -17,4 +17,6 @@ public interface IScoreService extends IService<Score> {
 	public void importScore(String courseId, List<Map> datas);
 
 	public String addAverageScore(String courseId,String studentId,int score);
+	
+	
 }

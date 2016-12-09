@@ -47,10 +47,12 @@ public class TeacherRemote extends BaseRemote {
 	@Autowired
 	private ICourseCellService courseCellServiceImpl;
 	/**
-	 * 获取某门课程的授课教师的信息 学生端功能
+	 * 学生端功能：获取某门课程的授课教师的信息 
 	 * 
 	 * @param courseId
 	 * @return
+	 * 
+	 * 废弃方法。该方法已实现  macong
 	 */
 	// {
 	// result : 'success',//成功success，失败failure
@@ -66,7 +68,7 @@ public class TeacherRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "student/courses/{courseId}/teacher", method = RequestMethod.GET)
+	/*@RequestMapping(value = "student/courses/{courseId}/teacher", method = RequestMethod.GET)
 	public ReturnBody courseTeacher(@PathVariable String courseId) {
 		try {
 			Course course = courseServiceImpl.get(courseId);
@@ -77,7 +79,7 @@ public class TeacherRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
 					ReturnBody.ERROR_MSG);
 		}
-	}
+	}*/
 
 	/**
 	 * 获取学生列表（签到学生列表、未签到学生列表、快速搜索）
@@ -114,26 +116,31 @@ public class TeacherRemote extends BaseRemote {
 	 */
 	// {
 	// result : 'success',//成功success，失败failure
-	// data : {
-	// name : '姓名',
-	// teacherNO : '教工号',
-	// sex : '性别',
-	// titleName : '职称',
-	// postName : '职务',
-	// schoolId : '学校Id',
-	// schoolName : '学校名称',
-	// department : '院系',
-	// introduction : '教师简介'
-	// },
+//	 data : {
+//	 name : '姓名',
+//	 teacherNO : '教工号',
+//	 sex : '性别',
+//	 titleName : '职称',
+//	 postName : '职务',
+//	 schoolId : '学校Id',
+//	 schoolName : '学校名称',
+//	 department : '院系',
+//	 introduction : '教师简介'
+//	 },
 	// msg : '提示信息XXX'
 	// }
 	@RequestMapping(value = "teacher/personInfo", method = RequestMethod.POST)
 	public ReturnBody getPersonInfo(HttpServletRequest request) {
 		try {
-			String userId = request.getParameter("userId");
+			String userId = null;
+			/*if(null != request.getParameter("teacherId")){
+				userId = request.getParameter("teacherId");//学生端查看教师信息
+			}else{
+				userId = request.getParameter("userId");//教师端
+			}*/
+			userId = request.getParameter("teacherId") != null?request.getParameter("teacherId"):request.getParameter("userId");
 			Map teacherInfo = teacherServiceImpl.getUserInfo(userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacherInfo);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
@@ -220,10 +227,9 @@ public class TeacherRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/getCommunicationList", method = RequestMethod.POST)
 	public ReturnBody getCommunicationList(HttpServletRequest request) {
 		try {
-			String userId = request.getParameter("userId");
+			String userId = request.getParameter("teacherId") != null?request.getParameter("teacherId"):request.getParameter("userId");
 			int type = Integer.parseInt(request.getParameter("type"));
-			List<Map> list = userCommunicationServiceImpl.getComByUserId(
-					userId, type);
+			List<Map> list = userCommunicationServiceImpl.getComByUserId(userId, type);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -403,6 +409,8 @@ public class TeacherRemote extends BaseRemote {
 	 * 
 	 * @author zjx
 	 * @return
+	 * 
+	 * 废弃。该方法已存在   macong
 	 */
 	// {
 	// result : 'success',//成功success，失败failure
@@ -421,7 +429,7 @@ public class TeacherRemote extends BaseRemote {
 	// },
 	// msg : '提示信息XXX'
 	// }
-	@RequestMapping(value = "teacher/teacherInfo", method = RequestMethod.POST)
+	/*@RequestMapping(value = "teacher/teacherInfo", method = RequestMethod.POST)
 	public ReturnBody getTeacherInfo(HttpServletRequest request) {
 		try {
 			String teacherId = request.getParameter("teacherId");
@@ -433,5 +441,5 @@ public class TeacherRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,
 					ReturnBody.ERROR_MSG);
 		}
-	}
+	}*/
 }

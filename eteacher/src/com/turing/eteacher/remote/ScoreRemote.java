@@ -1,6 +1,9 @@
 package com.turing.eteacher.remote;
 
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +46,4 @@ public class ScoreRemote extends BaseRemote {
 				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 			}
 		}
-	
 }
