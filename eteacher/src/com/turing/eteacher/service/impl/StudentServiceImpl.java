@@ -1,5 +1,6 @@
 package com.turing.eteacher.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,15 +10,26 @@ import org.springframework.stereotype.Service;
 import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.constants.EteacherConstants;
+import com.turing.eteacher.dao.ClassDAO;
+import com.turing.eteacher.dao.SchoolDAO;
 import com.turing.eteacher.dao.StudentDAO;
+import com.turing.eteacher.model.Classes;
+import com.turing.eteacher.model.School;
 import com.turing.eteacher.model.Student;
 import com.turing.eteacher.service.IStudentService;
+import com.turing.eteacher.util.StringUtil;
 
 @Service
 public class StudentServiceImpl extends BaseService<Student> implements IStudentService {
 
 	@Autowired
 	private StudentDAO studentDAO;
+	
+	@Autowired
+	private ClassDAO classDAO;
+	
+	@Autowired
+	private SchoolDAO schoolDAO;
 	
 	@Override
 	public BaseDAO<Student> getDAO() {
@@ -77,17 +89,29 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 	 */
 	@Override
 	public Map getUserInfo(String userId) {
-		String hql="select s.stuName as stuName ,s.stuNo as stuNo,s.sex as sex," +
-				"s.classId as classId , c.className as className ,s.schoolId as schoolId," +
-				"sch.value as schoolName ,s.faculty as faculty " +
-				"from Student s , Classes c ,School sch " +
-				"where s.classId = c.classId and s.schoolId = sch.schoolId and s.stuId = ?";
-		List<Map> map = studentDAO.findMap(hql, userId);
-		if(null != map && map.size() > 0){
-			Map m = map.get(0);
-			return m;
+		Map<String ,String> map = new HashMap(); 
+		Student student = studentDAO.get(userId);
+		if (null != student) {
+			map.put("stuName", student.getStuName());
+			map.put("stuNo", student.getStuNo());
+			map.put("sex", student.getSex());
+			map.put("schoolId", student.getSchoolId());
+			map.put("faculty", student.getFaculty());
+			map.put("classId", student.getClassId());
+			if (StringUtil.isNotEmpty(student.getClassId())) {
+				Classes classes = classDAO.get(student.getClassId());
+				if (null != classes) {
+					map.put("className", classes.getClassName());
+				}
+			}
+			if (StringUtil.isNotEmpty(student.getSchoolId())) {
+				School school = schoolDAO.get(student.getSchoolId());
+				if (null != school && school.getType() == 3) {
+					map.put("schoolName", school.getValue());
+				}
+			}
 		}
-		return null;
+		return map;
 	}
 
 }

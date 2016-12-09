@@ -9,7 +9,6 @@ import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.Notification;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turing.eteacher.model.PushMessage;
@@ -20,9 +19,12 @@ import com.turing.eteacher.model.PushMessage;
  */
 public class JPushUtil {
 	// 在极光注册上传应用的 appKey 和 masterSecret
-	private static final String appKey = "5b73c7485fe5534a9262e4c4";// //必填，例如466f7032ac604e02fb7bda89
-	private static final String masterSecret = "d0c4ca3f6625e81e16b09850";// 必填，每个应用都对应一个masterSecret
-	private static JPushClient jpush = null;
+	private static final String stuAppKey = "5b73c7485fe5534a9262e4c4";// //必填，例如466f7032ac604e02fb7bda89
+	private static final String stuMasterSecret = "d0c4ca3f6625e81e16b09850";// 必填，每个应用都对应一个masterSecret
+	private static final String teachAppKey = "3ea95ca12ee4a62e3ff58a96";// //必填，例如466f7032ac604e02fb7bda89
+	private static final String teachMasterSecret = "05051cb0bb9c5b30ad968edc";// 必填，每个应用都对应一个masterSecret
+	private static JPushClient stuJpush = null;
+	private static JPushClient teachJPush = null; 
 	// 消息内容
 	public static final String ALERT = "JPush Test - alert";
 	
@@ -33,19 +35,26 @@ public class JPushUtil {
 	public static String ACTION_SIGNIN_DETAIL = "3"; 
 	public static String ACTION_ALERT = "4"; 
 
-	public static JPushClient getPushClient() {
-		if (null == jpush) {
-			jpush = new JPushClient(masterSecret, appKey);
+	public static JPushClient getStuClient() {
+		if (null == stuJpush) {
+			stuJpush = new JPushClient(stuMasterSecret, stuAppKey);
 		}
-		return jpush;
+		return stuJpush;
+	}
+	public static JPushClient getteachClient() {
+		if (null == teachJPush) {
+			teachJPush = new JPushClient(teachMasterSecret, teachAppKey);
+		}
+		return teachJPush;
 	}
 	
 	public static void main(String[] args) {
 		PushMessage message = new PushMessage();
-		message.setAction(ACTION_HOMEWORK_DETAIL);
+		message.setAction(ACTION_ALERT);
 		message.setContent("消息内容！");
 		message.setTitle("消息标题！");
 		message.setShow(SHOW_ON);
+		message.setUserType(PushMessage.UTYPE_ALL);
 		pushMessage(message);
 	}
 	
@@ -53,18 +62,31 @@ public class JPushUtil {
 	 * 发送消息
 	 * @param message
 	 */
-	private static void pushMessage(PushMessage message) {
+	public static void pushMessage(PushMessage message) {
 		PushPayload payload = buildPushMessage(message);
 		if (null != payload) {
 			try {
-				PushResult result = getPushClient().sendPush(payload);
-				System.out.println("Got result - " + result);
+				PushResult result = null;
+				switch (message.getUserType()) {
+				case PushMessage.UTYPE_STUDENT:
+					result = getStuClient().sendPush(payload);
+					System.out.println("Got result - " + result);
+					break;
+				case PushMessage.UTYPE_TEACHER:
+					result = getteachClient().sendPush(payload);
+					System.out.println("Got result - " + result);
+					break;
+				case PushMessage.UTYPE_ALL:
+					result = getStuClient().sendPush(payload);
+					result = getteachClient().sendPush(payload);
+					break;
+				default:
+					break;
+				}
 			} catch (APIConnectionException e) {
 				System.out.println("Connection error, should retry later" + e);
 			} catch (APIRequestException e) {
-				System.out
-						.println("Should review the error, and fix the request"
-								+ e);
+				System.out.println("Should review the error, and fix the request"+ e);
 				System.out.println("HTTP Status: " + e.getStatus());
 				System.out.println("Error Code: " + e.getErrorCode());
 				System.out.println("Error Message: " + e.getErrorMessage());

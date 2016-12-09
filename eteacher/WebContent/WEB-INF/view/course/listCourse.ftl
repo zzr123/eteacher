@@ -97,7 +97,7 @@
                         <td>
                         	<select id="termSelect" class="select-control" style="width:30%" onchange="courseTable.bootstrapTable('refresh');">   
                         		<#list termList as map> 
-									<option value=${map["id"]} <#if map["id"] == termId?default("")>selected="selected"</#if>>
+									<option value=${map["id"]} <#if map["id"] == termId?default("")>selected="selected"</#if> >
 										${map["content"]}
 									</option>
 								</#list>                          

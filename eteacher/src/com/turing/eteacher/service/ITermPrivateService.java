@@ -26,4 +26,12 @@ public interface ITermPrivateService  extends IService<TermPrivate>{
 	 * @return
 	 */
 	public List<TermPrivate> getListByUserId(String userId);
+	/**
+	 * 获取包含start和end的学期
+	 * @author lifei
+	 * @param start 开始时间
+	 * @param end 结束时间
+	 * @return
+	 */
+	public List<Map> getContainDateList(String start,String end);
 }

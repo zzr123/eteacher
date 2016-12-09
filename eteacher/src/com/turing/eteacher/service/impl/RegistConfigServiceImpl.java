@@ -38,5 +38,14 @@ public class RegistConfigServiceImpl extends BaseService<RegistConfig>  implemen
 				+ "WHERE rc.CONFIG_ID = ? ";
 		registConfigDAO.executeBySql(hql, before,after,distance,configId);
 	}
+	@Override
+	public Map getRegistTimeByCourseId(String courseId) {
+		String sql = "SELECT trc.REGIST_BEFORE AS registTime FROM t_regist_config trc ,t_course tc WHERE trc.USER_ID = tc.USER_ID AND tc.COURSE_ID = ?";
+		List<Map> list = registConfigDAO.findBySql(sql, courseId);
+		if (null != list && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
 }

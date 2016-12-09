@@ -80,4 +80,18 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 		List list = termPrivateDAO.find(hql, userId);
 		return list;
 	}
+	@Override
+	public List<Map> getContainDateList(String start, String end) {
+		String sql = "SELECT t.TP_ID AS tpId, "+
+				"t.START_DATE AS startDate, "+
+				"t.END_DATE AS endDate, "+
+				"t.USER_ID AS userId, "+
+				"tt.SCHOOL_ID AS schoolId  "+
+				"FROM t_term_private t ,t_teacher tt "+
+				"WHERE t.START_DATE < ? "+ 
+				"AND t.USER_ID = tt.TEACHER_ID "+
+				"AND t.STATUS = 1 "+
+				"AND DATE_ADD(t.END_DATE,INTERVAL 1 DAY)  > ? ";
+		return termPrivateDAO.findBySql(sql, start,end);
+	}
 }

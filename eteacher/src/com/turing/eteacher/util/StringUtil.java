@@ -6,7 +6,7 @@ import java.util.List;
 public class StringUtil {
 
 	public static boolean isNotEmpty(String str) {
-		if (str == null || "".equals(str)) {
+		if (str == null || "".equals(str) || "null".equals(str)) {
 			return false;
 		}
 		return true;

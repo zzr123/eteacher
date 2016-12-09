@@ -103,7 +103,7 @@ public class StudentRemote extends BaseRemote {
 								//获取周重复课程结束周的周日
 								end = DateUtil.addDays(end, 6);
 								//是否如果学期在周日前结束 则课程结束日期为学期最后一天
-								if (DateUtil.isBefore((String)map.get("termEndDay"), end)) {
+								if (DateUtil.isBefore((String)map.get("termEndDay"), end,DateUtil.YYYYMMDD)) {
 									end = (String)map.get("termEndDay");
 								}
 								//查看课程是否与指定的月份有交集
@@ -126,7 +126,7 @@ public class StudentRemote extends BaseRemote {
 														String dateStr = DateUtil.getWeek(start, m*repeatNumber, Integer.parseInt(week[l]));
 														if (null != dateStr) {
 															//如果上课时间在学期内&&在所指定的月份内
-															if (DateUtil.isBefore(dateStr,(String)map.get("termEndDay")) && DateUtil.isInRange(dateStr, cFirstDay, cLastDay)) {
+															if (DateUtil.isBefore(dateStr,(String)map.get("termEndDay"),DateUtil.YYYYMMDD) && DateUtil.isInRange(dateStr, cFirstDay, cLastDay)) {
 																Map<String, String> n = new HashMap<>(); 
 																n.put("date", dateStr);
 																if (!result.contains(n)) {
@@ -207,22 +207,6 @@ public class StudentRemote extends BaseRemote {
 	 * @param stuId
 	 * @return
 	 */
-//{
-//	result : 'success',//成功success，失败failure
-//	data : {
-//		stuName : '姓名',
-//		sex : '性别',
-//		school : '学校',
-//		faculty : '院系',
-//		classId : '班级ID',
-//		stuNo : '学号',
-//		phone : '电话', //多个用英文逗号隔开
-//		qq : 'QQ',
-//		weixin : '微信',
-//		email : '邮箱' //多个用英文逗号隔开
-//	},
-//	msg : '提示信息XXX'
-//}	
 	@RequestMapping(value = "student/personInfo", method = RequestMethod.POST)
 	public ReturnBody getStudent(HttpServletRequest request){
 		try {
@@ -337,20 +321,17 @@ public class StudentRemote extends BaseRemote {
 		String classId = request.getParameter("classId");
 
 		if (StringUtil.checkParams(stuName,stuNo,sex,schoolId,faculty,classId)) {
-			Student student = null;
-			student = studentServiceImpl.get(userId);
-			
-			student.setStuName(stuName);
-			student.setStuNo(stuNo);
-			student.setSex(sex);
-			student.setSchoolId(schoolId);
-			student.setFaculty(faculty);
-			student.setClassId(classId);
-			studentServiceImpl.update(student);
-
-			Map<String,String> map = new HashMap();
-			map.put("stuId", student.getStuId());
-			return new ReturnBody(map);
+			Student student = studentServiceImpl.get(userId);
+			if(null != student){
+				student.setStuName(stuName);
+				student.setStuNo(stuNo);
+				student.setSex(sex);
+				student.setSchoolId(schoolId);
+				student.setFaculty(faculty);
+				student.setClassId(classId);
+				studentServiceImpl.update(student);
+			}
+			return new ReturnBody("保存成功！");
 		} else {
 			return ReturnBody.getParamError();
 		}

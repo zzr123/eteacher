@@ -12,14 +12,16 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd 
 		http://www.springframework.org/schema/tx 
-		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/task  
+		http://www.springframework.org/schema/task/spring-task-4.2.xsd">
 	
 	<!-- 扫描controller -->
 	<context:component-scan base-package="com.turing" use-default-filters="false"><!-- base-package="com.turing.**.controller"也可以 -->
 		<context:include-filter type="annotation"
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
-	
+	<!--<context:component-scan base-package="com.turing"></context:component-scan>-->
 	<!-- freemarker的配置 -->  
     <bean id="freemarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="/WEB-INF/view/" />
@@ -99,4 +101,5 @@
 	    <!-- 最大文件大小，-1为不限制大小 -->
 	    <property name="maxUploadSize" value="-1"/>
 	</bean>
+    
 </beans>

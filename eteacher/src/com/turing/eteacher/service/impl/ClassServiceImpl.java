@@ -52,9 +52,8 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 	@Override
 	public List<Map> getClassListByUser(String schoolId, int endTime,String majorId,int page) {
 		String sql = null;
-		System.out.println("endTIme:"+endTime+"  majorId:"+majorId);
 		List<Object> params = new ArrayList<>();
-		if(null != majorId && !"null".equals(majorId)){
+		if(null != majorId && !"null".equals(majorId) && !"".equals(majorId)){
 			sql="SELECT tc.CLASS_ID AS classId,tc.CLASS_NAME AS className FROM t_class tc WHERE tc.SCHOOL_ID = ? AND tc.MAJOR_ID = ? AND tc.END_TIME > ?";
 			params.add(schoolId);
 			params.add(majorId);
@@ -64,11 +63,7 @@ public class ClassServiceImpl extends  BaseService<Classes> implements IClassSer
 			params.add(schoolId);
 			params.add(endTime);
 		}
-		System.out.println("sql:"+sql);
 		List<Map> list=classDAO.findBySqlAndPage(sql, page*20, 20, params);
-		for(int i = 0;i< list.size();i++){
-			System.out.println("mappp"+i+":"+list.get(i).toString());
-		}
 		return list;
 	}
 

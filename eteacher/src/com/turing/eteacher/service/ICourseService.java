@@ -132,7 +132,7 @@ public interface ICourseService extends IService<Course> {
 	 * @param tpId
 	 * @return
 	 */
-	public List<Map> getCourseByTermId(String userId,String tpId);
+	public List<Map> getCourseByTermId(String tpId);
 	/**
 	 * 学生端功能：判断当前时间是否为签到时间（获取当前处于签到时间的课程信息）/ 获取某课程的签到信息（学校，教学楼，签到有效范围）
 	 * @author macong
@@ -164,4 +164,11 @@ public interface ICourseService extends IService<Course> {
 	 * @param courseId
 	 */
 	public List<Map> getCourDetail(String courseId);
+	
+	/**
+	 *通过课程Id得到对应的学校Id 
+	 * @param courseId
+	 * @return
+	 */
+	public Map getSchoolIdbyCourseId(String courseId);
 }

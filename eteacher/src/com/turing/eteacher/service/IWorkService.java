@@ -38,4 +38,28 @@ public interface IWorkService extends IService<Work> {
 	 * @return
 	 */
 	public List<Map> stugetWorkEndDateByMonth(String month,String userId);
+	/**
+	 * 获取指定日期内内要发布的作业
+	 * 
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Map> getDateLimitHomeWork(String startTime, String endTime) ;
+	
+	/**
+	 * 通过通知Id得到学校Id
+	 * @author lifei
+	 * @param noticeId
+	 * @return
+	 */
+	public String getSchoolIdbyWorkId(String noticeId);
+	
+	/**
+	 * 获取作业对应的班级Id
+	 * @author lifei
+	 * @param noticeId
+	 * @return
+	 */
+	public List<Map> getClassIdByWorkId(String noticeId);
 }

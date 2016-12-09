@@ -49,4 +49,26 @@ public interface INoticeService extends IService<Notice> {
 	 * @param userId
 	 */
 	public void addReadFlag(String noticeId, String userId);
+	/**
+	 * 获取指定开始结束时间内要发布的通知(定时器接口)
+	 * @author lifei
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Map> getDateLimitNotice(String startTime,String endTime);
+	/**
+	 * 通过通知Id得到学校Id
+	 * @author lifei
+	 * @param noticeId
+	 * @return
+	 */
+	public String getSchoolIdbyNoticeId(String noticeId);
+	/**
+	 * 获取通知对应的班级Id
+	 * @author lifei
+	 * @param noticeId
+	 * @return
+	 */
+	public List<Map> getClassIdByNoticeId(String noticeId);
 }

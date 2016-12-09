@@ -3,12 +3,19 @@ package com.turing.eteacher.model;
 import java.util.Map;
 
 public class PushMessage {
-	
+	public static final int UTYPE_STUDENT = 0;
+	public static final int UTYPE_TEACHER = 1;
+	public static final int UTYPE_ALL = 2;
 	private String title;
 	private String content;
 	private String show;
 	private String action;
+	private String classId;
+	private String schoolId;
+	private String userId;
+	private int userType;
 	private Map extra;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -39,4 +46,37 @@ public class PushMessage {
 	public void setExtra(Map extra) {
 		this.extra = extra;
 	}
+	public String getClassId() {
+		return classId;
+	}
+	public void setClassId(String classId) {
+		this.classId = classId;
+	}
+	public String getSchoolId() {
+		return schoolId;
+	}
+	public void setSchoolId(String schoolId) {
+		this.schoolId = schoolId;
+	}
+	public int getUserType() {
+		return userType;
+	}
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	@Override
+	public String toString() {
+		return "PushMessage [title=" + title + ", content=" + content
+				+ ", show=" + show + ", action=" + action + ", classId="
+				+ classId + ", schoolId=" + schoolId + ", userType=" + userType
+				+ ", extra=" + extra + "]";
+	}
+	
+	
 }

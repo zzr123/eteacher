@@ -315,8 +315,8 @@ public class TeacherRemote extends BaseRemote {
 					TermPrivate item = list.get(i);
 					// 查看指定月是否与所创建的学期有交集
 					if (DateUtil.isOverlap(cFirstDay, cLastDay, item.getStartDate(), item.getEndDate())) {
-						// 如果在则查找本学学期内的课程
-						List<Map> list2 = courseServiceImpl.getCourseByTermId(getCurrentUserId(request),item.getTpId());
+						// 如果有则查找本学学期内的课程
+						List<Map> list2 = courseServiceImpl.getCourseByTermId(item.getTpId());
 						if (null != list2) {
 							for (int j = 0; j < list2.size(); j++) {
 								Map map = list2.get(j);
@@ -351,7 +351,7 @@ public class TeacherRemote extends BaseRemote {
 									//获取周重复课程结束周的周日
 									end = DateUtil.addDays(end, 6);
 									//是否如果学期在周日前结束 则课程结束日期为学期最后一天
-									if (DateUtil.isBefore(item.getEndDate(), end)) {
+									if (DateUtil.isBefore(item.getEndDate(), end,DateUtil.YYYYMMDD)) {
 										end = item.getEndDate();
 									}
 									//查看课程是否与指定的月份有交集
@@ -374,7 +374,7 @@ public class TeacherRemote extends BaseRemote {
 															String dateStr = DateUtil.getWeek(start, m*repeatNumber, Integer.parseInt(week[l]));
 															if (null != dateStr) {
 																//如果上课时间在学期内&&在所指定的月份内
-																if (DateUtil.isBefore(dateStr,item.getEndDate()) && DateUtil.isInRange(dateStr, cFirstDay, cLastDay)) {
+																if (DateUtil.isBefore(dateStr,item.getEndDate(),DateUtil.YYYYMMDD) && DateUtil.isInRange(dateStr, cFirstDay, cLastDay)) {
 																	Map<String, String> n = new HashMap<>(); 
 																	n.put("date", dateStr);
 																	if (!result.contains(n)) {

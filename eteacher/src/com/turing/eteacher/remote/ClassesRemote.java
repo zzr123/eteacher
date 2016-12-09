@@ -78,13 +78,12 @@ public class ClassesRemote extends BaseRemote {
 		public ReturnBody getClassNameByMajor(HttpServletRequest request){
 				String majorId = request.getParameter("major");
 				String page = request.getParameter("page");
-				Student student = getCurrentStudent(request);
-				if (null != student && StringUtil.checkParams(page, student.getSchoolId())) {
+				String schoolId = request.getParameter("schoolId"); 
+				if (StringUtil.checkParams(page,schoolId)) {
 					int endTime = Calendar.getInstance().get(Calendar.YEAR);
 					List list = classServiceImpl.getClassListByUser(
-							student.getSchoolId(), endTime, majorId,
+							schoolId, endTime, majorId,
 							Integer.parseInt(page));
-					System.out.println(list.toString());
 					return new ReturnBody(list);
 				} else {
 					return ReturnBody.getParamError();

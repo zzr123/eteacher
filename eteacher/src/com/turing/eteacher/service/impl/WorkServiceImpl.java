@@ -351,5 +351,33 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		List list = workDAO.findBySql(sql, userId, cFirstDay, cLastDay);
 		return list;
 	}
+	@Override
+	public List<Map> getDateLimitHomeWork(String startTime, String endTime) {
+		String sql = "SELECT t.WORK_ID AS id , t.PUBLISH_TIME AS time FROM t_work t WHERE t.PUBLISH_TIME < ? AND t.PUBLISH_TIME > ? ORDER BY t.PUBLISH_TIME";
+		return workDAO.findBySql(sql, endTime,startTime);
+	}
+	@Override
+	public String getSchoolIdbyWorkId(String noticeId) {
+		String sql = "SELECT tt.SCHOOL_ID AS schoolId "+
+				"FROM t_teacher tt, t_course tc, t_work tw ,t_work_course twc "+ 
+				"WHERE tt.TEACHER_ID = tc.USER_ID "+ 
+				"AND tc.COURSE_ID = twc.COURSE_ID "+ 
+				"AND tw.WORK_ID = twc.WORK_ID "+ 
+				"AND tw.WORK_ID = ? ";
+		List<Map> list = workDAO.findBySql(sql, noticeId);
+		if (null != list && list.size() > 0) {
+			return (String) list.get(0).get("schoolId");
+		}
+		return null;
+	}
+	@Override
+	public List<Map> getClassIdByWorkId(String noticeId) {
+		String sql = "SELECT DISTINCT tcc.CLASS_ID AS schoolId "+
+				"FROM t_course_class tcc, t_course tc, t_work tw ,t_work_course twc "+ 
+				"WHERE tcc.COURSE_ID = twc.COURSE_ID "+ 
+				"AND tw.WORK_ID = twc.WORK_ID "+ 
+				"AND tw.WORK_ID = ? ";
+		return workDAO.findBySql(sql, noticeId);
+	}
 	
 }

@@ -253,4 +253,28 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 		noticeDAO.save(l);
 	}
 
+	@Override
+	public List<Map> getDateLimitNotice(String startTime, String endTime) {
+		String sql = "SELECT t.NOTICE_ID AS id , t.PUBLISH_TIME AS time FROM t_notice t WHERE t.PUBLISH_TIME < ? AND t.PUBLISH_TIME > ? ORDER BY t.PUBLISH_TIME";
+		return noticeDAO.findBySql(sql, endTime,startTime);
+	}
+
+	@Override
+	public String getSchoolIdbyNoticeId(String noticeId) {
+		String sql = "SELECT tt.SCHOOL_ID AS schoolId FROM t_teacher tt , t_notice tn WHERE tt.TEACHER_ID = tn.USER_ID AND tn.NOTICE_ID = ?";
+		List<Map> list = noticeDAO.findBySql(sql, noticeId);
+		if (null != list && list.size() > 0) {
+			return (String) list.get(0).get("schoolId");
+		}
+		return null;
+	}
+
+	@Override
+	public List<Map> getClassIdByNoticeId(String noticeId) {
+		String sql = "SELECT DISTINCT tcc.CLASS_ID AS classId FROM t_work_course twc ,t_notice tn ,t_course_class tcc "+ 
+				"WHERE twc.WORK_ID = tn.NOTICE_ID AND tcc.COURSE_ID = twc.COURSE_ID AND tn.NOTICE_ID = ?";
+		List list = noticeDAO.findBySql(sql, noticeId);
+		return list;
+	}
+
 }

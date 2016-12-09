@@ -1094,8 +1094,9 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 	}
 
 	@Override
-	public List<Map> getCourseByTermId(String userId, String tpId) {
+	public List<Map> getCourseByTermId(String tpId) {
 		String hql = "select c.courseId as courseId, " +
+				"c.remindTime as remindTime, " +
 				"ci.ciId as ciId, " +
 				"ci.repeatType as repeatType, " +
 				"ci.repeatNumber as repeatNumber, " +
@@ -1105,9 +1106,8 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 				"ci.endDay as endDay " +
 				"from Course c ,CourseItem ci " +
 				"where c.courseId = ci.courseId " +
-				"and c.termId = ? " +
-				"and c.userId = ?";
-		List<Map> list = courseDAO.findMap(hql, tpId,userId);
+				"and c.termId = ? ";
+		List<Map> list = courseDAO.findMap(hql, tpId);
 		return list;
 	}
 
@@ -1211,6 +1211,16 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 			list.get(0).put("examinationMode", list4);
 		}
 		return list;
+	}
+
+	@Override
+	public Map getSchoolIdbyCourseId(String courseId) {
+		String hql = "select te.schoolId as schoolId from Teacher te,Course tc where te.teacherId = tc.userId and tc.courseId = ?";
+		List<Map> list = courseDAO.findMap(hql, courseId);
+		if (null != list && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
 	}
 
 }

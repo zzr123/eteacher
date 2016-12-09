@@ -13,6 +13,7 @@ import java.util.Date;
 public class DateUtil {
 
 	public static final String YYYYMMDD = "yyyy-MM-dd";
+	public static final String YYYYMMDDHHMM = "yyyy-MM-dd HH:mm";
 
 	public static final long CONST_WEEK = 3600 * 1000 * 24 * 7;
 
@@ -90,6 +91,28 @@ public class DateUtil {
 			long l = _to.getTime() - _from.getTime();
 			int i = (int) (l / (1000 * 60 * 60 * 24));
 			return i;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	/**
+	 * 获取两个时间之间的毫秒
+	 * @author lifei
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public static long getTimeBetween(String from, String to) {
+		SimpleDateFormat format = new SimpleDateFormat(YYYYMMDDHHMM);
+		try {
+			Date _from = format.parse(from);
+			Date _to = format.parse(to);
+			if (from == null || to == null) {
+				return 0;
+			}
+			long l = _to.getTime() - _from.getTime();
+			return l;
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -354,8 +377,8 @@ public class DateUtil {
 	 * @param date2
 	 * @return
 	 */
-	public static boolean isBefore(String date1,String date2){
-		SimpleDateFormat format = new SimpleDateFormat(YYYYMMDD);
+	public static boolean isBefore(String date1,String date2,String strformat){
+		SimpleDateFormat format = new SimpleDateFormat(strformat);
 		Date _date1 = null;
 		Date _date2 = null;
 		try {
@@ -396,7 +419,6 @@ public class DateUtil {
 			System.out.println("after:" + sdf.format(after.getTime()));
 			return (int) ((after.getTimeInMillis() - before.getTimeInMillis()) / CONST_WEEK);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;
@@ -445,5 +467,22 @@ public class DateUtil {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	/**
+	 * 时间减去 i分钟
+	 * @param _date
+	 * @param i
+	 * @return 
+	 */
+	public static String deleteMinutes(String _date, int i) {
+		SimpleDateFormat format = new SimpleDateFormat(YYYYMMDDHHMM);
+		Date date;
+		try {
+			date = format.parse(_date);
+			return format.format(new Date(date.getTime() - i*1000*60));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
