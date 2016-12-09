@@ -35,11 +35,6 @@ public class NoticeRemote extends BaseRemote {
 	@Autowired
 	private IWorkCourseService workCourseServiceImpl;
 	
-	@Autowired
-	private ICourseService courseServiceImpl;
-	
-	@Autowired
-	private IStatisticService statisticServiceImpl;
 
 	/**
 	 * 教师端通知展示列表

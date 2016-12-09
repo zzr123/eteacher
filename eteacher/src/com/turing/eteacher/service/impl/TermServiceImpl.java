@@ -107,10 +107,10 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 				"(select t_term_private.TREM_ID FROM t_term_private " +
 				"WHERE t_term_private.USER_ID = ?)";
 		List<Map> list=termDAO.findBySql(sql,userId);
-		for(int i = 0;i< list.size();i++){
-			System.out.println("map"+i+":"+list.get(i).toString());
+		if(null != list && list.size() > 0){
+			return list;
 		}
-		return list;
+		return null;
 	}
 	/**
 	 * 获取学期私有数据列表

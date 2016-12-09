@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.RegistConfig;
+import com.turing.eteacher.service.IRegistConfigService;
 import com.turing.eteacher.service.ISignInService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -20,6 +22,9 @@ import com.turing.eteacher.util.StringUtil;
 public class SignInRemote extends BaseRemote{
 	@Autowired
 	private ISignInService signInServiceImpl;
+	
+	@Autowired
+	private IRegistConfigService registConfigServiceImpl;
 	/**
 	 * 学生端接口：根据courseID，获取某课程的位置信息（所在市，学校，教学楼）
 	 * @author macong
@@ -102,6 +107,49 @@ public class SignInRemote extends BaseRemote{
 			if(StringUtil.checkParams(teacherId)){
 				Map m = signInServiceImpl.getSignSetting(teacherId);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, m);
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+		return null;
+	}
+	/**
+	 * 教师端接口：更改签到设置
+	 * @author macong
+	 * 时间：2016年12月9日10:24:35
+	 */
+	@RequestMapping(value="signIn/saveSignSetting",method=RequestMethod.POST)
+	public ReturnBody saveSignSetting(HttpServletRequest request){
+		try{
+			String configId = request.getParameter("configId");
+			String before = request.getParameter("before");
+			String after = request.getParameter("after");
+			String distance = request.getParameter("distance");
+			if(StringUtil.checkParams(before,after,distance)){
+				registConfigServiceImpl.changeSetting(configId,before,after,distance);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS);
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
+		}
+		return null;
+	}
+	/**
+	 * 教师端接口：恢复用户的默认签到设置
+	 * @author macong
+	 * 时间：2016年12月9日10:48:36
+	 */
+	@RequestMapping(value="signIn/getDefaultSignSetting",method=RequestMethod.POST)
+	public ReturnBody getDefaultSignSetting(HttpServletRequest request){
+		try{
+			String configId = request.getParameter("configId");
+			if(StringUtil.checkParams(configId)){
+				registConfigServiceImpl.deleteById(configId);
+				return new ReturnBody(ReturnBody.RESULT_SUCCESS,null);
 			}
 		}
 		catch(Exception e){

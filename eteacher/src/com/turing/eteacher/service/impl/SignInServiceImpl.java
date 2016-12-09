@@ -24,7 +24,7 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 	
 	@Override
 	public BaseDAO<SignIn> getDAO() {
-		return null;
+		return signInDAO;
 	}
 	/**
 	 * 教师端功能：获取当前课程的出勤情况列表
@@ -206,7 +206,7 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 				+ "rc.after as after, rc.distance as distance "
 				+ "from RegistConfig rc where rc.userId = ? and rc.status = 1 ";
 		m = signInDAO.findMap(hql, teacherId);
-		if(null == m || m.size() < 0){
+		if(null != m){
 			String hql2 = "select rc.configId as configId, rc.before as before, "
 					+ "rc.after as after, rc.distance as distance "
 					+ "from RegistConfig rc where rc.status = 0 and rc.userId = null ";
