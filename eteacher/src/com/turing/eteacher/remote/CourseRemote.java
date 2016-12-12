@@ -121,7 +121,6 @@ public class CourseRemote extends BaseRemote {
 			try {
 				List<Map> data = courseServiceImpl
 						.getCourseByDate(userId, date);
-				System.out.println("~~~~~~~~~" + data);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
 			} catch (Exception e) {
 				log.error(this, e);
@@ -427,7 +426,7 @@ public class CourseRemote extends BaseRemote {
 	 */
 	/**
 	 * 获取指定日期的课程列表
-	 * 
+	 * @author macong
 	 * @param request
 	 * @param termId
 	 * @param date
@@ -1071,7 +1070,8 @@ public class CourseRemote extends BaseRemote {
 	}
 
 	/**
-	 * 1.3.5 获取指定学期下的课程列表
+	 *
+	 *学生端功能：获取指定学期下的课程列表
 	 * 
 	 */
 	@RequestMapping(value = "student/Course/getCourseByTerm", method = RequestMethod.POST)

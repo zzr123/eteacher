@@ -97,7 +97,6 @@ public class CourseTimetableRemote extends BaseRemote {
 		try{
 			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 	    	String tpId=getCurrentTerm(request)==null?null:(String)getCurrentTerm(request).get("termId");
-			System.out.println("****:"+tpId);
 			List<Map> list = courseServiceImpl.getCourse(userId,tpId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		}
@@ -129,7 +128,6 @@ public class CourseTimetableRemote extends BaseRemote {
 			String userId=getCurrentUser(request)==null?null:getCurrentUser(request).getUserId();
 			String tpId = request.getParameter("tpId");
 			String page =  (String)request.getParameter("page");
-			System.out.println("****:"+tpId);
 			List<Map> list = courseServiceImpl.getTermCourseTable(userId,tpId,Integer.parseInt(page));
 //			System.out.println("结果："+list.get(0).toString());
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);

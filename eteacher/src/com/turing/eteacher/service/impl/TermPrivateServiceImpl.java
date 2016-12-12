@@ -40,15 +40,16 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 	//删除学期
 	@Override
 	public void deleteById(String tpId) {
-		// TODO Auto-generated method stub
-		String hql = "delete from TermPrivate where tpId=?";
+//		String hql2 = "delete from TermPrivate where tpId = ?";
+		String hql = "update TermPrivate tp set tp.status = 2 where tp.tpId = ?";
 		termPrivateDAO.executeHql(hql, tpId);
 	}
 	//添加学期
 	@Override
-	public void saveTermPrivate(TermPrivate termPrivate) {
+	public String saveTermPrivate(TermPrivate termPrivate) {
 		// TODO Auto-generated method stub
-		Serializable list = termPrivateDAO.save(termPrivate);
+		String list = (String) termPrivateDAO.save(termPrivate);
+		return list;
 	}
 	
 	@Override

@@ -601,10 +601,10 @@ public class CourseServiceImpl extends BaseService<Course> implements ICourseSer
 					+ "ci.startWeek as startWeek, ci.endWeek as endWeek, ci.startDay as startDay, "
 					+ "ci.endDay as endDay, ci.repeatNumber as repeatNumber, cc.lessonNumber as lessonNumber "
 					+ "from CourseCell cc, Course c, CourseItem ci where "
-					+ "cc.ciId=ci.ciId and ci.courseId=c.courseId and c.userId = ? ";
+					+ "cc.ciId=ci.ciId and ci.courseId=c.courseId and c.userId = ? and c.termId = ?";
 			@SuppressWarnings("rawtypes")
-			List<Map> courseList = courseItemDAO.findMap(cql, userId);
-			System.out.println("根据用户ID，筛选出符合当前条件的课程:" + courseList.size() + courseList.get(0).toString());
+			List<Map> courseList = courseItemDAO.findMap(cql, userId , termId);
+//			System.out.println("根据用户ID，筛选出符合当前条件的课程:" + courseList.size() + courseList.get(0).toString());
 			// 处理给定的日期
 			String startDate = (String) termServiceImpl.getCurrentTerm(userId).get("startDate");// 获取当前学期的开始日期时间
 			

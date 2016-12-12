@@ -69,7 +69,7 @@ public class TermRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/term/getTermList", method = RequestMethod.POST)
 	public ReturnBody getListTerms(HttpServletRequest request) {
 		try {
-			String userId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
+			String userId = getCurrentUser(request).getUserId();
 			List<Map> list = termServiceImpl.getListTermPrivates(userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
@@ -86,7 +86,7 @@ public class TermRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/term/getTermName", method = RequestMethod.POST)
 	public ReturnBody getListTermName(HttpServletRequest request) {
 		try {
-			String userId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
+			String userId = getCurrentUser(request).getUserId();
 			List<Map> list = termServiceImpl.getListTerms(userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
@@ -104,7 +104,7 @@ public class TermRemote extends BaseRemote {
 	@RequestMapping(value = "teacher/term/getNowTerm", method = RequestMethod.POST)
 	public ReturnBody getNowTerm(HttpServletRequest request) {
 		try {
-			String userId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
+			String userId = getCurrentUser(request).getUserId();
 			Map map = termServiceImpl.getCurrentTerm(userId);
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, map);
 		} catch (Exception e) {
@@ -131,7 +131,6 @@ public class TermRemote extends BaseRemote {
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 		}
 	}
-
 	/**
 	 * 添加新学期信息
 	 * 
@@ -152,9 +151,11 @@ public class TermRemote extends BaseRemote {
 			// for(int i=0;i<termPrivate.length;i++){
 			// termServiceImpl.addTermPrivate(tpId, termPrivate[i]);
 			tp.setUserId(userId);
-			termPrivateServiceImpl.saveTermPrivate(tp);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
-
+			String tpId = termPrivateServiceImpl.saveTermPrivate(tp);
+			Map m = new HashMap<>();
+			m.put("tpId", tpId);
+			return new ReturnBody(ReturnBody.RESULT_SUCCESS, m);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);

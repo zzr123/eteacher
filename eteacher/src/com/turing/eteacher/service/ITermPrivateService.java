@@ -13,7 +13,7 @@ public interface ITermPrivateService  extends IService<TermPrivate>{
 	
 	public void deleteById(String tpId);
 	
-	public void saveTermPrivate(TermPrivate termPrivate);
+	public String saveTermPrivate(TermPrivate termPrivate);
 
 	public Map getListTerm(String tpId);
 	

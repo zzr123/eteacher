@@ -105,7 +105,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 				"t_term.WEEK_COUNT as weekCount FROM t_term " +
 				"WHERE t_term.TERM_ID NOT IN " +
 				"(select t_term_private.TREM_ID FROM t_term_private " +
-				"WHERE t_term_private.USER_ID = ?)";
+				"WHERE t_term_private.USER_ID = ? and t_term_private.status = 1)";
 		List<Map> list=termDAO.findBySql(sql,userId);
 		if(null != list && list.size() > 0){
 			return list;
@@ -119,7 +119,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	public List<Map> getListTermPrivates(String userId) {
 		String hql="select tp.tpId as tpId,t.termName as termName,tp.startDate as startTime,"+
 	               "tp.endDate as endTime from TermPrivate tp,Term t where tp.termId=t.termId "+
-				   "and tp.userId=?";
+				   "and tp.userId=? and tp.status = 1";
 		List<Map> list = termDAO.findMap(hql, userId);
 		return list;
 	}
@@ -129,15 +129,15 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 	@Override
 	public Map getCurrentTerm(String userId) {
 		String now = DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD);
-		String hql = "select tp.tpId as termId,"
-				+ "t.termName as termName,"
-				+ "tp.startDate as startDate,"
+		String hql = "select tp.tpId as termId, "
+				+ "t.termName as termName, "
+				+ "tp.startDate as startDate, "
 				+ "tp.endDate as endDate "
 				+ "from TermPrivate tp ,Term t "
-				+ "where tp.termId=t.termId " 
+				+ "where tp.termId = t.termId and tp.status = 1 " 
 				+ "and tp.userId = ? "
 				+ "and ? >= tp.startDate "
-				+ "and ? <= tp.endDate order by tp.createTime desc";
+				+ "and ? <= tp.endDate order by tp.createTime desc ";
 		List<Map> list = termDAO.findMap(hql, userId, now, now);
 		if(list!=null&&list.size()>0){
 			return list.get(0);
@@ -160,7 +160,7 @@ public class TermServiceImpl extends BaseService<Term> implements ITermService {
 				+ "tp.startDate as startDate,"
 				+ "tp.endDate as endDate "
 				+ "from TermPrivate tp,Term t "
-				+ "where tp.termId = t.termId "
+				+ "where tp.termId = t.termId and tp.status = 1 "
 				+ "and tp.userId = ? "
 				+ "order by tp.startDate desc";
 		return termDAO.findMap(hql, userId);
