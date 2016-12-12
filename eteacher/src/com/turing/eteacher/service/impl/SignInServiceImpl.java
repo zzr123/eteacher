@@ -212,7 +212,7 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 					+ "from RegistConfig rc where rc.status = 0 and rc.userId = null ";
 			m = signInDAO.findMap(hql2);
 		}
-		if(null != m){
+		if(null != m && m.size() > 0){
 			return m.get(0);
 		}
 		return null;

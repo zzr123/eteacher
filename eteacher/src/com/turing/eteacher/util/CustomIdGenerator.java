@@ -62,6 +62,10 @@ public class CustomIdGenerator implements IdentifierGenerator, Configurable {
 			String uuid1 = CustomIdGenerator.generateShortUuid();
 			System.out.println(uuid1);
 		}
+		System.out.println(""+DateUtil.isOverlap2(DateUtil.getCurrentDateStr(DateUtil.YYYYMMDDHHMM), 
+				DateUtil.getCurrentDateStr(DateUtil.YYYYMMDDHHMM),
+				"2016-12-11", 
+				"2016-12-30"));
 //		String uuid2 = null;
 //		int i = 0;
 //		System.out.println(uuid1);

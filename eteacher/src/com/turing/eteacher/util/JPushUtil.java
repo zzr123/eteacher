@@ -1,12 +1,17 @@
 package com.turing.eteacher.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.jiguang.common.resp.APIConnectionException;
 import cn.jiguang.common.resp.APIRequestException;
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
+import cn.jpush.api.push.model.audience.AudienceTarget;
 import cn.jpush.api.push.model.notification.Notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,12 +55,47 @@ public class JPushUtil {
 	
 	public static void main(String[] args) {
 		PushMessage message = new PushMessage();
-		message.setAction(ACTION_ALERT);
-		message.setContent("消息内容！");
-		message.setTitle("消息标题！");
+		message.setAction(ACTION_HOMEWORK_DETAIL);
+		message.setContent("消息内容打发第三方了解阿斯蒂芬骄傲了打发斯蒂芬拉萨的房间里的撒！");
+		message.setTitle("消息标题发第三方了解阿斯蒂芬骄傲了打发斯蒂芬拉萨的房间里的撒！");
+		message.setSchoolId("4");
+		message.setClassId("p74GYIXJss");
 		message.setShow(SHOW_ON);
-		message.setUserType(PushMessage.UTYPE_ALL);
+		message.setUserType(PushMessage.UTYPE_STUDENT);
+		Map<String,String> map = new HashMap<>();
+		map.put("workId", "jUwJin0jmo");
+		message.setExtra(map);
 		pushMessage(message);
+		//testMessage();
+	}
+	
+	  public static PushPayload buildPushObject_ios_audienceMore_messageWithExtras() {
+	        return PushPayload.newBuilder()
+	                .setPlatform(Platform.android_ios())
+                    .setAudience(Audience.newBuilder()
+                    .addAudienceTarget(AudienceTarget.tag("p74GYIXJss"))
+                    .build())
+	                .setMessage(Message.newBuilder()
+	                        .setMsgContent("消息内容是打发斯蒂芬！")
+	                        .addExtra("from", "JPush")
+	                        .build())
+	                .build();
+	    }
+	
+	public static void testMessage(){
+		PushPayload payload = buildPushObject_ios_audienceMore_messageWithExtras();
+	    try {
+	        PushResult result = getStuClient().sendPush(payload);
+	        System.out.println("Got result - " + result);
+
+	    } catch (APIConnectionException e) {
+	    	System.out.println("Connection error, should retry later");
+
+	    } catch (APIRequestException e) {
+	        System.out.println("HTTP Status: " + e.getStatus());
+	        System.out.println("Error Code: " + e.getErrorCode());
+	        System.out.println("Error Message: " + e.getErrorMessage());
+	    }
 	}
 	
 	/**
@@ -104,7 +144,6 @@ public class JPushUtil {
 				System.out.println("message:"+new ObjectMapper().writeValueAsString(message));
 				return PushPayload.messageAll(new ObjectMapper().writeValueAsString(message));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
@@ -117,7 +156,7 @@ public class JPushUtil {
 	 * @return
 	 */
 	public static PushPayload buildPushObject_all_alert(String content) {
-		return PushPayload.alertAll(ALERT);
+		return PushPayload.alertAll(content);
 	}
 
 	/**

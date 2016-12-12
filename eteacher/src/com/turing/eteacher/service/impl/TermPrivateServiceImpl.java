@@ -92,6 +92,7 @@ public class TermPrivateServiceImpl extends BaseService<TermPrivate> implements 
 				"AND t.USER_ID = tt.TEACHER_ID "+
 				"AND t.STATUS = 1 "+
 				"AND DATE_ADD(t.END_DATE,INTERVAL 1 DAY)  > ? ";
+		System.out.println("sql:"+sql);
 		return termPrivateDAO.findBySql(sql, start,end);
 	}
 }

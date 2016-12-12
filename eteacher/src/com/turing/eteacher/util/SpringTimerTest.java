@@ -65,7 +65,7 @@ public class SpringTimerTest {
 	 * 
 	 * @author lifei
 	 */
-	@Scheduled(cron = "0 0/2 20,21 * * ?")
+	@Scheduled(cron = "0 0/20 22,23 * * ?")
 	// 每天凌晨触发//0 0 0 * * ?
 	public void test() {
 		System.out.println(new SimpleDateFormat("yyyy 年 MM 月 dd 日 HH 时 mm 分 ss 秒").format(new Date()));
@@ -126,7 +126,7 @@ public class SpringTimerTest {
 		List<TaskModel> tempList = new ArrayList<>();
 		List<Map> list = workServiceImpl.getDateLimitHomeWork(DateUtil
 				.getCurrentDateStr("yyyy-MM-dd HH:mm"), DateUtil.addDays(
-				DateUtil.getCurrentDateStr("yyyy-MM-dd HH:mm"), 1));
+						DateUtil.getCurrentDateStr("yyyy-MM-dd HH:mm"), 1));
 		if (null != list) {
 			for (int i = 0; i < list.size(); i++) {
 				TaskModel temp = new TaskModel();
@@ -137,6 +137,7 @@ public class SpringTimerTest {
 				tempList.add(temp);
 			}
 		}
+		System.out.println("作业提醒有："+tempList.size()+"条");
 		return tempList;
 	}
 	
@@ -148,17 +149,24 @@ public class SpringTimerTest {
 	private List<TaskModel> getCurrentDayCourseStartTime() {
 		String now = DateUtil.getCurrentDateStr(DateUtil.YYYYMMDDHHMM);
 		List<Map> list = termPrivateServiceImpl.getContainDateList(now, now);
+		//System.out.println("*与今天有交集的学期："+list.size());
 		List<TaskModel> result = new ArrayList<>(); 
 		for (int i = 0; i < list.size(); i++) {
 			Map term = list.get(i); 
+			//System.out.println("*有交集的学期Id:"+term.get("tpId"));
 			List<Map> list2 = courseServiceImpl.getCourseByTermId((String)term.get("tpId"));
 			if (null != list2) {
+				//System.out.println("*该学期下的课程数："+list2.size());
 				for (int j = 0; j < list2.size(); j++) {
 					Map map = list2.get(j);
+					//System.out.println("*课程类型："+map.get("repeatType"));
 					//天循环的课程
 					if (map.get("repeatType").equals("01")) {
-						//判断课程的开始结束时间是否与本月有交集
-						if (DateUtil.isOverlap(now, now, (String)map.get("startDay"), (String)map.get("endDay"))) {
+						//System.out.println("*有天循环的课程");
+						//判断课程的开始结束时间是否与今天有交集
+						//System.out.println("*课程的开始结束时间："+map.get("startDay")+ "   "+map.get("endDay"));
+						if (DateUtil.isOverlap2(now, now, (String)map.get("startDay"), (String)map.get("endDay"))) {
+							//System.out.println("*课程有重复因子");
 							//课程重复天数
 							int repeatNumber = (int)map.get("repeatNumber");
 							//该课程一共有多少天
@@ -169,10 +177,13 @@ public class SpringTimerTest {
 								//每次上课的具体日期
 								String date = DateUtil.addDays((String)map.get("startDay"), k*repeatNumber);
 								//判断是否上课时间在指定月份里
+								//System.out.println("*上课时间："+date);
 								if (date.equals(DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD))) {
+									//System.out.println("*今天有要上的课："+map.get("courseId"));
 									//获取课程的重复规律
 									List<CourseCell> list3 = courseCellServiceImpl.getCells((String)map.get("ciId"));
 									if (null != list3 && list3.size() > 0) {
+										//System.out.println("*courseCell的个数："+list3.size());
 										for (int l = 0; l < list3.size(); l++) {
 											//获取上课时间集合
 											String[] lessions = list3.get(l).getLessonNumber().split(",");
@@ -182,25 +193,29 @@ public class SpringTimerTest {
 												if (null != timeTable) {
 													int remind = Integer.parseInt(((String)map.get("remindTime")).trim());
 													String remindTime = DateUtil.deleteMinutes(DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD)+" "+timeTable.getStartTime(),remind);
-													
+													//System.out.println("*课程的提醒时间："+remindTime);
 													int regist = 10;
 													if (null != registMap) {
 														regist = (int)registMap.get("registTime");
 													}
 													String registTime = DateUtil.deleteMinutes(DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD)+" "+timeTable.getStartTime(),regist);
-													
-													TaskModel model = new TaskModel();
-													model.setDate(remindTime);
-													model.setId((String)map.get("courseId"));
-													model.setType(TaskModel.TYPE_COURSE_START_REMIND);
-													model.setUserType(TaskModel.UTYPE_TEACHER);
-													result.add(model);
-													TaskModel model1 = new TaskModel();
-													model1.setDate(registTime);
-													model1.setId((String)map.get("courseId"));
-													model1.setType(TaskModel.TYPE_SIGN_IN);
-													model1.setUserType(TaskModel.UTYPE_TEACHER);
-													result.add(model1);
+													//System.out.println("*课程的签到时间："+registTime);
+													if (DateUtil.isBefore(now,remindTime, DateUtil.YYYYMMDDHHMM)) {
+														TaskModel model = new TaskModel();
+														model.setDate(remindTime);
+														model.setId((String)map.get("courseId"));
+														model.setType(TaskModel.TYPE_COURSE_START_REMIND);
+														model.setUserType(TaskModel.UTYPE_TEACHER);
+														result.add(model);
+													}
+													if (DateUtil.isBefore(now,registTime, DateUtil.YYYYMMDDHHMM)) {
+														TaskModel model1 = new TaskModel();
+														model1.setDate(registTime);
+														model1.setId((String)map.get("courseId"));
+														model1.setType(TaskModel.TYPE_SIGN_IN);
+														model1.setUserType(TaskModel.UTYPE_TEACHER);
+														result.add(model1);
+													}
 												}
 											}
 										}
@@ -214,13 +229,15 @@ public class SpringTimerTest {
 						//获取周重复课程结束周的周一
 						String end = DateUtil.addSpecialWeeks((String)term.get("startDate"), ((int)map.get("endWeek"))-1);
 						//获取周重复课程结束周的周日
+						//System.out.println("*周重复的开始时间和结束时间："+start+"   "+end);
 						end = DateUtil.addDays(end, 6);
 						//是否如果学期在周日前结束 则课程结束日期为学期最后一天
 						if (DateUtil.isBefore((String)term.get("endDate"), end,DateUtil.YYYYMMDD)) {
 							end = (String)term.get("endDate");
 						}
 						//查看课程是否与指定的月份有交集
-						if (DateUtil.isOverlap(now, now, start, end)) {
+						if (DateUtil.isOverlap2(now, now, start, end)) {
+							//System.out.println("*周重复有交集的");
 							//获取课程的重复规律
 							List<CourseCell> list3 = courseCellServiceImpl.getCells((String)map.get("ciId"));
 							if (null != list3) {
@@ -255,18 +272,22 @@ public class SpringTimerTest {
 																	}
 																	String registTime = DateUtil.deleteMinutes(DateUtil.getCurrentDateStr(DateUtil.YYYYMMDD)+" "+timeTable.getStartTime(),regist);
 																	if (null != remindTime) {
-																		TaskModel model = new TaskModel();
-																		model.setDate(remindTime);
-																		model.setId((String)map.get("courseId"));
-																		model.setType(TaskModel.TYPE_COURSE_START_REMIND);
-																		model.setUserType(TaskModel.UTYPE_TEACHER);
-																		result.add(model);
-																		TaskModel model1 = new TaskModel();
-																		model1.setDate(registTime);
-																		model1.setId((String)map.get("courseId"));
-																		model1.setType(TaskModel.TYPE_SIGN_IN);
-																		model1.setUserType(TaskModel.UTYPE_TEACHER);
-																		result.add(model1);
+																		if (DateUtil.isBefore(now,remindTime, DateUtil.YYYYMMDDHHMM)) {
+																			TaskModel model = new TaskModel();
+																			model.setDate(remindTime);
+																			model.setId((String)map.get("courseId"));
+																			model.setType(TaskModel.TYPE_COURSE_START_REMIND);
+																			model.setUserType(TaskModel.UTYPE_TEACHER);
+																			result.add(model);
+																		}
+																		if (DateUtil.isBefore(now,registTime, DateUtil.YYYYMMDDHHMM)) {
+																			TaskModel model1 = new TaskModel();
+																			model1.setDate(registTime);
+																			model1.setId((String)map.get("courseId"));
+																			model1.setType(TaskModel.TYPE_SIGN_IN);
+																			model1.setUserType(TaskModel.UTYPE_TEACHER);
+																			result.add(model1);
+																		}
 																	}
 																}
 															}
@@ -283,6 +304,7 @@ public class SpringTimerTest {
 				}
 			}
 		}
+		System.out.println("上课提醒有："+result.size()+"条");
 		return result;
 	}
 
@@ -303,7 +325,6 @@ public class SpringTimerTest {
 			timer.schedule(new TimerTask() {
 				public void run() {
 					doPush(model);
-					System.out.println("执行推送");
 					timer();
 				}
 			}, i);
@@ -347,19 +368,19 @@ public class SpringTimerTest {
 			classIds = classIds.substring(0, classIds.length()-1);
 		}
 		PushMessage message = new PushMessage();
-		message.setAction(JPushUtil.ACTION_ALERT);
+		message.setAction(JPushUtil.ACTION_NOTICE_DETAIL);
 		message.setTitle(notice.getTitle());
 		message.setContent(notice.getContent());
 		message.setShow(JPushUtil.SHOW_ON);
 		message.setUserType(model.getUserType());
 		message.setSchoolId(schoolId);
 		message.setClassId(classIds);
-		System.out.println("message:"+message.toString());
 		Map<String, String> map = new HashMap();
 		map.put("noticeId", model.getId());
 		map.put("flag", "1");
 		message.setExtra(map);
 		JPushUtil.pushMessage(message);
+		System.out.println("message:"+message.toString());
 		System.out.println("执行推送啦");
 	}
 	/**
@@ -378,19 +399,18 @@ public class SpringTimerTest {
 			classIds = classIds.substring(0, classIds.length()-1);
 		}
 		PushMessage message = new PushMessage();
-		message.setAction(JPushUtil.ACTION_ALERT);
+		message.setAction(JPushUtil.ACTION_HOMEWORK_DETAIL);
 		message.setTitle("有新作业啦！");
 		message.setContent(work.getContent());
 		message.setShow(JPushUtil.SHOW_ON);
 		message.setUserType(model.getUserType());
 		message.setSchoolId(schoolId);
 		message.setClassId(classIds);
-		System.out.println("message:"+message.toString());
 		Map<String, String> map = new HashMap();
-		map.put("noticeId", model.getId());
-		map.put("flag", "1");
+		map.put("workId", model.getId());
 		message.setExtra(map);
 		JPushUtil.pushMessage(message);
+		System.out.println("message:"+message.toString());
 		System.out.println("执行推送啦");
 	}
 	
@@ -419,12 +439,8 @@ public class SpringTimerTest {
 		}
 		message.setClassId(classIds);
 		message.setUserType(model.getUserType());
-		System.out.println("message:"+message.toString());
-		Map<String, String> map1 = new HashMap();
-		map.put("noticeId", model.getId());
-		map.put("flag", "1");
-		message.setExtra(map1);
 		JPushUtil.pushMessage(message);
+		System.out.println("message:"+message.toString());
 		System.out.println("执行推送啦");
 	}
 	/**
@@ -453,12 +469,8 @@ public class SpringTimerTest {
 		}
 		message.setClassId(classIds);
 		message.setUserType(model.getUserType());
-		System.out.println("message:"+message.toString());
-		Map<String, String> map1 = new HashMap();
-		map.put("noticeId", model.getId());
-		map.put("flag", "1");
-		message.setExtra(map1);
 		JPushUtil.pushMessage(message);
+		System.out.println("message:"+message.toString());
 		System.out.println("执行推送啦");
 	}
 }

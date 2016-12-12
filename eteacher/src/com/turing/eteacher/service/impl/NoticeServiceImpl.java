@@ -15,8 +15,8 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.NoticeDAO;
 import com.turing.eteacher.model.Log;
 import com.turing.eteacher.model.Notice;
+import com.turing.eteacher.service.ILogService;
 import com.turing.eteacher.service.INoticeService;
-import com.turing.eteacher.service.IStatisticService;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -30,7 +30,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	private IWorkCourseService workCourseServiceImpl;
 	
 	@Autowired
-	private IStatisticService statisticServiceImpl;
+	private ILogService logServiceImpl;
 	
 	@Override
 	public BaseDAO<Notice> getDAO() {
@@ -104,7 +104,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 				for (int i = 0; i < list.size(); i++) {
 					int all = workCourseServiceImpl.getStudentCountByWId((String)list.get(i).get("noticeId"));
 					list.get(i).put("all", all);
-					int statistics = statisticServiceImpl.getCountByTargetId((String)list.get(i).get("noticeId"));
+					int statistics = logServiceImpl.getCountByTargetId((String)list.get(i).get("noticeId"));
 					list.get(i).put("statistics", statistics);
 				}
 			}
@@ -139,7 +139,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 		List<Map> list=noticeDAO.findMap(hql, noticeId);
 		if (null != list && list.size() > 0) {
 			detail = list.get(0);
-			detail.put("statistics", statisticServiceImpl.getCountByTargetId(noticeId));
+			detail.put("statistics", logServiceImpl.getCountByTargetId(noticeId));
 			detail.put("all", workCourseServiceImpl.getStudentCountByWId(noticeId));
 			detail.put("courses", workCourseServiceImpl.getCoursesByWId(noticeId));
 		}
@@ -153,7 +153,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 		switch (type) {
 		case 1:
 			sql += "FROM t_student stu WHERE stu.STU_ID IN ( "+
-					"SELECT sta.USER_ID FROM t_statistic sta WHERE sta.TARGET_ID = ?)";
+					"SELECT sta.STU_ID FROM t_log sta WHERE sta.NOTICE_ID = ?)";
 			params.add(noticeId);
 			break;
 		default:
@@ -161,7 +161,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 					"SELECT DISTINCT  cc.CLASS_ID FROM t_course_class cc WHERE cc.COURSE_ID IN ( "+
 					"SELECT DISTINCT wc.COURSE_ID FROM t_work_course wc WHERE wc.WORK_ID = ?)) "+
 					"AND "+
-					"stu.STU_ID NOT IN (SELECT sta.USER_ID FROM t_statistic sta WHERE sta.TARGET_ID = ?)";
+					"stu.STU_ID NOT IN (SELECT sta.STU_ID FROM t_log sta WHERE sta.NOTICE_ID = ?)";
 			params.add(noticeId);
 			params.add(noticeId);
 			break;

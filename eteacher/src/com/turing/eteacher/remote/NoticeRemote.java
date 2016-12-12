@@ -19,9 +19,7 @@ import com.turing.eteacher.component.ReturnBody;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.model.WorkCourse;
-import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.INoticeService;
-import com.turing.eteacher.service.IStatisticService;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.util.StringUtil;
 
@@ -42,20 +40,6 @@ public class NoticeRemote extends BaseRemote {
 	 * @param request
 	 * @return
 	 */
-	// {
-	// result : 'success',//成功success，失败failure
-	// data : [
-	// {
-	// noticeId : '通知ID'
-	// title : '通知标题',
-	// content : '通知内容',
-	// status : '状态',
-	// publishTime : '发布时间',
-	// noticeObject : '通知对象'
-	// }
-	// ],
-	// msg : '提示信息XXX'
-	// }
 	@RequestMapping(value = "teacher/notices", method = RequestMethod.GET)
 	public ReturnBody teacherNotices(HttpServletRequest request) {
 		try {
@@ -246,18 +230,6 @@ public class NoticeRemote extends BaseRemote {
 	 * @author macong
 	 * @param status   "01":未读通知         "02":已读通知
 	 */
-//	{
-//	    "result": 200,
-//	    "data": [
-//	        {
-//	            "noticeId": "ziYBK3ka",
-//	            "title": "放假通知",
-//	            "content": "关于2016年寒假放假通知",
-//	            "author": "于铁忠",
-//	            "publishTime": "2016-12-28"
-//	        }
-//	    ]
-//	}
 	@RequestMapping(value = "student/getNoticeList", method = RequestMethod.POST)
 	public ReturnBody getNoticeList_student(HttpServletRequest request) {
 		String userId = getCurrentUserId(request);

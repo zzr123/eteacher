@@ -201,7 +201,6 @@ public class DateUtil {
 				if (week <= weekNum) {
 					distance = weekNum - week;
 				} else {
-					System.out.println("已过期");
 					return null;
 				}
 			}
@@ -210,7 +209,6 @@ public class DateUtil {
 			}else {
 				calendar.add(Calendar.DATE, (7 - week) + (weekCount - 1) * 7 + weekNum);
 			}
-			System.out.println(ft.format(calendar.getTime()));
 			return ft.format(calendar.getTime());
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -241,7 +239,6 @@ public class DateUtil {
 				week = 7;
 			}
 			calendar.add(Calendar.DATE, (7 - week) + 1 + (weeks - 1) * 7);
-			System.out.println(format.format(calendar.getTime()));
 			return format.format(calendar.getTime());
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -331,6 +328,8 @@ public class DateUtil {
 	public static boolean isOverlap(String startdate1, String enddate1,
 			String startdate2, String enddate2) {
 		SimpleDateFormat format = new SimpleDateFormat(YYYYMMDD);
+		System.out.println("startdate1"+startdate1+"enddate1"
+		+enddate1+"startdate2"+startdate2+"enddate2"+enddate2);
 		Date start1 = null;
 		Date end1 = null;
 		Date start2 = null;
@@ -340,6 +339,34 @@ public class DateUtil {
 			end1 = format.parse(enddate1);
 			start2 = format.parse(startdate2);
 			end2 = format.parse(enddate2);
+		} catch (ParseException e) {
+			System.out.println("assss");
+			
+			return false;
+		}
+		if (end1.getTime() <= start2.getTime()) {
+		}
+		if (end2.getTime() < start1.getTime()) {
+			System.out.println("end2"+end2.getTime());
+			System.out.println("start1");
+			System.out.println("asssdfdss");
+		}
+		return !(((end1.getTime() <= start2.getTime()) || end2.getTime() < start1
+				.getTime()));
+	}
+	public static boolean isOverlap2(String startdate1, String enddate1,
+			String startdate2, String enddate2) {
+		SimpleDateFormat format1 = new SimpleDateFormat(YYYYMMDDHHMM);
+		SimpleDateFormat format2 = new SimpleDateFormat(YYYYMMDD);
+		Date start1 = null;
+		Date end1 = null;
+		Date start2 = null;
+		Date end2 = null;
+		try {
+			start1 = format1.parse(startdate1);
+			end1 = format1.parse(enddate1);
+			start2 = format2.parse(startdate2);
+			end2 = format2.parse(enddate2);
 		} catch (ParseException e) {
 			return false;
 		}
@@ -408,15 +435,12 @@ public class DateUtil {
 			if (week == 0) {
 				week = 7;
 			}
-			System.out.println("当前：" + week);
 			before.add(Calendar.DATE, -week);
 			week = after.get(Calendar.DAY_OF_WEEK) - 1;
 			if (week == 0) {
 				week = 7;
 			}
 			after.add(Calendar.DATE, 7 - week);
-			System.out.println("before：" + sdf.format(before.getTime()));
-			System.out.println("after:" + sdf.format(after.getTime()));
 			return (int) ((after.getTimeInMillis() - before.getTimeInMillis()) / CONST_WEEK);
 		} catch (ParseException e) {
 			e.printStackTrace();
