@@ -26,9 +26,11 @@ import com.turing.eteacher.service.ICourseCellService;
 import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.INoticeService;
 import com.turing.eteacher.service.IRegistConfigService;
+import com.turing.eteacher.service.ISignInService;
 import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.ITimeTableService;
 import com.turing.eteacher.service.IWorkService;
+import com.turing.eteacher.service.impl.SignInServiceImpl;
 
 /**
  * Spring定时器
@@ -57,6 +59,9 @@ public class SpringTimerTest {
 	
 	@Autowired
 	private IRegistConfigService registConfigServiceImpl;
+	
+	@Autowired
+	private ISignInService signInServiceImpl;
 	
 	private List<TaskModel> allList = new ArrayList<>();
 
@@ -472,5 +477,7 @@ public class SpringTimerTest {
 		JPushUtil.pushMessage(message);
 		System.out.println("message:"+message.toString());
 		System.out.println("执行推送啦");
+		//课程上课次数+1
+		signInServiceImpl.updateCourseNum(course.getCourseId());
 	}
 }

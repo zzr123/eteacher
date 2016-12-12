@@ -72,11 +72,9 @@ public class WorkRemote extends BaseRemote {
 	@RequestMapping(value = "student/works", method = RequestMethod.POST)
 	public ReturnBody studentWorks(HttpServletRequest request) {
 		
-		String stuId = getCurrentUser(request) == null ? null : getCurrentUser(request).getUserId();
+		String stuId = getCurrentUser(request).getUserId();
 		String status = request.getParameter("status");
 		String page = (String)request.getParameter("page");
-
-		System.out.println("   stuId:" + stuId +"status:" + status + "  page:" + page );
 		if (StringUtil.checkParams(stuId,status, page)) {
 			try {
 				List list = workServiceImpl.getListByStuId(stuId, status,Integer.parseInt(page));

@@ -45,9 +45,7 @@ import com.turing.eteacher.service.ICourseService;
 import com.turing.eteacher.service.ICustomFileService;
 import com.turing.eteacher.service.IMajorService;
 import com.turing.eteacher.service.ISignInService;
-import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.ITextbookService;
-import com.turing.eteacher.service.ITimeTableService;
 import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
@@ -84,14 +82,6 @@ public class CourseRemote extends BaseRemote {
 	@Autowired
 	private ICustomFileService customFileServiceImpl;
 
-	@Autowired
-	private ITermPrivateService termPrivateServiceImpl;
-	
-	@Autowired
-	private ICourseCellService courseCellServiceImpl;
-	
-	@Autowired
-	private ITimeTableService timeTableServiceImpl;
 
 	/**
 	 * 学生端功能：获取用户特定日期的课程列表

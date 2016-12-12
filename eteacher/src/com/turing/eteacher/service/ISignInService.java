@@ -49,5 +49,10 @@ public interface ISignInService extends IService<SignIn> {
 	 * 时间：2016年12月2日09:56:29
 	 */
 	public Map getSignSetting(String teacherId);
-
+	/**
+	 * 教师端接口：更新课程的上课次数（课程的上课次数+1）
+	 * @author macong
+	 * @param  courseId
+	 */
+	public void updateCourseNum(String courseId);
 }

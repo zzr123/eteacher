@@ -127,7 +127,8 @@ public class NoticeRemote extends BaseRemote {
 	}
 
 	/**
-	 * 1.2.30	查看通知的已读/未读人员列表
+	 * 1.2.30 查看通知的已读/未读人员列表
+	 * 
 	 * @param request
 	 * @param notice_id
 	 * @return
@@ -137,19 +138,19 @@ public class NoticeRemote extends BaseRemote {
 		String noticeId = request.getParameter("noticeId");
 		String page = request.getParameter("page");
 		String type = request.getParameter("type");
-		if(StringUtil.checkParams(noticeId,page,type)){
+		if (StringUtil.checkParams(noticeId, page, type)) {
 			try {
-				List list = noticeServiceImpl.getNoticeReadList(noticeId,Integer.parseInt(type),Integer.parseInt(page));
+				List list = noticeServiceImpl.getNoticeReadList(noticeId, Integer.parseInt(type),
+						Integer.parseInt(page));
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new ReturnBody(ReturnBody.RESULT_FAILURE,
-						ReturnBody.ERROR_MSG);
+				return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
 			}
-		}else{
+		} else {
 			return ReturnBody.getParamError();
 		}
-	
+
 	}
 
 	/**

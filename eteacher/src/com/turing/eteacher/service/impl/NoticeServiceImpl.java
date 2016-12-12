@@ -109,8 +109,19 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 				}
 			}
 		}
-		System.out.println("list.size():"+list.size());
-		return list;
+		if(null != list && list.size() > 0){
+			//查询通知是否有附件
+			for (int i = 0; i < list.size(); i++) {
+				String l = "select f.fileId as fileId, f.fileName as fileName "
+						+ "from CustomFile f where f.dataId = ?";
+				List<Map> lm = noticeDAO.find(l, list.get(i).get("noticeId"));
+				if(null != lm && lm.size() > 0){
+					list.get(i).put("fileIds", lm);
+				}
+			}
+			return list;
+		}
+		return null;
 	}
 	//通知状态的修改
 	@Override
@@ -215,6 +226,15 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 			list = noticeDAO.findMapByPage(hql2, page*10, 10,userId,preDays,currentDay,userId);
 		}
 		if(null != list && list.size() > 0){
+			//查询通知是否有附件
+			for (int i = 0; i < list.size(); i++) {
+				String l = "select f.fileId as fileId, f.fileName as fileName "
+						+ "from CustomFile f where f.dataId = ?";
+				List<Map> lm = noticeDAO.find(l, list.get(i).get("noticeId"));
+				if(null != lm && lm.size() > 0){
+					list.get(i).put("fileIds", lm);
+				}
+			}
 			return list;
 		}
 		return null;

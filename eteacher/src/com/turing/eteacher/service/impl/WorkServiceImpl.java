@@ -73,7 +73,6 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				"(select w.WORK_ID from t_status ss,t_work w,t_student s where ss.WORK_ID = w.WORK_ID and ss.STU_ID = s.STU_ID) " +
 				"order by w.PUBLISH_TIME desc";
 			list = workDAO.findBySqlAndPage(hql,page*20, 20, stuId);
-			System.out.println("list.size():"+list.size());
 		}
 		if("1".equals(status)){//获取已完成作业列表
 			hql="select distinct w.workId as workId,c.courseName as courseName, " +
@@ -85,7 +84,6 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				"and w.status = 1 and w.publishTime <= now() " +
 				"and s.stuId = ? order by w.publishTime desc" ;
 			list = workDAO.findMapByPage(hql,page*20, 20, stuId);
-			System.out.println("0000list.size():"+list.size());
 		}
 		if("2".equals(status)){//获取所有作业列表
 			hql="select distinct w.workId as workId,c.courseName as courseName," +
@@ -97,16 +95,19 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				"and s.stuId = ? order by w.publishTime desc";
 			 list = workDAO.findMapByPage(hql,page*20, 20, stuId);
 		}
-		
-		/*List<Map> datas = null;
-		List result = new ArrayList();
-		Map record = null;
-		for(Map data : datas){
-			if(record==null||!data.get("workId").equals(record.get("workId"))){
-				record = 
+		if(null != list && list.size() > 0){
+			//查询作业是否有附件
+			for (int i = 0; i < list.size(); i++) {
+				String l = "select f.fileId as fileId, f.fileName as fileName "
+						+ "from CustomFile f where f.dataId = ?";
+				List<Map> lm = workDAO.find(l, list.get(i).get("workId"));
+				if(null != lm && lm.size() > 0){
+					list.get(i).put("fileIds", lm);
+				}
 			}
-		}*/
-		return list;
+			return list;
+		}
+		return null;
 	}
 	/**
 	 * 学生端查看作业详情
@@ -227,53 +228,16 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 				}
 			}
 		}
-		
-		
-//		if (null != list && list.size() > 0) {
-//			for (int i = 0; i < list.size(); i++) {
-//				String sql2 = "SELECT w.WORK_ID AS workId  FROM t_work w WHERE w.WORK_ID IN (SELECT wc.WORK_ID FROM t_work_course wc WHERE wc.COURSE_ID = ?)";
-//				List<Map> list2 = workDAO.findBySql(sql2,list.get(i).get("courseId"));
-//				if (null != list2 && list2.size() > 0) {
-//					String courseName = "(";
-//					for (int j = 0; j < list2.size(); j++) {
-//						courseName += list2.get(j).get("courseName") + ",";
-//					}
-//					courseName = courseName.substring(0, courseName.length() - 1);
-//					courseName += ")";
-//					System.out.println("6666666666:"+courseName);
-//					list.get(i).put("courseName", list.get(i).get("courseName")+courseName);
-//				}	
-//			}
-//		}
-//		
-//		List<Map> datas = null;
-//		List result = new ArrayList();
-//		Map record = null;
-//		for(Map data : list){
-//			if(record==null||!data.get("workId").equals(record.get("workId"))){
-//				record =(Map) workDAO.findMapByPage(hql, page*20, 20, userId).get(0); 
-//		
-//			//课程ID（可能会有多个），根据课程查询出课程名称
-//			String ci = "SELECT t_course.COURSE_ID AS courseId, t_course.COURSE_NAME AS courseName "
-//					+ "from t_work LEFT JOIN t_work_course ON t_work.WORK_ID=t_work_course.WORK_ID "
-//					+ "LEFT JOIN t_course ON t_course.COURSE_ID = t_work_course.COURSE_ID "
-//					+ "WHERE t_course.USER_ID = ?";
-//			List<Map> clist = workDAO.findBySql(ci, userId);
-//			String courseName = "";
-//			String courseIds= "[";
-//			for(int i=0;i<clist.size();i++){
-//				courseIds += "\""+clist.get(i).get("courseId")+"\",";
-//			}
-//			String c = courseIds.substring(0, courseIds.length()-1);
-//			c = c+"]";
-//			System.out.println("courseIds==="+c);
-//			
-//			record.put("courseName", courseName);
-//			record.put("courseIds", c);
-//		}
-//		}
-//	
 		if(null != list && list.size()>0){
+			//判断作业是否存在附件
+			for (int i = 0; i < list.size(); i++) {
+				String l = "select f.fileId as fileId, f.fileName as fileName "
+						+ "from CustomFile f where f.dataId = ?";
+				List<Map> lm = workDAO.find(l, list.get(i).get("workId"));
+				if(null != lm && lm.size() > 0){
+					list.get(i).put("fileIds", lm);
+				}
+			}
 			return list;
 		}else{
 			return null;

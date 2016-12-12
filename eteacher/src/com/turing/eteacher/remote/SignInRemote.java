@@ -146,9 +146,9 @@ public class SignInRemote extends BaseRemote{
 	@RequestMapping(value="signIn/getDefaultSignSetting",method=RequestMethod.POST)
 	public ReturnBody getDefaultSignSetting(HttpServletRequest request){
 		try{
-			String configId = request.getParameter("configId");
-			if(StringUtil.checkParams(configId)){
-				registConfigServiceImpl.deleteById(configId);
+			String userId = getCurrentUserId(request);
+			if(StringUtil.checkParams(userId)){
+				registConfigServiceImpl.deleteByUserId(userId);
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS,null);
 			}
 		}

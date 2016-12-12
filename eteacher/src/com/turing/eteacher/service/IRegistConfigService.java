@@ -21,4 +21,9 @@ public interface IRegistConfigService extends IService<RegistConfig> {
 	 * 通过CourseId 获取该课程的上课签到时间
 	 */
 	public Map getRegistTimeByCourseId(String courseId);
+	/**
+	 * 恢复系统默认设置
+	 * @param userId
+	 */
+	public void deleteByUserId(String userId);
 }

@@ -1,6 +1,7 @@
 package com.turing.eteacher.service.impl;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.SignInDAO;
 import com.turing.eteacher.model.SignIn;
 import com.turing.eteacher.service.ISignInService;
+import com.turing.eteacher.util.CustomIdGenerator;
 import com.turing.eteacher.util.DateUtil;
 import com.turing.eteacher.util.StringUtil;
 
@@ -172,7 +174,7 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 		List<Map> cl = null;
 		String now = DateUtil.getCurrentDateStr("yyyy-MM-dd");
 		//根据学生ID，查询该用户本学期的课程列表
-		String hql = "select cc.courseId as courseId, "
+		String hql = "select distinct cc.courseId as courseId, "
 				+ "c.courseName as courseName, s.stuName as studentName , tp.tpId as termId "
 				+ "from Course c, CourseClasses cc, Student s, TermPrivate tp "
 				+ "where cc.courseId = c.courseId and cc.classId = s.classId "
@@ -184,10 +186,22 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 			//根据courseID和studentID，获取课程的已签到次数
 			String hql2 = "select count(si.courseId) as NUM from SignIn si "
 					+ "where si.courseId = ? and si.studentId = ? and si.status = 1";
+			String hql3 = "select si.courseNum as courseNum from SignIn si "
+					+ "where si.courseId = ? and si.status = 0 and si.studentId = null";
 			for (int i = 0; i < cl.size(); i++) {
-				Map m = signInDAO.findMap(hql2, (String)cl.get(i).get("courseId"),studentId).get(0);
-				System.out.println("678000:" + m.get("NUM"));
-				cl.get(i).put("signInNum", m.get("NUM"));
+				List<Map> m = signInDAO.findMap(hql2, (String)cl.get(i).get("courseId"),studentId);
+				if(null != m && m.size() > 0){
+					cl.get(i).put("signInNum", m.get(0).get("NUM"));
+				}else{
+					cl.get(i).put("signInNum", 0);
+				}
+				List<Map> c = signInDAO.findMap(hql3, (String)cl.get(i).get("courseId"));
+				if(null != c && c.size() > 0){
+					cl.get(i).put("courseNum", c.get(0).get("courseNum"));
+				}else{
+					cl.get(i).put("courseNum", 0);
+				}
+				
 			}
 			return cl;
 		}
@@ -216,5 +230,29 @@ public class SignInServiceImpl extends BaseService<SignIn> implements ISignInSer
 			return m.get(0);
 		}
 		return null;
+	}
+	
+	/**
+	 * 教师端接口：更新课程的上课次数（课程的上课次数+1）
+	 * @author macong
+	 * @param  courseId
+	 */
+	@Override
+	public void updateCourseNum(String courseId) {
+		String sql = "SELECT si.COURSE_ID as id FROM t_sign_in si "
+				+ "WHERE si.`STATUS` = 0 AND si.COURSE_ID = ? ";
+		List<Map> result = signInDAO.findBySql(sql, courseId);
+		if(null == result || result.size() == 0){
+			//1.该课程第一次进行（向数据表插入数据）
+			String sql2 = "INSERT INTO t_sign_in (SIGN_ID, COURSE_ID,STATUS) "
+					+ "VALUES (?,?,0)";
+			String signId = CustomIdGenerator.generateShortUuid();
+			signInDAO.executeBySql(sql2, signId,courseId);
+		}else{
+			//2.该课程非第一次进行（课程的上课次数+1）
+			String hql3 = "update SignIn s set s.courseNum = s.courseNum + 1 "
+					+ "where s.courseId = ? and s.status = 0 ";
+			signInDAO.executeHql(hql3, courseId);
+		}
 	}
 }

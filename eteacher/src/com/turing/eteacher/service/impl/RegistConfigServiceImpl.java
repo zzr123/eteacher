@@ -47,5 +47,10 @@ public class RegistConfigServiceImpl extends BaseService<RegistConfig>  implemen
 		}
 		return null;
 	}
+	@Override
+	public void deleteByUserId(String userId) {
+		String hql = "delete from RegistConfig rc where rc.userId = ?";
+		registConfigDAO.executeHql(hql, userId);
+	}
 
 }
