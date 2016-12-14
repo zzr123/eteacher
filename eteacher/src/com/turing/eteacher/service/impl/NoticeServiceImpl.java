@@ -15,6 +15,7 @@ import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.NoticeDAO;
 import com.turing.eteacher.model.Log;
 import com.turing.eteacher.model.Notice;
+import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.ILogService;
 import com.turing.eteacher.service.INoticeService;
 import com.turing.eteacher.service.IWorkCourseService;
@@ -31,6 +32,9 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	
 	@Autowired
 	private ILogService logServiceImpl;
+	
+	@Autowired
+	private IFileService fileServiceImpl;
 	
 	@Override
 	public BaseDAO<Notice> getDAO() {
@@ -139,7 +143,7 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	}
 	//查看通知详情
 	@Override
-	public Map getNoticeDetail(String noticeId) {
+	public Map getNoticeDetail(String noticeId,String url) {
 		Map detail = null;
 		String hql="select n.noticeId as noticeId ," +
 				   "n.title as title," +
@@ -152,7 +156,14 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 			detail = list.get(0);
 			detail.put("statistics", logServiceImpl.getCountByTargetId(noticeId));
 			detail.put("all", workCourseServiceImpl.getStudentCountByWId(noticeId));
-			detail.put("courses", workCourseServiceImpl.getCoursesByWId(noticeId));
+			List courseList = workCourseServiceImpl.getCoursesByWId(noticeId);
+			if (null != courseList && courseList.size() > 0) {
+				detail.put("courses", courseList);
+			}
+			List fileList = fileServiceImpl.getFileList(noticeId, url);
+			if (null != fileList && fileList.size() > 0) {
+				detail.put("files", fileList);
+			}
 		}
 		return detail;
 	}
@@ -246,14 +257,18 @@ public class NoticeServiceImpl extends BaseService<Notice> implements INoticeSer
 	 * @return
 	 */
 	@Override
-	public Map getNoticeDetail_student(String noticeId,int flag) {
-		// TODO Auto-generated method stub
+	public Map getNoticeDetail_student(String noticeId,int flag,String url) {
 		String hql = "select n.noticeId as noticeId, n.title as title, "
 				+ "n.content as content,n.publishTime as publishTime, t.name as author "
 				+ "from Notice n,Teacher t where n.userId = t.teacherId and n.noticeId = ? ";
-		Map m = noticeDAO.findMap(hql, noticeId).get(0);
-		if(null != m){
-			return m;
+		List<Map> list = noticeDAO.findMap(hql, noticeId);
+		if (null != list && list.size() > 0) {
+			Map detail = list.get(0);
+			List fileList = fileServiceImpl.getFileList(noticeId, url);
+			if (null != fileList && fileList.size() > 0) {
+				detail.put("files", fileList);
+			}
+			return detail;
 		}
 		return null;
 	}

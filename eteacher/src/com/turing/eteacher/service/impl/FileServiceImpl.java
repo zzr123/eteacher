@@ -25,18 +25,17 @@ public class FileServiceImpl extends BaseService<CustomFile> implements IFileSer
 	}
 
 	@Override
-	public List<CustomFile> getListByDataId(String dataId) {
-		String hql = "from CustomFile where dataId = ? order by createTime";
-		List<CustomFile> list = fileDAO.find(hql, dataId);
-		return list;
-	}
-
-	@Override
-	public List<Map> getNoteFileList(String noteId) {
+	public List<Map> getFileList(String noteId,String url) {
 		String sql = "SELECT tf.File_ID AS fileId, "+
 					"tf.FILE_NAME AS fileName, "+
-					"tf.SERVER_NAME AS serverName FROM t_file tf WHERE tf.DATA_ID = ?";
-		return fileDAO.findBySql(sql, noteId);
+					"CONCAT( ? ,tf.SERVER_NAME) AS serverName, "+ 
+					"tf.`DATA_ID` AS dataId, "+ 
+					"tf.`IS_COURSE_FILE` AS isCourseFile, "+
+					"tf.`VOCABULARY_ID` AS vocabularyId, "+
+					"tf.`FILE_AUTH` AS fileAuth "+ 
+					"FROM t_file tf "+ 
+					"WHERE tf.DATA_ID = ?";
+		return fileDAO.findBySql(sql, url, noteId);
 	}
 
 	@Override

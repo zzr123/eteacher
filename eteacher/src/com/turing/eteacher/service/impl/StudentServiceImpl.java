@@ -88,7 +88,7 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 	 *  classId : '班级Id' , className : '班级名称',
 	 */
 	@Override
-	public Map getUserInfo(String userId) {
+	public Map getUserInfo(String userId,String url) {
 		Map<String ,String> map = new HashMap(); 
 		Student student = studentDAO.get(userId);
 		if (null != student) {
@@ -98,6 +98,8 @@ public class StudentServiceImpl extends BaseService<Student> implements IStudent
 			map.put("schoolId", student.getSchoolId());
 			map.put("faculty", student.getFaculty());
 			map.put("classId", student.getClassId());
+			//FIXME 
+			map.put("icon", url+student.getPicture());
 			if (StringUtil.isNotEmpty(student.getClassId())) {
 				Classes classes = classDAO.get(student.getClassId());
 				if (null != classes) {

@@ -1,5 +1,7 @@
 package com.turing.eteacher.remote;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,25 +9,30 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
-import com.turing.eteacher.model.Course;
+import com.turing.eteacher.dao.TeacherDAO;
 import com.turing.eteacher.model.CourseCell;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Teacher;
 import com.turing.eteacher.model.TermPrivate;
 import com.turing.eteacher.model.UserCommunication;
 import com.turing.eteacher.service.ICourseCellService;
 import com.turing.eteacher.service.ICourseService;
+import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.ITeacherService;
 import com.turing.eteacher.service.ITermPrivateService;
 import com.turing.eteacher.service.IUserCommunicationService;
 import com.turing.eteacher.util.DateUtil;
+import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
 @RestController
@@ -46,6 +53,9 @@ public class TeacherRemote extends BaseRemote {
 	
 	@Autowired
 	private ICourseCellService courseCellServiceImpl;
+	
+	@Autowired
+	private IFileService fileServiceImpl;
 	/**
 	 * 学生端功能：获取某门课程的授课教师的信息 
 	 * 
@@ -114,32 +124,12 @@ public class TeacherRemote extends BaseRemote {
 	 * @author macong
 	 * @return
 	 */
-	// {
-	// result : 'success',//成功success，失败failure
-//	 data : {
-//	 name : '姓名',
-//	 teacherNO : '教工号',
-//	 sex : '性别',
-//	 titleName : '职称',
-//	 postName : '职务',
-//	 schoolId : '学校Id',
-//	 schoolName : '学校名称',
-//	 department : '院系',
-//	 introduction : '教师简介'
-//	 },
-	// msg : '提示信息XXX'
-	// }
 	@RequestMapping(value = "teacher/personInfo", method = RequestMethod.POST)
 	public ReturnBody getPersonInfo(HttpServletRequest request) {
 		try {
 			String userId = null;
-			/*if(null != request.getParameter("teacherId")){
-				userId = request.getParameter("teacherId");//学生端查看教师信息
-			}else{
-				userId = request.getParameter("userId");//教师端
-			}*/
 			userId = request.getParameter("teacherId") != null?request.getParameter("teacherId"):request.getParameter("userId");
-			Map teacherInfo = teacherServiceImpl.getUserInfo(userId);
+			Map teacherInfo = teacherServiceImpl.getUserInfo(userId,FileUtil.getUploadPath(),FileUtil.getRequestUrl(request));
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, teacherInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -154,33 +144,48 @@ public class TeacherRemote extends BaseRemote {
 	 * @author macong
 	 * @return
 	 */
-	// {
-	// result : 'success',//成功success，失败failure
-	// data : {
-	// name : '姓名',
-	// teacherNO : '教工号',
-	// sex : '性别',
-	// titleName : '职称',
-	// postName : '职务',
-	// schoolId : '学校Id',
-	// schoolName : '学校名称',
-	// department : '院系',
-	// introduction : '教师简介'
-	// },
-	// msg : '提示信息XXX'
-	// }
 	@RequestMapping(value = "teacher/editPersonInfo", method = RequestMethod.POST)
-	public ReturnBody editPersonInfo(HttpServletRequest request, Teacher teacher) {
+	public ReturnBody editPersonInfo(HttpServletRequest request) {
 		try {
-			String userId = request.getParameter("userId");
-			teacher.setTeacherId(userId);
-			// Teacher t = teacherServiceImpl.get(userId);
-			// if(!t.equals(teacher)){
-			System.out.println(teacher);
-			teacherServiceImpl.saveOrUpdate(teacher);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, "true");
-			// }
-			// return new ReturnBody(ReturnBody.RESULT_SUCCESS,"");
+			String name = request.getParameter("name");
+			String teacherNo = request.getParameter("teacherNo");
+			String sex = request.getParameter("sex");
+			String titleId = request.getParameter("titleId");
+			String postId = request.getParameter("postId");
+			String schoolId = request.getParameter("schoolId");
+			String introduction = request.getParameter("introduction");
+			if (StringUtil.checkParams(name,teacherNo,schoolId)) {
+				Teacher teacher = getCurrentTeacher(request);
+				teacher.setName(name);
+				teacher.setTeacherNo(teacherNo);
+				teacher.setSex(sex);
+				teacher.setTitleId(titleId);
+				teacher.setPostId(postId);
+				teacher.setSchoolId(schoolId);
+				teacher.setIntroduction(introduction);
+				if (request instanceof MultipartRequest) {
+					MultipartRequest multipartRequest = (MultipartRequest)request;
+					MultipartFile file = multipartRequest.getFile("icon");
+					if (!file.isEmpty()) {
+						String serverName = FileUtil.makeFileName(file.getOriginalFilename());
+						try {
+							FileUtils.copyInputStreamToFile(file.getInputStream(),
+									new File(FileUtil.getUploadPath(), serverName));
+							teacher.setPicture(serverName);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				teacherServiceImpl.update(teacher);
+				Map<String, String> result = new HashMap<>();
+				result.put("name", teacher.getName());
+				result.put("icon", FileUtil.getRequestUrl(request)+teacher.getPicture());
+				return new ReturnBody(result);
+			}else{
+				return ReturnBody.getParamError();
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE,

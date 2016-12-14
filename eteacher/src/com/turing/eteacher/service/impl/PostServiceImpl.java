@@ -60,10 +60,7 @@ public class PostServiceImpl extends BaseService<Post> implements IPostService {
 		if(list!=null&&list.size()>0){
 			data = list.get(0);
 			//图片
-			List<CustomFile> files = fileServiceImpl.getListByDataId(postId);
-			for(CustomFile file : files){
-				file.setServerName(FileUtil.getFileStorePath() + file.getServerName());
-			}
+			List<Map> files = fileServiceImpl.getFileList(postId,"");
 			data.put("files", files);
 			//评论列表
 			hql = "select pr.prId as prId,pr.content as content,s.stuName as stuName " +

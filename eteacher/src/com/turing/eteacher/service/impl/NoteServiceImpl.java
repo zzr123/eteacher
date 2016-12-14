@@ -34,9 +34,8 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 	}
 
 	@Override
-	public void saveNote(Note note, List<MultipartFile> files, String savePath)
-			throws Exception {
-		noteDAO.save(note);
+	public void saveNoteFiles(String noteId, List<MultipartFile> files, String savePath)
+			{
 		if (files != null) {
 			for (MultipartFile file : files) {
 				if (!file.isEmpty()) {
@@ -49,7 +48,7 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 						e.printStackTrace();
 					}
 					CustomFile customFile = new CustomFile();
-					customFile.setDataId(note.getNoteId());
+					customFile.setDataId(noteId);
 					customFile.setFileName(file.getOriginalFilename());
 					customFile.setServerName(serverName);
 					customFile.setIsCourseFile(2);
@@ -68,16 +67,13 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 	}
 
 	@Override
-	public List<Map> getListByDate(String userId, String date) {
+	public List<Map> getListByDate(String userId, String date,String url) {
 		String hql = "select n.noteId as noteId, n.content as content from Note n where n.userId = ? and date_format(n.createTime,'%Y-%m-%d') = ?";
 		List<Map> list = noteDAO.find(hql, userId, date);
 		// 附件
 		for (Map record : list) {
 			String noteId = (String) record.get("noteId");
-			List<CustomFile> files = fileServiceImpl.getListByDataId(noteId);
-			for (CustomFile file : files) {
-				file.setServerName("/upload/" + file.getServerName());
-			}
+			List<Map> files = fileServiceImpl.getFileList(noteId,url);
 			record.put("files", files);
 		}
 		return list;
@@ -108,7 +104,7 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 	}
 
 	@Override
-	public Map getNoteDetail(String noteId, String path) {
+	public Map getNoteDetail(String noteId, String path,String url) {
 		String sql = "SELECT t.NOTE_ID AS noteId, " + "t.TITLE AS noteTitle, "
 				+ "t.CONTENT AS noteContent, "
 				+ "t.CREATE_TIME AS createTime, " + "t.IS_KEY AS isKey, "
@@ -118,13 +114,7 @@ public class NoteServiceImpl extends BaseService<Note> implements INoteService {
 		List<Map> list = noteDAO.findBySql(sql, noteId);
 		if (null != list && list.size() > 0) {
 			Map map = list.get(0);
-			List<Map> list2 = fileServiceImpl.getNoteFileList(noteId);
-			if (null != list2 && list2.size() > 0) {
-				for (int i = 0; i < list2.size(); i++) {
-					list2.get(i).put("filePath",
-							path + "/" + list2.get(i).get("serverName"));
-				}
-			}
+			List<Map> list2 = fileServiceImpl.getFileList(noteId,url);
 			map.put("files", list2);
 			return map;
 		}

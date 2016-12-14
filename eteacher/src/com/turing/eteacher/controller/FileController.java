@@ -24,8 +24,9 @@ public class FileController extends BaseController {
 	@ResponseBody
 	public Object getFileDatas(HttpServletRequest request){
 		String dataId = request.getParameter("dataId");
-		List<CustomFile> list = fileServiceImpl.getListByDataId(dataId);
-		return list;
+		//FIXME
+		//List<CustomFile> list = fileServiceImpl.getListByDataId(dataId);
+		return null;
 	}
 	
 	@RequestMapping("deleteFile")

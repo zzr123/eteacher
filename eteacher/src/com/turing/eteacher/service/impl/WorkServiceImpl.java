@@ -11,6 +11,7 @@ import com.turing.eteacher.base.BaseDAO;
 import com.turing.eteacher.base.BaseService;
 import com.turing.eteacher.dao.WorkDAO;
 import com.turing.eteacher.model.Work;
+import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.DateUtil;
@@ -22,6 +23,8 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	@Autowired
 	private WorkDAO workDAO;
 	
+	@Autowired
+	private IFileService fileServiceImpl;
 	@Override
 	public BaseDAO<Work> getDAO() {
 		return workDAO;
@@ -144,10 +147,7 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	}
 	
 	/**
-	 * 教师相关接口
-	 */
-	// 获取作业列表（已过期、未过期、待发布、指定截止日期）
-	/**
+	 * 教师相关接口   获取作业列表（已过期、未过期、待发布、指定截止日期）
 	 * @author zjx
 	 *  返回结果： 作业ID，作业所属课程名称[],作业内容，作业发布时间，作业到期时间，作业状态
 	 */
@@ -203,31 +203,31 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 		 * 修改：macong 
 		 * 一个作业可能对应多门课程，一门课程可能包含多个班级信息。对这些信息进行拼接 
 		 */
-		for(int a = 0; a < list.size(); a++){
-			//1.课程名称与授课班级的拼接--->软件工程（13软工A班）
-			String hq = "select cl.className as className from "
-					+ "Classes cl, CourseClasses cc where "
-					+ "cc.classId = cl.classId and cc.courseId = ?";
-			List<Map> cnlist = workDAO.findMap(hq, (String)list.get(a).get("courseId"));
-			if (null != cnlist && cnlist.size() > 0) {
-				String courseName = list.get(a).get("courseName")+"(";
-				for (int j = 0; j < cnlist.size(); j++) {
-					courseName += cnlist.get(j).get("className") + ",";
-				}
-				courseName = courseName.substring(0, courseName.length() - 1);
-				courseName += ")";
-				list.get(a).put("courseName", courseName);
-			}	
-			//2. 一个作业对应多门课程
-			Object wid = list.get(a).get("workId");
-			for(int b = 0; b < list.size(); b++){
-				if(a != b && wid.equals(list.get(b).get("workId"))){
-					String ncn = (String) list.get(a).get("courseName")+"||"+(String) list.get(b).get("courseName");
-					list.remove(b);//去掉重复项
-					list.get(a).put("courseName", ncn);//覆盖原有的course为拼接后的值
-				}
-			}
-		}
+//		for(int a = 0; a < list.size(); a++){
+//			//1.课程名称与授课班级的拼接--->软件工程（13软工A班）
+//			String hq = "select cl.className as className from "
+//					+ "Classes cl, CourseClasses cc where "
+//					+ "cc.classId = cl.classId and cc.courseId = ?";
+//			List<Map> cnlist = workDAO.findMap(hq, (String)list.get(a).get("courseId"));
+//			if (null != cnlist && cnlist.size() > 0) {
+//				String courseName = list.get(a).get("courseName")+"(";
+//				for (int j = 0; j < cnlist.size(); j++) {
+//					courseName += cnlist.get(j).get("className") + ",";
+//				}
+//				courseName = courseName.substring(0, courseName.length() - 1);
+//				courseName += ")";
+//				list.get(a).put("courseName", courseName);
+//			}	
+//			//2. 一个作业对应多门课程
+//			Object wid = list.get(a).get("workId");
+//			for(int b = 0; b < list.size(); b++){
+//				if(a != b && wid.equals(list.get(b).get("workId"))){
+//					String ncn = (String) list.get(a).get("courseName")+"||"+(String) list.get(b).get("courseName");
+//					list.remove(b);//去掉重复项
+//					list.get(a).put("courseName", ncn);//覆盖原有的course为拼接后的值
+//				}
+//			}
+//		}
 		if(null != list && list.size()>0){
 			//判断作业是否存在附件
 			for (int i = 0; i < list.size(); i++) {
@@ -250,18 +250,25 @@ public class WorkServiceImpl extends BaseService<Work> implements IWorkService {
 	 *  返回结果： 作业ID，作业所属课程名称[],作业内容，作业开始时间，作业结束时间，作业附件ID，作业附件名称，作业附件地址
 	 */
 	@Override
-	public Map getWorkDetail(String workId) {
+	public Map getWorkDetail(String workId,String url) {
 		//第一步，根据作业ID查询该作业的内容，开始时间，结束时间（ＷＯＲＫ）
 		String wi = "select w.workId as workId, w.publishTime as publishTime, "
 				+ "w.endTime as endTime, w.content as content, w.remindTime as remindTime "
 				+ "from Work w where w.workId = ?";
 		List<Map> list = workDAO.findMap(wi, workId);
-		Map data = null;
 		if(null != list && list.size() > 0){
-			data = workDAO.findMap(wi, workId).get(0);
-			data.put("courses", workCourseServiceImpl.getCoursesByWId(workId));
+			Map data = workDAO.findMap(wi, workId).get(0);
+			List listCourse =  workCourseServiceImpl.getCoursesByWId(workId);
+			if (null != listCourse && listCourse.size() > 0) {
+				data.put("courses", listCourse);
+			}
+			List fileList = fileServiceImpl.getFileList(workId,url);
+			if (null != fileList && fileList.size() > 0) {
+				data.put("files", fileList);
+			}
+			return data;
 		}
-		return data;
+		return null;
 	}
 	/**
 	 * @author zjx

@@ -1,5 +1,7 @@
 package com.turing.eteacher.remote;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,19 +10,25 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Notice;
 import com.turing.eteacher.model.User;
 import com.turing.eteacher.model.WorkCourse;
+import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.INoticeService;
 import com.turing.eteacher.service.IWorkCourseService;
+import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
 @RestController
@@ -33,7 +41,8 @@ public class NoticeRemote extends BaseRemote {
 	@Autowired
 	private IWorkCourseService workCourseServiceImpl;
 	
-
+	@Autowired
+	private IFileService fileServiceImpl;
 	/**
 	 * 教师端通知展示列表
 	 * 
@@ -114,7 +123,7 @@ public class NoticeRemote extends BaseRemote {
 		String noticeId = request.getParameter("noticeId");
 		if(StringUtil.checkParams(noticeId)){
 			try {
-				Map detail = noticeServiceImpl.getNoticeDetail(noticeId);
+				Map detail = noticeServiceImpl.getNoticeDetail(noticeId,FileUtil.getRequestUrl(request));
 				return new ReturnBody(ReturnBody.RESULT_SUCCESS, detail);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -212,6 +221,39 @@ public class NoticeRemote extends BaseRemote {
 						workCourse.setCourseId(courseId);
 						workCourseServiceImpl.add(workCourse);
 					}
+					//对作业附件的处理
+					if (request instanceof MultipartRequest) {
+						try {
+							List<MultipartFile> files = null;
+							MultipartRequest multipartRequest = (MultipartRequest) request;
+							files = multipartRequest.getFiles("file");
+							System.out.println("文件的个数："+files.size());
+							if (files != null) {
+								for (MultipartFile file : files) {
+									if (!file.isEmpty()) {
+										String serverName = FileUtil.makeFileName(file
+												.getOriginalFilename());
+										try {
+											FileUtils.copyInputStreamToFile(file.getInputStream(),
+													new File(FileUtil.getUploadPath(), serverName));
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+										CustomFile customFile = new CustomFile();
+										customFile.setDataId(noticeId);
+										customFile.setFileName(file.getOriginalFilename());
+										customFile.setServerName(serverName);
+										customFile.setIsCourseFile(2);
+										customFile.setFileAuth("02");
+										fileServiceImpl.save(customFile);
+									}
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+						}
+					}
 				}
 			}
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, "保存成功！");
@@ -268,7 +310,7 @@ public class NoticeRemote extends BaseRemote {
 					noticeServiceImpl.addReadFlag(noticeId,userId);
 				}
 				//查看通知详情
-				Map notice = noticeServiceImpl.getNoticeDetail_student(noticeId,Integer.parseInt(flag));
+				Map notice = noticeServiceImpl.getNoticeDetail_student(noticeId,Integer.parseInt(flag),FileUtil.getRequestUrl(request));
 				if(null != notice){
 					return new ReturnBody(ReturnBody.RESULT_SUCCESS, notice);
 				}else{

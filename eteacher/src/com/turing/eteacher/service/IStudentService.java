@@ -21,5 +21,5 @@ public interface IStudentService extends IService<Student> {
 	 * @param
 	 * @return
 	 * */
-	public Map getUserInfo(String userId);
+	public Map getUserInfo(String userId,String url);
 }

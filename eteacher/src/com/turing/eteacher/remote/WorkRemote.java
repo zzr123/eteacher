@@ -1,25 +1,33 @@
 package com.turing.eteacher.remote;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
+import com.turing.eteacher.model.CustomFile;
 import com.turing.eteacher.model.Work;
 import com.turing.eteacher.model.WorkCourse;
 import com.turing.eteacher.model.WorkStatus;
+import com.turing.eteacher.service.IFileService;
 import com.turing.eteacher.service.IWorkCourseService;
 import com.turing.eteacher.service.IWorkService;
 import com.turing.eteacher.util.CustomIdGenerator;
+import com.turing.eteacher.util.FileUtil;
 import com.turing.eteacher.util.StringUtil;
 
 /**
@@ -49,6 +57,9 @@ public class WorkRemote extends BaseRemote {
 
 	@Autowired
 	private IWorkCourseService workCourseServiceImpl;
+	
+	@Autowired
+	private IFileService fileServiceImpl;
 //  学生端操作
 	/**
 	 * 获取作业列表
@@ -184,12 +195,20 @@ public class WorkRemote extends BaseRemote {
 	int i = 0;
 
 	@RequestMapping(value = "teacher/work/detail", method = RequestMethod.POST)
-	public ReturnBody getWorkDetail(HttpServletRequest request, String workId) {
+	public ReturnBody getWorkDetail(HttpServletRequest request) {
 		try {
 			i++;
-			System.out.println("workId :" + workId);
-			Map data = workServiceImpl.getWorkDetail(workId);
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+			String workId = request.getParameter("workId"); 
+			if (StringUtil.checkParams(workId)) {
+				Map data = workServiceImpl.getWorkDetail(workId,FileUtil.getRequestUrl(request));
+				if (null != data) {
+					return new ReturnBody(ReturnBody.RESULT_SUCCESS, data);
+				}else{
+					return ReturnBody.getParamError();
+				}
+			}else{
+				return ReturnBody.getParamError();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);
@@ -225,10 +244,41 @@ public class WorkRemote extends BaseRemote {
 				workCourseServiceImpl.add(workCourse);
 			}
 			//对作业附件的处理
-			if(null!= request.getParameter("file")){
-				//..
+			if (request instanceof MultipartRequest) {
+				try {
+					List<MultipartFile> files = null;
+					MultipartRequest multipartRequest = (MultipartRequest) request;
+					files = multipartRequest.getFiles("file");
+					System.out.println("文件的个数："+files.size());
+					if (files != null) {
+						for (MultipartFile file : files) {
+							if (!file.isEmpty()) {
+								String serverName = FileUtil.makeFileName(file
+										.getOriginalFilename());
+								try {
+									FileUtils.copyInputStreamToFile(file.getInputStream(),
+											new File(FileUtil.getUploadPath(), serverName));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								CustomFile customFile = new CustomFile();
+								customFile.setDataId(work.getWorkId());
+								customFile.setFileName(file.getOriginalFilename());
+								customFile.setServerName(serverName);
+								customFile.setIsCourseFile(2);
+								customFile.setFileAuth("02");
+								fileServiceImpl.save(customFile);
+							}
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new ReturnBody(ReturnBody.RESULT_FAILURE,ReturnBody.ERROR_MSG);
+				}
+			}else{
+				System.out.println("不是文件请求");;
 			}
-			return new ReturnBody(ReturnBody.RESULT_SUCCESS, new HashMap());
+			return new ReturnBody("保存成功！");
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ReturnBody(ReturnBody.RESULT_FAILURE, ReturnBody.ERROR_MSG);

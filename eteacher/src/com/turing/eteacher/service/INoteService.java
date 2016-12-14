@@ -10,11 +10,11 @@ import com.turing.eteacher.model.Note;
 
 public interface INoteService extends IService<Note> {
 
-	public void saveNote(Note note, List<MultipartFile> files,String savePath) throws Exception;
+	public void saveNoteFiles(String noteId, List<MultipartFile> files,String savePath);
 	
 	public List getNoteDateList(String userId, String courseId);
 	
-	public List<Map> getListByDate(String userId, String date);
+	public List<Map> getListByDate(String userId, String date,String url);
 	
 	public void deleteByDate(String userId, String date);
 	/**
@@ -32,7 +32,7 @@ public interface INoteService extends IService<Note> {
 	 * @param noteId
 	 * @return
 	 */
-	public Map getNoteDetail(String noteId,String path);
+	public Map getNoteDetail(String noteId,String path,String url);
 	/**
 	 * 删除笔记
 	 * @author lifei

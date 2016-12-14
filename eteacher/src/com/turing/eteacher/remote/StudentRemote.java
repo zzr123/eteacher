@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.turing.eteacher.base.BaseRemote;
 import com.turing.eteacher.component.ReturnBody;
@@ -211,7 +212,7 @@ public class StudentRemote extends BaseRemote {
 	public ReturnBody getStudent(HttpServletRequest request){
 		try {
 			String userId = request.getParameter("userId");
-			Map student = studentServiceImpl.getUserInfo(userId);
+			Map student = studentServiceImpl.getUserInfo(userId,FileUtil.getRequestUrl(request));
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, student);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -329,9 +330,28 @@ public class StudentRemote extends BaseRemote {
 				student.setSchoolId(schoolId);
 				student.setFaculty(faculty);
 				student.setClassId(classId);
+				if (request instanceof MultipartRequest) {
+					MultipartRequest multipartRequest = (MultipartRequest)request;
+					MultipartFile file = multipartRequest.getFile("icon");
+					if (!file.isEmpty()) {
+						String serverName = FileUtil.makeFileName(file.getOriginalFilename());
+						try {
+							FileUtils.copyInputStreamToFile(file.getInputStream(),
+									new File(FileUtil.getUploadPath(), serverName));
+							student.setPicture(serverName);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 				studentServiceImpl.update(student);
+				Map<String, String> map = new HashMap<>();
+				map.put("name", student.getStuName());
+				map.put("icon", FileUtil.getRequestUrl(request)+student.getPicture());
+				return new ReturnBody(map);
+			}else{
+				return ReturnBody.getParamError();
 			}
-			return new ReturnBody("保存成功！");
 		} else {
 			return ReturnBody.getParamError();
 		}

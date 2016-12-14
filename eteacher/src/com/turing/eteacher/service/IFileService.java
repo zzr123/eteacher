@@ -7,8 +7,6 @@ import com.turing.eteacher.base.IService;
 import com.turing.eteacher.model.CustomFile;
 
 public interface IFileService extends IService<CustomFile> {
-
-	public List<CustomFile> getListByDataId(String dataId);
 	
 	/**
 	 * 获取笔记附件
@@ -16,7 +14,7 @@ public interface IFileService extends IService<CustomFile> {
 	 * @param noteId
 	 * @return
 	 */
-	public List<Map> getNoteFileList(String  noteId);
+	public List<Map> getFileList(String  noteId,String url);
 	/**
 	 * 删除笔记
 	 * @author lifei

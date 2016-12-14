@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,7 +57,7 @@ public class FileRemote extends BaseRemote {
 	public ReturnBody getFiles(HttpServletRequest request,
 			@PathVariable String dataId) {
 		try {
-			List<CustomFile> list = fileServiceImpl.getListByDataId(dataId);
+			List<Map> list = fileServiceImpl.getFileList(dataId,FileUtil.getRequestUrl(request));
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,7 +78,7 @@ public class FileRemote extends BaseRemote {
 		String courseId = request.getParameter("courseId");
 		String page = request.getParameter("page");
 		if (StringUtil.checkParams(courseId, page)) {
-			List list = customFileServiceImpl.getListByCourse(courseId, Integer.parseInt(page),FileUtil.getUploadPath(request));
+			List list = customFileServiceImpl.getListByCourse(courseId, Integer.parseInt(page),FileUtil.getUploadPath());
 			return new ReturnBody(list);
 		}else{
 			return ReturnBody.getParamError();

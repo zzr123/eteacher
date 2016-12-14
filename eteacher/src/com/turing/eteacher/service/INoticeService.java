@@ -17,7 +17,7 @@ public interface INoticeService extends IService<Notice> {
 	//通知状态的修改
 	public void ChangeNoticeState(String noticeId,String status);
 	//查看通知详情
-	public Map getNoticeDetail(String noticeId);
+	public Map getNoticeDetail(String noticeId,String url);
 	/**
 	 * 查看通知已读读人员列表
 	 * @author lifei
@@ -41,7 +41,7 @@ public interface INoticeService extends IService<Notice> {
 	 * @param noticeId
 	 * @return
 	 */
-	public Map getNoticeDetail_student(String noticeId,int flag);
+	public Map getNoticeDetail_student(String noticeId,int flag,String url);
 	/**
 	 * 学生端接口：将未读通知置为已读状态
 	 * @author macong

@@ -49,20 +49,20 @@ public class NoteRemote extends BaseRemote {
 			note.setIsKey(isKey);
 			note.setUserId(getCurrentUserId(request));
 			note.setCourseId(courseId);
-			try {
-				List<MultipartFile> files = null;
-				if (request instanceof MultipartRequest) {
+			noteServiceImpl.save(note);
+			if (request instanceof MultipartRequest) {
+				try {
+					List<MultipartFile> files = null;
 					MultipartRequest multipartRequest = (MultipartRequest) request;
 					files = multipartRequest.getFiles("myFiles");
+					noteServiceImpl.saveNoteFiles(note.getNoteId(), files,FileUtil.getUploadPath());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new ReturnBody(ReturnBody.RESULT_FAILURE,
+							ReturnBody.ERROR_MSG);
 				}
-				noteServiceImpl.saveNote(note, files,
-						FileUtil.getUploadPath(request));
-				return new ReturnBody("保存成功！");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return new ReturnBody(ReturnBody.RESULT_FAILURE,
-						ReturnBody.ERROR_MSG);
 			}
+			return new ReturnBody("保存成功！");
 		} else {
 			return ReturnBody.getParamError();
 		}
@@ -123,7 +123,7 @@ public class NoteRemote extends BaseRemote {
 			@PathVariable String date) {
 		try {
 			List list = noteServiceImpl.getListByDate(getCurrentUser(request)
-					.getUserId(), date);
+					.getUserId(), date,FileUtil.getRequestUrl(request));
 			return new ReturnBody(ReturnBody.RESULT_SUCCESS, list);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -208,8 +208,7 @@ public class NoteRemote extends BaseRemote {
 	public ReturnBody getNoteDetail(HttpServletRequest request) {
 		String noteId = request.getParameter("noteId");
 		if (StringUtil.checkParams(noteId)) {
-			Map map = noteServiceImpl.getNoteDetail(noteId,
-					FileUtil.getUploadPath(request));
+			Map map = noteServiceImpl.getNoteDetail(noteId,FileUtil.getUploadPath(),FileUtil.getRequestUrl(request));
 			if (null != map) {
 				return new ReturnBody(map);
 			} else {
@@ -224,7 +223,7 @@ public class NoteRemote extends BaseRemote {
 	public ReturnBody delete(HttpServletRequest request) {
 		String noteId = request.getParameter("noteId");
 		if (StringUtil.checkParams(noteId)) {
-			noteServiceImpl.deleteNote(noteId, FileUtil.getUploadPath(request));
+			noteServiceImpl.deleteNote(noteId, FileUtil.getUploadPath());
 			return new ReturnBody("删除成功！");
 		} else {
 			return ReturnBody.getParamError();

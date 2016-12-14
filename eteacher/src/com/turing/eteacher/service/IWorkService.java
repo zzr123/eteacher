@@ -20,7 +20,7 @@ public interface IWorkService extends IService<Work> {
 	//获取作业列表（已过期、未过期、待发布、指定截止日期）
 	public List<Map> getListWork(String userId, String state, String date,int page);
 	//查看作业详情
-	public Map getWorkDetail(String workId);
+	public Map getWorkDetail(String workId,String url);
 	//更改作业状态
 	public void updateWorkStatus(String workId,String status);
 	//删除作业
